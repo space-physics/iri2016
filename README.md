@@ -13,6 +13,6 @@ python setup.py install
 ## Examples
 
 ### Height-profile
-Here is an example obtained with this [script] (examples/iri1DExample.py):
+Here is an example obtained with this [script] (examples/iri1DExample01.py):
 
-![alt tag] (figures/iri1DExample.png)
+![alt tag] (figures/iri1DExample01.png)
