@@ -9,3 +9,10 @@ It requires [Time Utilities] (https://github.com/rilma/TimeUtilities).
 ```
 python setup.py install
 ```
+
+## Examples
+
+### Height-profile
+Here is an example obtained with this [script] (examples/iri1DExample.py):
+
+![alt tag] (figures/iri1DExample.png)
