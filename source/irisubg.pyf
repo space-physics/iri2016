@@ -1,0 +1,41 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module irisub ! in 
+    interface  ! in :irisub
+        subroutine irisubg(jf,jmag,alati,along,iyyyy,mmdd,dhour,heibeg,heiend,heistp,dirdata,outf,oarr) ! in :irisub:irisubg.for
+            logical dimension(50),intent(in) :: jf
+            integer intent(in) :: jmag
+            real intent(in) :: alati
+            real intent(in) :: along
+            integer intent(in) :: iyyyy
+            integer intent(in) :: mmdd
+            real intent(in) :: dhour
+            real intent(in) :: heibeg
+            real intent(in) :: heiend
+            real intent(in) :: heistp
+            character*256 intent(in) :: dirdata
+            real dimension(30,1000),intent(out) :: outf
+            real dimension(100),intent(out) :: oarr
+            character*256 :: dirdata1
+            common /folders/ dirdata1
+        end subroutine irisubg
+        subroutine irisubgl(jf,jmag,iyyyy,mmdd,dhour,coordl,lenl,dirdata,outf1,oarr1) ! in :irisub:irisubg.for
+            logical dimension(50),intent(in) :: jf
+            integer intent(in) :: jmag
+            integer intent(in) :: iyyyy
+            integer intent(in) :: mmdd
+            real intent(in) :: dhour
+            real dimension(lenl,3),intent(in) :: coordl
+            integer, optional,intent(hide),depend(coordl) :: lenl=shape(coordl,0)
+            character*256 intent(in) :: dirdata
+            real dimension(30,lenl),intent(out),depend(lenl) :: outf1
+            real dimension(100,lenl),intent(out),depend(lenl) :: oarr1
+            character*256 :: dirdata1
+            common /folders/ dirdata1
+        end subroutine irisubgl
+    end interface 
+end python module irisub
+
+! This file was auto-generated with f2py (version:2).
+! See http://cens.ioc.ee/projects/f2py2e/

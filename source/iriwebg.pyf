@@ -1,0 +1,63 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module iriweb ! in 
+    interface  ! in :iriweb
+        subroutine iriwebg(injmag,injf,inalati,inalong,iniyyyy,inmmdd,iniut,indhour,inheight,inh_tec_max,inivar,invbeg,invend,invstp,inaddinp,dirdata,outa,outb) ! in :iriweb:iriwebg.for
+            real*8 intent(in) :: injmag
+            real*8 dimension(50),intent(in) :: injf
+            real*8 intent(in) :: inalati
+            real*8 intent(in) :: inalong
+            real*8 intent(in) :: iniyyyy
+            real*8 intent(in) :: inmmdd
+            real*8 intent(in) :: iniut
+            real*8 intent(in) :: indhour
+            real*8 intent(in) :: inheight
+            real*8 intent(in) :: inh_tec_max
+            real*8 intent(in) :: inivar
+            real*8 intent(in) :: invbeg
+            real*8 intent(in) :: invend
+            real*8 intent(in) :: invstp
+            real*8 dimension(12),intent(in) :: inaddinp
+            character*256 intent(in) :: dirdata
+            real*8 dimension(30,1000),intent(out) :: outa
+            real*8 dimension(100,1000),intent(out) :: outb
+            character*256 :: dirdata1
+            common /folders/ dirdata1
+        end subroutine iriwebg
+        subroutine irisubg(jf,jmag,alati,along,iyyyy,mmdd,dhour,heibeg,heiend,heistp,dirdata,outf,oarr) ! in :iriweb:iriwebg.for
+            logical dimension(50),intent(in) :: jf
+            integer intent(in) :: jmag
+            real intent(in) :: alati
+            real intent(in) :: along
+            integer intent(in) :: iyyyy
+            integer intent(in) :: mmdd
+            real intent(in) :: dhour
+            real intent(in) :: heibeg
+            real intent(in) :: heiend
+            real intent(in) :: heistp
+            character*256 intent(in) :: dirdata
+            real dimension(30,1000),intent(out) :: outf
+            real dimension(100),intent(out) :: oarr
+            character*256 :: dirdata1
+            common /folders/ dirdata1
+        end subroutine irisubg
+        subroutine irisubgl(jf,jmag,iyyyy,mmdd,dhour,coordl,lenl,dirdata,outf1,oarr1) ! in :iriweb:iriwebg.for
+            logical dimension(50),intent(in) :: jf
+            integer intent(in) :: jmag
+            integer intent(in) :: iyyyy
+            integer intent(in) :: mmdd
+            real intent(in) :: dhour
+            real dimension(lenl,3),intent(in) :: coordl
+            integer, optional,intent(hide),depend(coordl) :: lenl=shape(coordl,0)
+            character*256 intent(in) :: dirdata
+            real dimension(30,lenl),intent(out),depend(lenl) :: outf1
+            real dimension(100,lenl),intent(out),depend(lenl) :: oarr1
+            character*256 :: dirdata1
+            common /folders/ dirdata1
+        end subroutine irisubgl
+    end interface 
+end python module iriweb
+
+! This file was auto-generated with f2py (version:2).
+! See http://cens.ioc.ee/projects/f2py2e/
