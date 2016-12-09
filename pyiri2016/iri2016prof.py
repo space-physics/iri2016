@@ -10,7 +10,7 @@ class IRI2016Profile(IRI2016):
 
     def __init__(self, alt=300., altlim=[90.,150.], altstp=2., dom=21, htecmax=0, \
                     hour=12., hrlim=[0., 24.], hrstp=.25, \
-                    iut=0, jmag=0, \
+                    iut=1, jmag=0, \
                     lat=0., latlim=[-90, 90], latstp=10., \
                     lon=0., lonlim=[-180,180], lonstp=20., \
                     month=11, option=1, verbose=True, year=2003):
@@ -90,8 +90,8 @@ class IRI2016Profile(IRI2016):
     def GetTitle(self):
 
         dateStr = 'DATE: {:4d}-{:02d}-{:02d}'.format(self.year, self.month, self.dom)
-        self._Hr2HHMMSS()        
-        timeStr = 'TIME: {:02d}:{:02d}'.format(self.HH, self.MM)
+        self._Hr2HHMMSS()
+        timeStr = 'TIME: {:02d}:{:02d} UT'.format(self.HH, self.MM)
         latStr = '{:6.2f} {:s}'.format(abs(self.lat), 'N' if self.lat > 0 else 'S')
         lonStr = '{:6.2f} {:s}'.format(abs(self.lon), 'E' if self.lon > 0 else 'W')
 
@@ -100,9 +100,15 @@ class IRI2016Profile(IRI2016):
         apStr = 'ap: {:3d}'.format(int(self.b[50, 0]))
         ApStr = 'Ap: {:3d}'.format(int(self.b[51, 0]))
         KpStr = 'Kp: {:3d}'.format(int(self.b[82, 0]))
-        
-        self.title1 = '{:s} - {:s}  -  {:s}, {:s}'.format(dateStr, timeStr, latStr, lonStr)
-        self.title2 = '{:s}  -  {:s}'.format(f107Str, KpStr)
+
+        if self.option in [1, 8]:
+            self.title1 = '{:s} - {:s}  -  {:s}, {:s}'.format(dateStr, timeStr, latStr, lonStr)
+        elif self.option == 2:
+            self.title1 = '{:s} - {:s}  -  GEOG. LON.: {:s}'.format(dateStr, timeStr, lonStr)            
+        else:
+            pass
+
+        self.title2 = '{:s}  -  {:s}'.format(f107Str, ApStr)
         
 
     def HeiProfile(self):
@@ -138,6 +144,8 @@ class IRI2016Profile(IRI2016):
 
         self._CallIRI()
 
+        self.GetTitle()
+
         if self.verbose:
 
             latbins = list(map(lambda x : self.vbeg + float(x) * self.vstp, range(self.numstp)))
@@ -155,6 +163,8 @@ class IRI2016Profile(IRI2016):
 
         self._CallIRI()
 
+        self.GetTitle()
+
         if self.verbose:
 
             lonbins = list(map(lambda x : self.vbeg + float(x) * self.vstp, range(self.numstp)))
@@ -171,6 +181,8 @@ class IRI2016Profile(IRI2016):
     def HrProfile(self):
 
         self._CallIRI()
+
+        self.GetTitle()
 
         if self.verbose:
 

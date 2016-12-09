@@ -7,7 +7,7 @@ from scipy import arange, nan, ones, squeeze, where
 
 
 
-class IRI2016:
+class IRI2016(object):
 
 
     def __init__(self):

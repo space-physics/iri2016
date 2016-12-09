@@ -13,6 +13,17 @@ python setup.py install
 ## Examples
 
 ### Height-profile
-Here is an example obtained with this [script] (examples/iri1DExample01.py):
+Use this [script] (examples/iri1DExample01.py) to generate a plot of density and temperatures vs height:
 
 ![alt tag] (figures/iri1DExample01.png)
+
+### Latitudinal profile
+Use this [script] (examples/iri1DExample02.py) to generate a plot of densities and height at the peak of F2, F2, and E regions vs geographic latitude:
+
+![alt tag] (figures/iri1DExample02.png)
+
+### GMT profile
+Use this [script] (examples/iri1DExample08.py) to generate a plot of densities and height at the peak of F2, F2, and E regions vs universal time:
+
+![alt tag] (figures/iri1DExample08.png)
+

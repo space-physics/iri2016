@@ -25,7 +25,7 @@ if __name__ == '__main__':
         fig = figure(figsize=(16,6))
 
         pn = fig.add_subplot(121)
-        ne = iri2016Obj.a[0, index]
+        ne = iri2016Obj.a[0, index]        
         pn.plot(ne, altbins, label='N$_e$')
         pn.set_title(iri2016Obj.title1)
         pn.set_xlabel('Density (m$^{-3}$)')
