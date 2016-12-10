@@ -34,7 +34,7 @@ Use this [script] (scripts/iri2DExample01.py) to generate a plot of Ne, Te, and 
 
 ![alt tag] (figures/iri2DExample01.png)
 
-### Lattidude vs Longitude
+### Latitude vs Longitude
 Use this [script] (scripts/iri2DExample02.py) to generate a plot of foF2 a function of geographic latitude and longitude:
 
 ![alt tag] (figures/iri2DExample02.png)
