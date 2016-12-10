@@ -1,6 +1,6 @@
 # pyIRI2016
 
-<p align="center"?
+<p align="center"
 <img src="figures/iri2DExample02.gif">
 </p>
 
