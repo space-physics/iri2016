@@ -87,7 +87,7 @@ class IRI2016Profile(IRI2016):
     # End of '_Hr2HHMMSS'
     #####
 
-    def GetTitle(self):
+    def _GetTitle(self):
 
         dateStr = 'DATE: {:4d}-{:02d}-{:02d}'.format(self.year, self.month, self.dom)
         self._Hr2HHMMSS()
@@ -109,6 +109,7 @@ class IRI2016Profile(IRI2016):
             pass
 
         self.title2 = '{:s}  -  {:s}'.format(f107Str, ApStr)
+        self.title3 = '{:s} - {:s}   -   {:s} - {:s}'.format(dateStr, timeStr, f107Str, ApStr)
         
 
     def HeiProfile(self):
@@ -117,7 +118,7 @@ class IRI2016Profile(IRI2016):
         a = self.a
         b = self.b
 
-        self.GetTitle()
+        self._GetTitle()
 
         if self.verbose:
 
@@ -144,7 +145,7 @@ class IRI2016Profile(IRI2016):
 
         self._CallIRI()
 
-        self.GetTitle()
+        self._GetTitle()
 
         if self.verbose:
 
@@ -163,7 +164,7 @@ class IRI2016Profile(IRI2016):
 
         self._CallIRI()
 
-        self.GetTitle()
+        self._GetTitle()
 
         if self.verbose:
 
@@ -182,7 +183,7 @@ class IRI2016Profile(IRI2016):
 
         self._CallIRI()
 
-        self.GetTitle()
+        self._GetTitle()
 
         if self.verbose:
 

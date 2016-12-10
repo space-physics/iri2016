@@ -1,5 +1,7 @@
 # pyIRI2016
 
+![alt tag] (figure/iri2DExample02.gif)
+
 A Python interface to the International Reference Ionosphere (IRI) 2016 model. 
 
 It requires [Time Utilities] (https://github.com/rilma/TimeUtilities).
@@ -26,4 +28,3 @@ Use this [script] (examples/iri1DExample02.py) to generate a plot of densities a
 Use this [script] (examples/iri1DExample08.py) to generate a plot of densities and height at the peak of F2, F2, and E regions vs universal time:
 
 ![alt tag] (figures/iri1DExample08.png)
-
