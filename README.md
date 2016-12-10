@@ -1,7 +1,7 @@
 # pyIRI2016
 
 <p align="center"
-<img src="figures/iri2DExample02.gif">
+<img src="https://github.com/rilma/pyIRI2016/blob/version-1.0.0/figures/iri2DExample02.gif">
 </p>
 
 A Python interface to the International Reference Ionosphere (IRI) 2016 model. 
