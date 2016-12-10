@@ -28,3 +28,13 @@ Use this [script] (examples/iri1DExample02.py) to generate a plot of densities a
 Use this [script] (examples/iri1DExample08.py) to generate a plot of densities and height at the peak of F2, F2, and E regions vs universal time:
 
 ![alt tag] (figures/iri1DExample08.png)
+
+### Height vs GMT
+Use this [script] (scripts/iri2DExample01.py) to generate a plot of Ne, Te, and Ti as a function of height and universal time:
+
+![alt tag] (figures/iri2DExample01.png)
+
+### Lattidude vs Longitude
+Use this [script] (scripts/iri2DExample02.py) to generate a plot of foF2 a function of geographic latitude and longitude:
+
+![alt tag] (figures/iri2DExample02.png)
