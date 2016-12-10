@@ -1,6 +1,6 @@
 # pyIRI2016
 
-![alt tag] (figure/iri2DExample02.gif)
+![alt tag] (figures/iri2DExample02.gif)
 
 A Python interface to the International Reference Ionosphere (IRI) 2016 model. 
 
