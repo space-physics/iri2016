@@ -56,6 +56,26 @@ python module iriweb ! in
             character*256 :: dirdata1
             common /folders/ dirdata1
         end subroutine irisubgl
+        subroutine firisubl(yyyy,ddd,uhour,coordl,lenl,dirdata,edens1,ierr1) ! in :iriweb:iriwebg.for
+            integer intent(in) :: yyyy
+            integer intent(in) :: ddd
+            real intent(in) :: uhour
+            real dimension(lenl,3),intent(in) :: coordl
+            integer, optional,intent(hide),depend(coordl) :: lenl=shape(coordl,0)
+            character*256 intent(in) :: dirdata
+            real dimension(lenl),intent(out),depend(lenl) :: edens1
+            real dimension(lenl),intent(out),depend(lenl) :: ierr1
+            character*256 :: dirdata1
+            common /folders/ dirdata1
+        end subroutine firisubl
+        subroutine initialize ! in :iriweb:iriwebg.for
+            real :: dtr
+            real :: pi
+            real :: humr
+            real :: dumr
+            common /const/ dtr,pi
+            common /const1/ humr,dumr
+        end subroutine initialize
     end interface 
 end python module iriweb
 

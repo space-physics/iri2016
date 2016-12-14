@@ -8,7 +8,7 @@ if __name__ == '__main__':
 
     def example08():
 
-        """ Geog. Latitude Profile Example """
+        """ GMT Profile Example """
 
         hrlim = [0, 24]
         hrstp = 0.25
@@ -20,9 +20,9 @@ if __name__ == '__main__':
         nhr = len(hrbins)
         index = range(nhr)
 
-        fig = figure(figsize=(8,12))
+        fig = figure(figsize=(16,12))
 
-        pn = fig.add_subplot(211)
+        pn = fig.add_subplot(221)
         NmF2 = iri2016Obj.b[0, index]
         NmF1 = IRI2016()._RmNeg(iri2016Obj.b[2, index])
         NmE = iri2016Obj.b[4, index]
@@ -36,7 +36,7 @@ if __name__ == '__main__':
         pn.set_yscale('log')
         legend(loc='best')
 
-        pn = fig.add_subplot(212)
+        pn = fig.add_subplot(222)
         hmF2 = iri2016Obj.b[1, index]
         hmF1 = IRI2016()._RmNeg(iri2016Obj.b[3, index])
         hmE = iri2016Obj.b[5, index]
@@ -47,7 +47,24 @@ if __name__ == '__main__':
         pn.set_title(iri2016Obj.title2)
         pn.set_xlabel('Hour (UT)')
         pn.set_ylabel('(km)')
-        legend(loc='best')                
+        legend(loc='best')    
+
+        # pn = fig.add_subplot(223)
+        # tec = iri2016Obj.b[36, index]
+        # pn.plot(hrbins, tec, label=r'TEC')
+        # pn.set_xlim(hrbins[[0, -1]])
+        # pn.set_xlabel('Hour (UT)')
+        # pn.set_ylabel('(m$^{-2}$)')
+        # #pn.set_yscale('log')
+        # legend(loc='best')
+
+        pn = fig.add_subplot(224)
+        vy = iri2016Obj.b[43, index]
+        pn.plot(hrbins, vy, label=r'V$_y$')
+        pn.set_xlim(hrbins[[0, -1]])
+        pn.set_xlabel('Hour (UT)')
+        pn.set_ylabel('(m/s)')
+        legend(loc='best')
 
         show()
 

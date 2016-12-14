@@ -213,3 +213,59 @@ Cf2py       intent(out) outf1,oarr1
             end do
 
         end subroutine irisubgl
+
+
+        subroutine firisubl(yyyy,ddd,uhour,coordl,lenl,dirdata,
+     &      edens1,ierr1)
+
+        integer yyyy,ddd,lenl,i
+        real coordl(lenl,3)
+		real uhour,edens1(lenl),ierr1(lenl)		
+		character*256 dirdata,dirdata1
+
+        integer mm,dd,nrdaymo,nmonth
+		real rz(3),igz(3),rsn,f107d,f107d1,glat,glon,hei,lhour
+		real sud,xhi,sax,sux,edens,ierr
+
+Cf2py   intent(in) yyyy,ddd,uhour,coordl,dirdata
+Cf2py   integer intent(hide),depend(coordl) :: lenl=shape(coordl,0)
+Cf2py	intent(out) edens1,ierr1
+        
+		common /folders/ dirdata1
+		dirdata1 = trim(dirdata)		
+
+		call initialize
+        call read_ig_rz
+
+        call moda(1,yyyy,mm,dd,ddd,nrdaymo)       
+        call tcon(yyyy,mm,dd,ddd,rz,ig,rsn,nmonth)
+		f107d = 63.75 + rz(3) * (0.728 + rz(3) * 0.00089)
+
+		do i=1,lenl
+
+			glon = real(coordl(i,1),kind(glon))
+			hei = real(coordl(i,2),kind(hei))			                
+			glat = real(coordl(i,3),kind(glat))
+
+			call ut_lt(0,uhour,lhour,glon,yyyy,ddd)
+    		call soco(ddd,lhour,glat,glon,hei,sud,xhi,sax,sux)
+			f107d1 = f107d
+			call f00(hei,glat,ddd,xhi,f107d1,edens,ierr)
+			edens1(i) = edens
+			ierr1(i) = ierr
+		
+		end do
+
+        end subroutine firisubl
+
+
+		subroutine initialize
+
+		common /const/dtr,pi /const1/humr,dumr
+
+		pi = 4.0 * atan(1.0)
+		dtr = pi / 180.
+		humr = pi / 12.
+		dumr = pi / 182.5
+
+		end subroutine initialize

@@ -47,7 +47,7 @@ class IRI2016(object):
         jf[18 - 1] = 1; #   18    IGRF dip, magbr, modip old FIELDG using POGO68/10 for 1973 1
         jf[19 - 1] = 1; #   19    F1 probability model   critical solar zenith angle (old)   1
         jf[20 - 1] = 1; #   20    standard F1            standard F1 plus L condition        1
-        jf[21 - 1] = 0; #   21    ion drift computed     ion drift not computed              0
+        jf[21 - 1] = 1; #   21    ion drift computed     ion drift not computed              0
         jf[22 - 1] = 1; #   22    ion densities in %     ion densities in m-3                1
         jf[23 - 1] = 0; #   23    Te_tops (Aeros,ISIS)   Te_topside (TBT-2011)               0
         jf[24 - 1] = 0; #   24    D-region: IRI-95       Special: 3 D-region models (FIRI)   1
@@ -113,11 +113,11 @@ class IRI2016(object):
         #
         # more inputs ...
         #
-        jmag = 0       #  0: geographic; 1: geomagnetic
-        iut = 0        #  0: for LT;     1: for UT
-        height = 300.  #  in km
-        h_tec_max = 0  #  0: no TEC; otherwise: upper boundary for integral
-        ivar = var     #  1: altitude; 2: latitude; 3: longitude; ... 
+        jmag = 0            #  0: geographic; 1: geomagnetic
+        iut = 0             #  0: for LT;     1: for UT
+        height = 300.       #  in km
+        h_tec_max = 2000    #  0: no TEC; otherwise: upper boundary for integral
+        ivar = var          #  1: altitude; 2: latitude; 3: longitude; ... 
 
         ivbeg = vbeg
         ivend = vend
@@ -125,7 +125,7 @@ class IRI2016(object):
 
         # Ionosphere (IRI)
         a, b = iriwebg(jmag, jf, glat, glon, year, mmdd, iut, hrlt, \
-                            height, h_tec_max, ivar, ivbeg, ivend, ivstp, addinp, self.iriDataFolder)
+            height, h_tec_max, ivar, ivbeg, ivend, ivstp, addinp, self.iriDataFolder)
 
         bins = arange(ivbeg, ivend + ivstp * 0., ivstp)
         a = a[:, arange(len(bins))]
