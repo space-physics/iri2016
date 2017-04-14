@@ -11,7 +11,7 @@ from mpl_toolkits.basemap import Basemap
 from os.path import dirname, isdir, join, realpath
 from os import mkdir
 import pyapex, seaborn
-from scipy.interpolate import interp2d, RectBivariateSpline
+from scipy.interpolate import interp2d#, RectBivariateSpline
 from timeutil.timeutil import TimeUtilities
 
 
@@ -90,7 +90,7 @@ class IRI2016_2DProf(IRI2016Profile):
         self.data2D = {'lat' : latbins, 'lon' : lonbins, \
                     'NmF2' : NmF2, 'hmF2' : hmF2, 'B0' : B0, 'dip' : dip, \
                     'title' : self.title3}
-            
+
 
     #
     # End of 'LatVsLon'
@@ -245,7 +245,7 @@ class IRI2016_2DProf(IRI2016Profile):
     def PlotLatVsFL(self):
 
         self._Get_Title()
-        
+
         nrow, ncol = 2, 2
 
         spID = nrow * 100 + ncol * 10
@@ -294,7 +294,7 @@ class IRI2016_2DProf(IRI2016Profile):
                 pn.set_ylim(self.hlim)
                 pn.invert_xaxis()
                 pn.grid()
-                
+
                 cp = colorbar(ipc)
                 cp.set_label(zlabel)
 
@@ -303,13 +303,13 @@ class IRI2016_2DProf(IRI2016Profile):
         show()
 
     #
-    # End of 'PlotLatVsFL' 
+    # End of 'PlotLatVsFL'
     #####
 
     def PlotLatVsFLFIRI(self, save=False, verbose=False):
 
         self._Get_Title()
-        
+
         nrow, ncol = 1, 1
 
         spID = nrow * 100 + ncol * 10
@@ -344,12 +344,12 @@ class IRI2016_2DProf(IRI2016Profile):
                 pn.set_ylim(self.hlim)
                 pn.invert_xaxis()
                 pn.grid()
-                
+
                 cp = colorbar(ipc)
                 cp.set_label(zlabel)
 
                 counter += 1
-        
+
         if not save:
             show()
         else:
@@ -358,13 +358,13 @@ class IRI2016_2DProf(IRI2016Profile):
             self.figname = gpath + 'firi-{:02d}{:02d}.jpg'.format(self.time[0], self.time[1])
             if verbose: print('Saving at: {:s}'.format(self.figname))
             savefig(self.figname, bbox_inches='tight', format='jpg', dpi=100)
-            
+
 
         clf()
         close()
 
     #
-    # End of 'PlotLatVsFL' 
+    # End of 'PlotLatVsFL'
     #####
 
     def Plot2D(self):
@@ -449,7 +449,7 @@ class IRI2016_2DProf(IRI2016Profile):
 
             X, Y = meshgrid(self.FIRI2D['hour'], self.FIRI2D['alt'])
 
-            #ipc = pn.pcolor(X, Y, transpose(log10(self.FIRI2D['Ne'])), cmap=cm.jet, 
+            #ipc = pn.pcolor(X, Y, transpose(log10(self.FIRI2D['Ne'])), cmap=cm.jet,
             #vmax=12, vmin=9)
 
             Z = self.FIRI2D['Ne']
@@ -476,7 +476,7 @@ class IRI2016_2DProf(IRI2016Profile):
             pass
 
     #
-    # End of 'PlotFIRI2D' 
+    # End of 'PlotFIRI2D'
     #####
 
     def _RoundLim(self, lim):
@@ -535,7 +535,7 @@ class IRI2016_2DProf(IRI2016Profile):
         #lon0, lat0 = -11.95, -76.87
         #x0, y0 = meshgrid(lon0, lat0)
         #self.m.plot(x0, y0, color='k', linestyle='None', marker='o')
-        
+
         #print(x0, y0)
 
 #------------------------------------------------------------------------------
@@ -549,7 +549,7 @@ class IRI2016_2DProf(IRI2016Profile):
         lon1 = lon0 + (array(self.data2D['lon']) - lon0) * .5
         lat1 = lat0 + (array(self.data2D['lat']) - lat0) * .5
 
-        x0, y0 = array(self.data2D['lon']), array(self.data2D['lat'])        
+        x0, y0 = array(self.data2D['lon']), array(self.data2D['lat'])
 
         foF2 = interp2d(x0, y0, 9.*transpose(self.data2D['NmF2'])**.5*1e-6)(lon1, lat1)
         hmF2 = interp2d(x0, y0, transpose(self.data2D['hmF2']))(lon1, lat1)
@@ -560,9 +560,9 @@ class IRI2016_2DProf(IRI2016Profile):
 
         self.data2DTX = {}
         self.data2DTX['foF2'] = interp2d(x0, y0, 9.*transpose(self.data2D['NmF2'])**.5*1e-6)(lon0, lat0)[0]
-        
+
     #
-    # End of 'IntLatVsLon'    
+    # End of 'IntLatVsLon'
     #####
 
 
@@ -577,10 +577,10 @@ class IRI2016_2DProf(IRI2016Profile):
         parallelsLim = self._RoundLim([self.data2D['lat'][0], self.data2D['lat'][-1]])
         self.m.drawparallels(arange(parallelsLim[0], parallelsLim[1], 2.), labels=[True,False,False,True])
 
-        meridiansLim = self._RoundLim([self.data2D['lon'][0], self.data2D['lon'][-1]])        
-        self.m.drawmeridians(arange(meridiansLim[0], meridiansLim[1], 5.), labels=[True,False,False,True])            
-        
-        X, Y = meshgrid(self.data2DInt['lon'], self.data2DInt['lat'])                    
+        meridiansLim = self._RoundLim([self.data2D['lon'][0], self.data2D['lon'][-1]])
+        self.m.drawmeridians(arange(meridiansLim[0], meridiansLim[1], 5.), labels=[True,False,False,True])
+
+        X, Y = meshgrid(self.data2DInt['lon'], self.data2DInt['lat'])
         ipc = self.m.pcolor(X, Y, transpose(arr), cmap=cm.jet, vmax=vmax, vmin=vmin)
 
         X0, Y0 = meshgrid(self.data2D['lon'],self.data2D['lat'])

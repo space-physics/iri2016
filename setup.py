@@ -9,7 +9,7 @@ name = 'pyiri2016'
 sourcePath = 'source'
 f77CompileArgs = ['-w']
 
-req = ['nose','numpy','matplotlib','seaborn',
+req = ['nose','numpy','matplotlib','seaborn','pathlib2',
        'timeutil']
 
 iriSource1 = ['iriwebg.for', 'irisub.for', 'irifun.for',

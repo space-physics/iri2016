@@ -1,18 +1,23 @@
+try:
+    from pathlib import Path
+    Path().expanduser()
+except (ImportError,AttributeError):  # Python < 3.5
+    from pathlib2 import Path
+#%%
+from pathlib import Path
 from .iriweb import iriwebg
-from math import ceil, floor
-from os.path import dirname, join, realpath
 from timeutil.timeutil import TimeUtilities
 from numpy import arange, nan, ones, squeeze, where
 
 class IRI2016(object):
 
     def __init__(self):
-        self.iriDataFolder = join(dirname(realpath(__file__)), 'data')
+        self.iriDataFolder = Path(__file__).parent / 'data'
 
 
     def Switches(self):
         """
-         IRI switches to turn on/off several options 
+         IRI switches to turn on/off several options
         """
 
         jf = ones(50)
@@ -25,7 +30,7 @@ class IRI2016(object):
         jf[ 4 - 1] = 0; #    4    B0 - Table option      B0 - other models jf(31)            0
         jf[ 5 - 1] = 0; #    5    foF2 - CCIR            foF2 - URSI                         0
         jf[ 6 - 1] = 0; #    6    Ni - DS-95 & DY-85     Ni - RBV-10 & TTS-03                0
-        jf[ 7 - 1] = 1; #    7    Ne - Tops: f10.7<188   f10.7 unlimited                     1            
+        jf[ 7 - 1] = 1; #    7    Ne - Tops: f10.7<188   f10.7 unlimited                     1
         jf[ 8 - 1] = 1; #    8    foF2 from model        foF2 or NmF2 - user input           1
         jf[ 9 - 1] = 1; #    9    hmF2 from model        hmF2 or M3000F2 - user input        1
         jf[10 - 1] = 1; #   10    Te - Standard          Te - Using Te/Ne correlation        1
@@ -48,9 +53,9 @@ class IRI2016(object):
         jf[27 - 1] = 1; #   27    IG12 from file         IG12 - user                         1
         jf[28 - 1] = 0; #   28    spread-F probability   not computed                        0
         jf[29 - 1] = 0; #   29    IRI01-topside          new options as def. by JF(30)       0
-        jf[30 - 1] = 0; #   30    IRI01-topside corr.    NeQuick topside model               0 
+        jf[30 - 1] = 0; #   30    IRI01-topside corr.    NeQuick topside model               0
                         # (29,30) = (1,1) IRIold, (0,1) IRIcor, (0,0) NeQuick, (1,0) Gulyaeva
-        jf[31 - 1] = 1; #   31    B0,B1 ABT-2009         B0 Gulyaeva h0.5                    1   
+        jf[31 - 1] = 1; #   31    B0,B1 ABT-2009         B0 Gulyaeva h0.5                    1
         jf[32 - 1] = 1; #   32    F10.7_81 from file     PF10.7_81 - user input (oarr(46))   1
         jf[33 - 1] = 0; #   33    Auroral boundary model on/off  true/false                  0
         jf[34 - 1] = 0; #   34    Messages on            Messages off                        1
@@ -59,22 +64,22 @@ class IRI2016(object):
                         #   50    ....
                         #   ------------------------------------------------------------------
 
-        return jf                       
+        return jf
 
 #%%
 
-    def IRI(self, ap=5, dom=21, f107=150, glat=0., glon=0., \
-                hrlt=12., month=3, ssn=150, var=1, vbeg=130., \
+    def IRI(self, ap=5, dom=21, f107=150, glat=0., glon=0.,
+                hrlt=12., month=3, ssn=150, var=1, vbeg=130.,
                 vend=130.+1., vstp=1., year=1980):
 
-        doy = squeeze(TimeUtilities().CalcDOY(year, month, dom))
+#        doy = squeeze(TimeUtilities().CalcDOY(year, month, dom))
 
         hh, mm, ss = TimeUtilities().ToHMS(hrlt)
 
         # IRI options
         jf = self.Switches()
 
-        # additional "input parameters" (necessary to scale the empirical model results 
+        # additional "input parameters" (necessary to scale the empirical model results
         # to measurements)
         addinp = -ones(12)
 
@@ -82,7 +87,7 @@ class IRI2016(object):
         #
         if year < 1958:
 
-            addinp[10 - 1] = ssn  # RZ12  (This switches 'jf[17 - 1]' to '0' and 
+            addinp[10 - 1] = ssn  # RZ12  (This switches 'jf[17 - 1]' to '0' and
                                 # uses correlation function to estimate IG12)
 
             jf[25 - 1] = 1        #   25    F107D from APF107.DAT  F107D user input (oarr(41))         1
@@ -96,7 +101,7 @@ class IRI2016(object):
             jf[35 - 1] = 1        #   35    foE storm model        no foE storm updating               0
          #
          #------------------------------------------------------------------------------
-        
+
         mmdd = int(1e2 * month) + dom                  # month and dom (MMDD)
 
         #
@@ -106,14 +111,14 @@ class IRI2016(object):
         iut = 0             #  0: for LT;     1: for UT
         height = 300.       #  in km
         h_tec_max = 2000    #  0: no TEC; otherwise: upper boundary for integral
-        ivar = var          #  1: altitude; 2: latitude; 3: longitude; ... 
+        ivar = var          #  1: altitude; 2: latitude; 3: longitude; ...
 
         ivbeg = vbeg
         ivend = vend
         ivstp = vstp
 
         # Ionosphere (IRI)
-        a, b = iriwebg(jmag, jf, glat, glon, year, mmdd, iut, hrlt, \
+        a, b = iriwebg(jmag, jf, glat, glon, year, mmdd, iut, hrlt,
             height, h_tec_max, ivar, ivbeg, ivend, ivstp, addinp, self.iriDataFolder)
 
         bins = arange(ivbeg, ivend + ivstp * 0., ivstp)
@@ -145,11 +150,11 @@ class IRI2016(object):
         heplusIRI = squeeze(self._RmZeros(a[7 - 1, :])[0]) / 100. * neIRI      # in m-3
         nplusIRI = squeeze(self._RmZeros(a[11 - 1, :])[0]) / 100. * neIRI      # in m-3
 
-        iri = {'ne' : neIRI, 'te' : teIRI, 'ti' : tiIRI, 'neFIRI' : iri_ne_firi, \
-            'oplus' : oplusIRI, 'o2plus' : o2plusIRI, 'noplus' : noplusIRI, \
+        iri = {'ne' : neIRI, 'te' : teIRI, 'ti' : tiIRI, 'neFIRI' : iri_ne_firi,
+            'oplus' : oplusIRI, 'o2plus' : o2plusIRI, 'noplus' : noplusIRI,
             'hplus' : hplusIRI, 'heplus' : heplusIRI, 'nplus' : nplusIRI}
 
-        iriadd = { 'NmF2' : b[1 - 1, :][0], 'hmF2' : b[2 - 1, :][0], \
+        iriadd = { 'NmF2' : b[1 - 1, :][0], 'hmF2' : b[2 - 1, :][0],
                 'B0' : b[10 - 1, :][0] }
 
         return iri, iriadd
@@ -175,14 +180,14 @@ class IRI2016(object):
 
 class IRI2016Profile(IRI2016):
 
-    def __init__(self, alt=300., altlim=[90.,150.], altstp=2., dom=21, htecmax=0, \
-                    hour=12., hrlim=[0., 24.], hrstp=.25, \
-                    iut=1, jmag=0, \
-                    lat=0., latlim=[-90, 90], latstp=10., \
-                    lon=0., lonlim=[-180,180], lonstp=20., \
+    def __init__(self, alt=300., altlim=[90.,150.], altstp=2., dom=21, htecmax=0,
+                    hour=12., hrlim=[0., 24.], hrstp=.25,
+                    iut=1, jmag=0,
+                    lat=0., latlim=[-90, 90], latstp=10.,
+                    lon=0., lonlim=[-180,180], lonstp=20.,
                     month=11, option=1, verbose=True, year=2003):
 
-        self.iriDataFolder = join(dirname(realpath(__file__)), 'data')
+        self.iriDataFolder = Path(__file__).parent / 'data'
 
         self.jf = self.Switches()
 
@@ -197,15 +202,15 @@ class IRI2016Profile(IRI2016):
         elif option == 2:   # Latitude Profile
             self.vbeg = latlim[0]
             self.vend = latlim[1]
-            self.vstp = latstp            
+            self.vstp = latstp
         elif option == 3:   # Longitude Profile
             self.vbeg = lonlim[0]
             self.vend = lonlim[1]
-            self.vstp = lonstp                        
+            self.vstp = lonstp
         elif option == 8:   # Local Time Profile
             self.vbeg = hrlim[0]
             self.vend = hrlim[1]
-            self.vstp = hrstp        
+            self.vstp = hrstp
         else:
             print('Invalid option!')
             return
@@ -236,8 +241,8 @@ class IRI2016Profile(IRI2016):
 
     def _CallIRI(self):
 
-        self.a, self.b = iriwebg(self.jmag, self.jf, self.lat, self.lon, self.year, self.mmdd, \
-                            self.iut, self.hour, self.alt, self.htecmax, self.option, self.vbeg, \
+        self.a, self.b = iriwebg(self.jmag, self.jf, self.lat, self.lon, self.year, self.mmdd,
+                            self.iut, self.hour, self.alt, self.htecmax, self.option, self.vbeg,
                             self.vend, self.vstp, self.addinp, self.iriDataFolder)
 
     #
@@ -262,22 +267,22 @@ class IRI2016Profile(IRI2016):
         latStr = '{:6.2f} {:s}'.format(abs(self.lat), 'N' if self.lat > 0 else 'S')
         lonStr = '{:6.2f} {:s}'.format(abs(self.lon), 'E' if self.lon > 0 else 'W')
 
-        Rz12Str = 'Rz12: {:6.2f}'.format(self.b[32, 0])
+#        Rz12Str = 'Rz12: {:6.2f}'.format(self.b[32, 0])
         f107Str = 'F107: {:6.2f}'.format(self.b[40, 0])
-        apStr = 'ap: {:3d}'.format(int(self.b[50, 0]))
+#        apStr = 'ap: {:3d}'.format(int(self.b[50, 0]))
         ApStr = 'Ap: {:3d}'.format(int(self.b[51, 0]))
-        KpStr = 'Kp: {:3d}'.format(int(self.b[82, 0]))
+#        KpStr = 'Kp: {:3d}'.format(int(self.b[82, 0]))
 
         if self.option in [1, 8]:
             self.title1 = '{:s} - {:s}  -  {:s}, {:s}'.format(dateStr, timeStr, latStr, lonStr)
         elif self.option == 2:
-            self.title1 = '{:s} - {:s}  -  GEOG. LON.: {:s}'.format(dateStr, timeStr, lonStr)            
+            self.title1 = '{:s} - {:s}  -  GEOG. LON.: {:s}'.format(dateStr, timeStr, lonStr)
         else:
             pass
 
         self.title2 = '{:s}  -  {:s}'.format(f107Str, ApStr)
         self.title3 = '{:s} - {:s}   -   {:s} - {:s}'.format(dateStr, timeStr, f107Str, ApStr)
-        
+
 
     def HeiProfile(self):
 
@@ -291,22 +296,22 @@ class IRI2016Profile(IRI2016):
 
             print('------------------------------------------------------------------------------------------------------------------------------------------')
             print('  Height\tNe    Ne/NmF2\tTi\tTe\tO+\tH+\tN+    He+    O2+    NO+   Clust.  Rz12   IG12   F107   F107(81)   ap    AP')
-            print('------------------------------------------------------------------------------------------------------------------------------------------')                        
+            print('------------------------------------------------------------------------------------------------------------------------------------------')
 
             for i in range(self.numstp):
-                        
+
                 varval = self.vbeg + float(i) * self.vstp
                 edens = a[1 - 1, i] * 1e-6
                 edratio = a[1 - 1, i] / b[1 - 1, 1 - 1]
 
-                print('%8.3f %10.3f %8.3f %8.3f %8.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %7.3f %7.3f %7.3f %7.3f' % \
-                    (varval, edens, edratio, a[2,i], a[3,i], a[4,i], a[5,i], a[10,i], a[6,i], \
+                print('%8.3f %10.3f %8.3f %8.3f %8.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %7.3f %7.3f %7.3f %7.3f' %
+                    (varval, edens, edratio, a[2,i], a[3,i], a[4,i], a[5,i], a[10,i], a[6,i],
                     a[7,i], a[8,i], a[9,i], b[32,i], b[38,i], b[40,i], b[45,i], b[50,i], b[51,i]))
 
     #
     # End of 'HeiProfile'
     #####
-    
+
 
     def LatProfile(self):
 
@@ -320,8 +325,8 @@ class IRI2016Profile(IRI2016):
 
             print('\tGLON\tGLAT\tNmF2\t\thmF2\tB0')
             for j in range(len(latbins)):
-                print('%8.3f %8.3f %8.3e %8.3f %8.3f' % (self.lon, latbins[j], self.b[0, j], self.b[1, j], self.b[9, j])) 
-            
+                print('%8.3f %8.3f %8.3e %8.3f %8.3f' % (self.lon, latbins[j], self.b[0, j], self.b[1, j], self.b[9, j]))
+
     #
     # End of 'LatProfile'
     #####
@@ -339,8 +344,8 @@ class IRI2016Profile(IRI2016):
 
             print('\tGLON\tGLAT\tNmF2\t\thmF2\tB0')
             for j in range(len(lonbins)):
-                print('%8.3f %8.3f %8.3e %8.3f %8.3f' % (lonbins[j], self.lat, self.b[0, j], self.b[1, j], self.b[9, j])) 
-            
+                print('%8.3f %8.3f %8.3e %8.3f %8.3f' % (lonbins[j], self.lat, self.b[0, j], self.b[1, j], self.b[9, j]))
+
     #
     # End of 'LonProfile'
     #####
@@ -358,8 +363,8 @@ class IRI2016Profile(IRI2016):
 
             print('   GLON     GLAT\tHR\tNmF2\thmF2\tB0')
             for j in range(len(hrbins)):
-                print('%8.3f %8.3f %8.3f %8.3e %8.3f %8.3f' % (self.lon, self.lat, hrbins[j], self.b[0, j], self.b[1, j], self.b[9, j])) 
-            
+                print('%8.3f %8.3f %8.3f %8.3e %8.3f %8.3f' % (self.lon, self.lat, hrbins[j], self.b[0, j], self.b[1, j], self.b[9, j]))
+
     #
     # End of 'HrProfile'
     #####
