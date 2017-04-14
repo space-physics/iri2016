@@ -59,34 +59,52 @@ C..... underestimated due to neglect of diffusion. There is an artificial
 C..... floor on the NO density to prevent it from getting too low below 130 km.
 C..... H+ and He+ are only good during the daytime below ~450 km.
 C..... The EUVAC model is used for solar EUV irradiances
-      SUBROUTINE CHEMION(JPRINT,  !.. Input: Turn file output on or off
-     >                      ALT,  !.. Input: Altitude(km)
-     >               F107,F107A,  !.. Input: Solar activity indices
-     >                 TE,TI,TN,  !.. Input: Electron, ion and neutral temperatures
-     >       OXN,O2N,N2N,HEN,HN,  !.. Input: O, O2, N2, He, and H densities (cm-3)
-     >                  USER_NO,  !.. Input: User specified NO density (cm-3)
-     >                      N4S,  !.. Input: N4S should be 0.5*MSIS N density (cm-3)
-     >                       NE,  !.. Input: electron density (cm-3)
-     >               USER_OPLUS,  !.. Input: User specified O+ density (cm-3) -1.0=off
-     >                     SZAD,  !.. Input: LT(hrs), UT(sec) and solar zenith angle(D)
-     >     OXPLUS,O2PLUS,NOPLUS,  !.. OUTPUT: O+, O2+, NO+ densities (cm-3)
-     >             N2PLUS,NPLUS,  !.. OUTPUT: N2+ and N+ densities (cm-3)
-     >                  NNO,N2D,  !.. OUTPUT: NO and N(2D) density (cm-3)
-     >                    ITERS)  !.. OUTPUT: # of iterations to converge
+      SUBROUTINE CHEMION(JPRINT, 
+     >                      ALT,  
+     >               F107,F107A,  
+     >                 TE,TI,TN,  
+     >       OXN,O2N,N2N,HEN,HN,
+     >                  USER_NO,  
+     >                      N4S,
+     >                       NE,
+     >               USER_OPLUS,
+     >                     SZAD,
+     >     OXPLUS,O2PLUS,NOPLUS,
+     >             N2PLUS,NPLUS,
+     >                  NNO,N2D,
+     >                    ITERS)
       IMPLICIT NONE
-      INTEGER JPRINT        !.. Turns on printing of production and loss
-      INTEGER I,J,K,ITERS   !.. loop control variables
-      INTEGER IRATS         !.. Switch for different rates
-      INTEGER ITS,JITER     !.. Variables for Newton procedure
-      REAL TE,TN,TI         !.. Electron and ion temperatures
+      INTEGER,Intent(in) :: JPRINT   !.. write file: production and loss
+      real, intent(in) :: ALT        !.. Altitude(km)
+      real, intent(in) :: F107,F107A !.. Solar activity indices
+      REAL, intent(in) :: TE,TN,TI   !.. Electron and ion temperatures
+! O, O2, N2, He, and H densities (cm-3)
+      real, intent(in) :: OXN,O2N,N2N,HEN,HN 
+      real, intent(in) :: USER_NO !O, O2, N2, He, and H densities (cm-3)
+      real, intent(in) :: N4S  ! N4S should be 0.5*MSIS N density (cm-3)
+      real, intent(in) :: NE   ! electron density (cm-3)
+! User specified O+ density (cm-3) -1.0=off
+      real, intent(in) :: USER_OPLUS 
+! LT(hrs), UT(sec) and solar zenith angle(D)
+      real, intent(in) :: SZAD
+! O+, O2+, NO+ densities (cm-3)
+      real,intent(out) :: OXPLUS,O2PLUS,NOPLUS
+! N2+ and N+ densities (cm-3)
+      real, intent(out) :: N2PLUS, NPLUS
+! NO and N(2D) density (cm-3)
+      real, intent(out) :: NNO,N2D
+! # of iterations to converge
+      integer, intent(out) :: ITERS
+
+      INTEGER K   !.. loop control variables
+!      INTEGER IRATS         !.. Switch for different rates
+      INTEGER JITER     !.. Variables for Newton procedure
+
       !.. Geophysical parameters
-      REAL F107,F107A,ALT,SZAD
       !.. Measured H+, He+, O+, N2+, NO+, O2+, N+, RPA ion density
-      REAL HEPLUS,OXPLUS,N2PLUS,NOPLUS,O2PLUS,NPLUS,USER_Oplus
-      !.. O2,O,N2,NO,He,N4S, user specified NO
-      REAL O2N,OXN,N2N,NNO,HEN,N4S,HN,USER_NO
+      REAL HEPLUS
       !.. Ne, N(2P),N(2D),O+(2P),O+(2D) densities
-      REAL NE,N2P,N2D,OP2D,OP2P
+      REAL N2P,OP2D,OP2P
       !.. Total (photon & photoel) production rates O+(4S),O+(2P),O+(2D),O2+
       REAL TPROD1,PDISOP,TPROD2,TPROD3,TPROD5
       !.. Total Production rates from all sources for NO+, O2+, 
@@ -95,8 +113,8 @@ C..... The EUVAC model is used for solar EUV irradiances
       REAL DISNP,PHOTN,PLYNOP
       REAL PSEC                     !.. generic PE production
       REAL RTS(99)                  !.. Reaction rates array
-      REAL SECPN2PLUS,EUVN2PLUS     !.. N2+ total production
-      REAL H,DEX,FEX(2)             !.. used in Newton solver
+!      REAL SECPN2PLUS,EUVN2PLUS     !.. N2+ total production
+!      REAL H,DEX,FEX(2)            !.. used in Newton solver
       REAL SUMIONS                  !.. Sum of the major ions
       REAL PNO,LNO,PDNOSR           !.. Production and loss of NO
       REAL N2A                      !.. N2(A) density    
@@ -239,8 +257,7 @@ C..... The EUVAC model is used for solar EUV irradiances
         SUMSAVE=SUMIONS  
       ENDDO
 
-      RETURN
-      END
+      END SUBROUTINE CHEMION
 C
 C
 C:::::::::::::::::::::: KEMPRN.FOR ::::::::::::::::::::::::::::::::::::::::::::::::
@@ -282,7 +299,7 @@ C...      EF=RTS(61)*0.76/L1
      > ,(LR(K)*N2D,K=1,6)
       RETURN
  7    FORMAT(F6.1,1P,22E8.1)
-      END
+      END SUBROUTINE CN2D
 C:::::::::::::::::::::::::::::: NO ::::::::::::::::::::::::::::::::::::::::
       SUBROUTINE CNO(JPR,I,JPT,Z,RTS,ON,O2N,N2N,NE,P1,L1
      > ,N2D,N4S,N2P,NNO,O2P,OPLS,PDNOSR,PLYNOP,N2A,NPLUS)
@@ -310,7 +327,7 @@ C:::::::::::::::::::::::::::::: NO ::::::::::::::::::::::::::::::::::::::::
      > ,(LR(K)*NNO,K=1,6)
       RETURN
  7    FORMAT(F6.1,1P,22E9.2)
-      END
+      END SUBROUTINE CNO
 C::::::::::::::::::::::::::::::: N(4S):::::::::::::::::::::::::::::::::::::::
       SUBROUTINE CN4S(JPR,I,JPT,Z,RTS,ON,O2N,N2N,NE,P1,L1,N4S,DISN4S
      >   ,N2D,N2P,OPLS,N2PLS,UVDISN,NOP,NPLUS,NNO,O2P,PDNOSR,VCON)
@@ -346,7 +363,7 @@ C::::::::::::::::::::::::::::::: N(4S):::::::::::::::::::::::::::::::::::::::
       IF(JPR.GT.0) WRITE(I,7) Z,N4S,(PR(K),K=1,11),(LR(K)*N4S,K=1,3)
       RETURN
  7    FORMAT(F6.1,1P,22E8.1)
-      END
+      END SUBROUTINE CN4S
 C::::::::::::::::::::::::::::::: CN2PLS :::::::::::::::::::::::::::::::
 C..... Simplified chemistry of N2+.  PUN2P* = production of N2+ by euv 
 C..... in the (X,A,B states). PEN2P* same for p.e.s (X,A,B states)
@@ -386,7 +403,7 @@ C..... in the (X,A,B states). PEN2P* same for p.e.s (X,A,B states)
      > ,(LR(K)*N2PLS,K=1,5)
       RETURN
  7    FORMAT(F6.1,1P,22E8.1)
-      END
+      END SUBROUTINE CN2PLS
 C:::::::::::::::::::::::::::::: NO+ ::::::::::::::::::::::::::::::::::
       SUBROUTINE CNOP(JPR,I,JPT,Z,RTS,ON,O2N,N2N,NE,P1,NOP,OPLS
      >  ,N2PLS,O2P,N4S,NNO,NPLUS,N2P,PLYNOP,VCON,N2D,OP2D)
@@ -420,7 +437,7 @@ C:::::::::::::::::::::::::::::: NO+ ::::::::::::::::::::::::::::::::::
       IF(JPR.GT.0) WRITE(I,7) Z,NOP,(PR(K),K=1,13),LR(1)*NOP
       RETURN
  7    FORMAT(F6.1,1P,22E9.2)
-      END
+      END SUBROUTINE CNOP
 C::::::::::::::::::::::::::::::: O2+ :::::::::::::::::::::::::::::::::::::::
       SUBROUTINE CO2P(JPR,I,JPT,Z,RTS,ON,O2N,N2N,NE,P1
      > ,O2P,TPROD5,OPLS,OP2D,N2PLS,NPLUS,N4S,NNO,OP2P)
@@ -445,7 +462,7 @@ C::::::::::::::::::::::::::::::: O2+ :::::::::::::::::::::::::::::::::::::::
       IF(JPR.GT.0) WRITE(I,7) Z,O2P,(PR(K),K=1,7),(LR(K)*O2P,K=1,3)
       RETURN
  7    FORMAT(F6.1,1P,22E9.2)
-      END
+      END SUBROUTINE CO2P
 C::::::::::::::::::::::::::::::::: O+(4S) :::::::::::::::::::::::::::::::::::::
       SUBROUTINE COP4S(JPR,I,JPT,Z,RTS,ON,O2N,N2N,NE,OPLS,TPROD1,OP2D
      >  ,OP2P,PEPION,PDISOP,N2PLS,N2D,NNO,VCON,HEPLUS)

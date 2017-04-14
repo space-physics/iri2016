@@ -50,8 +50,10 @@ These commands are not normally needed unless you want to work with the Fortran 
     ./testiri2016
 
 ### Manual f2py compile
+The function `DFRIDR()` inside `igrf.for` dynamically calls other functions. 
+This is something `f2py` can't access directly, so we tell `f2py` not to hook into function `DFRIDF()` with the end statement `skip: dfridr`
 
-    f2py -m iri2016 -c iriwebg.for irisub.for irifun.for iritec.for iridreg.for igrf.for skip: dfridr cira.for iriflip.for 
+    f2py -m iri2016 -c iriwebg.for irisub.for irifun.for iritec.for iridreg.for igrf.for  cira.for iriflip.for  skip: dfridr
 
 ### manual f2py: IGRF only
 
