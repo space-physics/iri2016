@@ -51,5 +51,9 @@ These commands are not normally needed unless you want to work with the Fortran 
 
 ### Manual f2py compile
 
-    cd source
-    f2py -m iri2016 -c iriwebg.for irisub.for irifun.for iritec.for iridreg.for igrf.for cira.for iriflip.for 
+    f2py -m iri2016 -c iriwebg.for irisub.for irifun.for iritec.for iridreg.for igrf.for skip: dfridr cira.for iriflip.for 
+
+### manual f2py: IGRF only
+
+    f2py -m igrf -c irifun.for igrf.for skip: dfridr
+

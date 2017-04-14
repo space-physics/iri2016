@@ -50,7 +50,7 @@ C  OUTPUT: TEC          Total Electron Content in m-2
 C          tecb,tect    percentage of bottomside and topside content
 c-----------------------------------------------------------------------
 
-        dimension       outf(20,1000),oarr(100)
+        real       outf(20,1000),oarr(100)
         logical         jf(50)
 
 c
