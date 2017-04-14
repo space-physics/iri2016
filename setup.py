@@ -1,4 +1,5 @@
-
+#!/usr/bin/env python
+import setuptools # enables develop
 from glob import glob
 from numpy.distutils.core import Extension, setup
 from os.path import join
@@ -8,14 +9,13 @@ name = 'pyiri2016'
 sourcePath = 'source'
 f77CompileArgs = ['-w']
 
-iriSource1 = ['iriwebg.pyf', 'iriwebg.for', 'irisub.for', 'irifun.for', \
+iriSource1 = ['iriwebg.for', 'irisub.for', 'irifun.for',
     'iritec.for', 'iridreg.for', 'igrf.for', 'cira.for', 'iriflip.for']
-sources1 = []
-for src in iriSource1:
-    sources1.append(join(sourcePath, src))
 
-ext1 = Extension(name='iriweb', sources=sources1, f2py_options=['--quiet'], \
-    extra_f77_compile_args=f77CompileArgs)
+sources1 = [join(sourcePath, s) for s in iriSource1]
+
+ext1 = Extension(name='iriweb', sources=sources1, f2py_options=['--quiet'],
+                 extra_f77_compile_args=f77CompileArgs)
 
 
 ccirData = glob(join(join('data', 'ccir'), '*.asc'))
@@ -25,22 +25,30 @@ mcsatData = glob(join(join('data', 'mcsat'), '*.dat'))
 ursiData = glob(join(join('data', 'ursi'), '*.asc'))
 
 
-iriDataFiles = [(join(name, join('data', 'ccir')), ccirData), \
-    (join(name, join('data', 'igrf')), igrfData), \
-    (join(name, join('data', 'index')), indexData), \
-    (join(name, join('data', 'mcsat')), mcsatData), \
-    (join(name, join('data', 'ursi')), ursiData) \
-    ]
+iriDataFiles = [(join(name, join('data', 'ccir')), ccirData),
+                (join(name, join('data', 'igrf')), igrfData),
+                (join(name, join('data', 'index')), indexData),
+                (join(name, join('data', 'mcsat')), mcsatData),
+                (join(name, join('data', 'ursi')), ursiData)
+                ]
 
 if __name__ == '__main__':
 
-    setup(name=name, \
-        version='1.0.0', \
-        author='Ronald Ilma', \
-        author_email='rri5@cornell.edu', \
-        description='IRI2016 Apps', \
-        packages=[name], \
-        ext_package=name, \
-        ext_modules=[ ext1 ], \
-        data_files=iriDataFiles, \
+    setup(name=name,
+          packages=[name],
+        version='1.0.1',
+        author='Ronald Ilma',
+        url = 'https://github.com/rilma/pyIRI2016',
+        description='IRI2016 International Reference Ionosphere via Python',
+        classifiers=[
+          'Intended Audience :: Science/Research',
+          'Development Status :: 5 - Production/Stable',
+          'License :: OSI Approved :: MIT License',
+          'Topic :: Scientific/Engineering :: Atmospheric Science',
+          'Programming Language :: Python',
+          'Programming Language :: Python :: 3',
+          ],
+        ext_package=name,
+        ext_modules=[ ext1 ],
+        data_files=iriDataFiles,
         )
