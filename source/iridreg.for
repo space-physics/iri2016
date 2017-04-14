@@ -67,7 +67,7 @@ C     SUBROUTINES AND FUNCTION SUBPROGRAMS REQUIRED
 C        none
 C
 C     Reference: Friedrich, M., Torkar, K. FIRI: a semiempirical model of the lower
-C                ionosphere. J. Geophys. Res. 106 (A10), 21409Ð21418, 2001.
+C                ionosphere. J. Geophys. Res. 106 (A10), 2140921418, 2001.
 C     WRITTEN BY K. TORKAR, IWF GRAZ
 C     Klaus.Torkar@oeaw.ac.at
 C
