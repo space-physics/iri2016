@@ -9,6 +9,9 @@ name = 'pyiri2016'
 sourcePath = 'source'
 f77CompileArgs = ['-w']
 
+req = ['nose','numpy','matplotlib','seaborn',
+       'timeutil']
+
 iriSource1 = ['iriwebg.for', 'irisub.for', 'irifun.for',
     'iritec.for', 'iridreg.for', 'igrf.for', 'cira.for', 'iriflip.for']
 
@@ -52,7 +55,7 @@ if __name__ == '__main__':
         ext_package=name,
         ext_modules=[ ext1 ],
         data_files=iriDataFiles,
-        install_requires=['timeutil'],
+        install_requires=req,
         dependency_links=[
       'https://github.com/rilma/TimeUtilities/zipball/master#egg=timeutil']
         )
