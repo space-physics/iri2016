@@ -14,7 +14,8 @@ iriSource1 = ['iriwebg.for', 'irisub.for', 'irifun.for',
 
 sources1 = [join(sourcePath, s) for s in iriSource1]
 
-ext1 = Extension(name='iriweb', sources=sources1, f2py_options=['--quiet'],
+ext1 = Extension(name='iriweb', sources=sources1, 
+                 f2py_options=['skip:dfridr'],
                  extra_f77_compile_args=f77CompileArgs)
 
 

@@ -914,20 +914,20 @@ C        RH = (RE + HI)/RE
         SCO = TH/UMR
         SLA = 90.- SCO
 
-      RETURN
-      END
+      END SUBROUTINE GEODIP
 
 C 
 C 
 		function fmodip(xlat)
+
+        real, intent(in) :: xlat
 		
 		common/findRLAT/xlong,year
 		
       	call igrf_dip(xlat,xlong,year,300.,dec,dip,dipl,ymodip)
       	fmodip=ymodip
 
-      	return
-      	end
+      	end function fmodip
 C
 C
       SUBROUTINE GEOCGM01(ICOR,IYEAR,HI,DAT,PLA,PLO)
@@ -1317,8 +1317,7 @@ C  GEOLON if |GEOLAT| = 90 deg. - see CGMGLO for details.
 
        OVL_ANG = OVL_ANG*57.2957751
 
-      return
-      end
+      end function OVL_ANG
 C
 C
       real function cgmgla(clon)
@@ -1327,7 +1326,7 @@ C  This function returns the geocentric latitude as a function of CGM
 C  longitude with the CGM latitude held in common block CGMGEO.
 C  Essentially this function just calls the subroutine CORGEO.
 C  *********************************************************************
-
+      real clon
       logical cr360,cr0
       common/cgmgeo/cclat,cr360,cr0,rh
 
@@ -1337,8 +1336,7 @@ C  *********************************************************************
        call CORGEO(geolat,geolon,rr,dla,dlo,cclat,clon,pmi)
          cgmgla = geolat
 
-      return
-      end
+      end function cgmgla
 C
 C
       real function cgmglo(clon)
@@ -1348,7 +1346,7 @@ C  longitude. If cr360 is true, geolon+360 deg is returned when geolon
 C  is less than 90 deg. If cr0 is true, geolon-360 deg is returned
 C  when geolon is larger than 270 degrees.
 C *********************************************************************
-
+      real clon 
       logical cr360,cr0
 
       common/cgmgeo/cclat,cr360,cr0,rh
@@ -1389,7 +1387,7 @@ C **********************************************************************
 ! f2py does not understand functions calling functions on the fly
 ! example: f2py -m igrf -c irifun.for igrf.for skip: dfridr
 
-      real, external :: func ! 
+      real, external :: func 
 
       REAL, intent(in) :: h,x
       real :: err
@@ -3942,8 +3940,10 @@ C      Output:
 C             MLT..magnetic local time in decimal hours
 C      Required subroutines: DPMTRX
 C--------------------------------------------------------------------
-       INTEGER IYYYY,DDD
-       REAL UTHR,GLAT,GLON,MLT
+       INTEGER,intent(in) :: IYYYY,DDD
+       REAL, intent(in) :: UTHR,GLAT,GLON
+       Real, intent(out) :: MLT
+
        REAL DTOR,PI,XG,YG,ZG
        REAL XXM(3),YYM(3),ZZM(3)
        INTEGER IHOUR,MIN,ISEC
