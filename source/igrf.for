@@ -1265,10 +1265,8 @@ C  Written by Therese Moretto in August 1994 (revised by V. Papitashvili
 C  in January 1999).
 C  *********************************************************************
 
-      real cgmgla,cgmglo,dfridr
+      real,external :: cgmgla,cgmglo,dfridr
       logical cr360,cr0
-
-      external cgmgla,cgmglo,dfridr
 
       common/cgmgeo/clat,cr360,cr0,rh
 
@@ -1364,10 +1362,10 @@ C *********************************************************************
 C  Geographic longitude geolon could be any number (e.g., discontinued)
 C  when geolat is the geographic pole
 
-	 if(abs(geolat).ge.89.99) then
+      if(abs(geolat).ge.89.99) then
 	       clon = clon - 0.01
 	       goto 1
-	 endif
+      endif
 
        if(cr360.and.(geolon.le.90.)) then
            cgmglo = geolon + 360.
@@ -1377,23 +1375,29 @@ C  when geolat is the geographic pole
                                        else
            cgmglo = geolon
          endif
-	 endif
+	  endif
 
-      return
-      end
+      end function cgmglo
 C
 C
-      FUNCTION DFRIDR(func,x,h,err)
+      Real FUNCTION DFRIDR(func,x,h,err)
 C **********************************************************************
 C  Numerical Recipes Fortran 77 Version 2.07
 C  Copyright (c) 1986-1995 by Numerical Recipes Software
 C **********************************************************************
+! must not have intent in general for external
+! f2py does not understand functions calling functions on the fly
+! example: f2py -m igrf -c irifun.for igrf.for skip: dfridr
 
-      INTEGER NTAB
-      REAL dfridr,err,h,x,func,CON,CON2,BIG,SAFE
+      real, external :: func ! 
+
+      REAL, intent(in) :: h,x
+      real :: err
+
       LOGICAL mess
-      PARAMETER (CON=1.4,CON2=CON*CON,BIG=1.E30,NTAB=10,SAFE=2.)
-      EXTERNAL func
+      Real,PARAMETER :: CON=1.4,CON2=CON*CON,BIG=1.E30,SAFE=2.
+      Integer, Parameter :: NTAB=10
+
 
         COMMON/iounit/konsol,mess        
 
@@ -1423,8 +1427,7 @@ C **********************************************************************
          if(abs(a(i,i)-a(i-1,i-1)).ge.SAFE*err) return
   12   continue
 
-      return
-      END
+      END FUNCTION DFRIDR
 C
 C
       real function AZM_ANG(sla,slo,cla,pla,plo)
@@ -3617,7 +3620,7 @@ C  THE CALCULATIONS ARE TERMINATED IF ONLY GEO-MAG TRANSFORMATION
 C  IS TO BE DONE  (IHOUR>24 IS THE AGREED CONDITION FOR THIS CASE):
 
    5   IF (IHOUR.GT.24) RETURN
-
+! subroutine sun is in irifun.for
       CALL SUN(IY,IDAY,IHOUR,MIN,ISEC,GST,SLONG,SRASN,SDEC)
 
 C  S1,S2, AND S3 ARE THE COMPONENTS OF THE UNIT VECTOR EXGSM=EXGSE
@@ -4002,8 +4005,10 @@ C      MX(N),MY(N),MZ(N)..coordinates of the B vector in geographic system
 C                for years stored in YR(N)
 C      N..number of elements of arrays MX,MY,MZ and YR
 C--------------------------------------------------------------------------
-       INTEGER IYYYY,DDD
-       REAL XM(3),YM(3),ZM(3)
+       INTEGER, Intent(in) :: IYYYY,
+     &   DDD
+       REAL, Intent(out) :: XM(3),YM(3),ZM(3)
+
        REAL YR(10),MX(10),MY(10),MZ(10)
        REAL INTERP,YEAR
        REAL M,MXI,MYI,MZI,ZM12
@@ -4020,7 +4025,7 @@ c IGRF coefficients (dipole) calculated in FELDCOF in IGRF.FOR
 
 C normalization of the vector of the dipole exis of the magnetic field
        M=SQRT(MXI*MXI+MYI*MYI+MZI*MZI)
-       MYZ=SQRT(MYI*MYI+MZI*MZI)
+       MYZ = SQRT(MYI*MYI+MZI*MZI)
        ZM(1)=MXI/M
        ZM(2)=MYI/M
        ZM(3)=MZI/M
@@ -4031,7 +4036,7 @@ C normalization of the vector of the dipole exis of the magnetic field
        XM(1)=YM(2)*ZM(3)-YM(3)*ZM(2)
        XM(2)=YM(3)*ZM(1)-YM(1)*ZM(3)
        XM(3)=YM(1)*ZM(2)-YM(2)*ZM(1)
-       RETURN
-       END
+
+       END SUBROUTINE DPMTRX
 C
 C --------------------- end IGRF.FOR ----------------------------------

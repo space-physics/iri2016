@@ -17,13 +17,13 @@ C*******************************************************************************
 C subroutines for IDC model
 C
 C includes: main subroutine CHEMION and the following subroutines and functions
-C           KEMPPRN.FOR: CN2D, CNO, CN4S, CN2PLS, CNOP, CO2P, COP4S, COP2D, COP2P,
-C                        CNPLS, CN2A, CN2P, CNOPV
-C           RATES.FOR:   RATS 
-C           PESIMP.FOR:  SECIPRD, FLXCAL, FACFLX, SIGEXS, TXSION, OXRAT, T_XS_N2, 
-C                        T_XS_OX, OXSIGS
-C           RSPRIM.FOR:  PRIMPR, SCOLUM, PARAMS, PROBS, PROBN2, YLDISS, PROBO2, 
-C                        SCHUMN, FACEUV, FACSR,  
+C  KEMPPRN.FOR: CN2D, CNO, CN4S, CN2PLS, CNOP, CO2P, COP4S, COP2D, COP2P,
+C               CNPLS, CN2A, CN2P, CNOPV
+C  RATES.FOR:   RATS 
+C  PESIMP.FOR:  SECIPRD, FLXCAL, FACFLX, SIGEXS, TXSION, OXRAT, T_XS_N2, 
+C               T_XS_OX, OXSIGS
+C  RSPRIM.FOR:  PRIMPR, SCOLUM, PARAMS, PROBS, PROBN2, YLDISS, PROBO2, 
+C               SCHUMN, FACEUV, FACSR,  
 C  
 C turn on printout of intermediate quantities with JPRINT=1 also in PARAMS, PROBS, 
 C PROBN2, YLDISS, and PROBO2 with ISW=1.
@@ -578,7 +578,8 @@ C:::::::::::::::::::::::::::::::::: N+ ::::::::::::::::::::::::::::::::::::
      > ,(PR(K),K=1,9),(LR(K)*NPLUS,K=1,6)
       RETURN
  7    FORMAT(F6.1,1P,22E9.2)
-      END
+
+      END SUBROUTINE CNPLS
 C::::::::::::::::::::::::::::::::: N2(A3sigma+LBH) :::::::::::::::::::::::::::::::::::::
       SUBROUTINE CN2A(JPR,I,JPT,Z,RTS,ON,O2N,N2N,NE
      > ,N2A,P3X1,P3X2,P3X3,P3X4)
@@ -602,14 +603,25 @@ C::::::::::::::::::::::::::::::::: N2(A3sigma+LBH) :::::::::::::::::::::::::::::
      > ,P3X4
       RETURN
  7    FORMAT(F6.1,1P,22E9.2)
-      END
+
+      END SUBROUTINE CN2A
 C:::::::::::::::::::::::::::::::::: N(2P) ::::::::::::::::::::::::::::::::::::
 C..... The rates are from Zipf et al JGR, 1980 p687
 C..... 21-AUG-1992. Added N2+ recombination source
       SUBROUTINE CN2P(JPR,I,JPT,Z,RTS,ON,O2N,N2N,NE,P1,L1
      > ,N2P,P3X7,UVDISN,O2P,NNO,N2PLUS)
-      IMPLICIT REAL(A-H,L,N-Z)
-      DIMENSION RTS(99),LR(22),PR(22)
+      implicit none
+
+      Real, Intent(In) :: jpr,jpt,z,RTS(99),on,o2n,ne,n2p,p3x7,uvdisn,
+     &                    o2p,nno,n2plus,
+     &  N2N
+      Integer, Intent(In) :: i
+      Real, Intent(Out) :: p1,l1
+
+!      IMPLICIT REAL(A-H,L,N-Z)
+      Real LR(22),PR(22)
+      Integer K
+
       PR(1)=P3X7
       PR(2)=RTS(64)*UVDISN
       PR(3)=RTS(73)*RTS(11)*N2PLUS*NE
@@ -629,125 +641,132 @@ C..... 21-AUG-1992. Added N2+ recombination source
       IF(JPR.GT.0) WRITE(I,7) Z,N2P,(PR(K),K=1,3),(LR(K)*N2P,K=1,7)
       RETURN
  7    FORMAT(F6.1,1P,22E9.2)
-      END
+
+      END SUBROUTINE CN2P
 C:::::::::::::::::::::::::::::: NO+(v) ::::::::::::::::::::::::::::::::::
 C...... This routine calculates the vibrational distribution of no+
 C...... Uses AFRL report by Winick et al. AFGL-TR-87-0334, Environmental
 C...... Research papers, NO. 991, "An infrared spectral radiance code 
 C...... for the auroral thermosphere (AARC)
 C...... Written by P. Richards in February 2004
-      SUBROUTINE CNOPV(JPR,I,JPT,Z,RTS,ON,O2N,N2N,NE,P1,NOP,OPLS
-     >  ,N2PLS,O2P,N4S,NNO,NPLUS,N2P,PLYNOP,VCON,N2D,OP2D)
-      IMPLICIT NONE
-      INTEGER JPR,I,JPT,INV,IJ,IV,K
-      PARAMETER (INV=20)            !.. NO+(v) array dimensions
-      REAL Z,RTS(99),   !.. Altitude, rate coefficients
-     >  ON,O2N,N2N,NE,              !.. O, N2, O2, electron densities
-     >  P1,                         !.. total source output for finding [e] 
-     >  NOP,OPLS,N2PLS,O2P,         !.. NO+, )+,N2+,O2+ densities
-     >  N4S,NNO,NPLUS,N2P,          !.. N(4S), NO, N+, N(2P) densities
-     >  PLYNOP,VCON,                !.. Lyman-a source, N2(v) rate factor
-     >  N2D,OP2D,                   !.. N(2D), O+(2D) densities                
-     >  NOPV(INV),NOPTOT,           !.. NO+(v) densities and total NO+ density
-     >  LR(22),PR(22),              !.. storage for NO+ sources and sinks
-     >  EINSCO1(INV),EINSCO2(INV),  !.. Einstein coeffs for delv=1,2
-     >  LRV(INV),                   !.. NO+(v) + e rate factors
-     >  PNOPV,LNOPV,                !.. Sources and sinks of NO+(v)
-     >  PCASC,LRAD,                 !.. Temp total cascade source, sink
-     >  K_N2_Q,P_N2_Q,L_N2_Q        !.. N2 queching rate :- coeff, source, sink
+!      SUBROUTINE CNOPV(JPR,I,JPT,Z,RTS,ON,O2N,N2N,NE,P1,NOP,OPLS
+!     >  ,N2PLS,O2P,N4S,NNO,NPLUS,N2P,PLYNOP,VCON,N2D,OP2D)
+!      IMPLICIT NONE
+!      Integer, Intent(in) :: JPR, I, JPT
+!      Real, Intent(in) :: Z,
+!     & RTS(99),          !.. Altitude, rate coefficients
+!     &  ON,O2N,N2N,NE,   !.. O, N2, O2, electron densities
+!     &  OPLS,N2PLS,O2P,  !.. , O+,N2+,O2+ densities
+!     &  N4S,NNO,NPLUS,N2P,          !.. N(4S), NO, N+, N(2P) densities
+!     &  PLYNOP,VCON,                !.. Lyman-a source, N2(v) rate factor
+!     &  N2D,OP2D                    !.. N(2D), O+(2D) densities  
+
+!      Real, Intent(Out) :: P1, !.. total source output for finding [e] 
+!     & NOP                     !.. NO+ density
+      
+!      INTEGER IJ,IV,K
+!      Integer,PARAMETER :: INV=20           !.. NO+(v) array dimensions
+!      REAL               
+!     >  NOPV(INV),NOPTOT,           !.. NO+(v) densities and total NO+ density
+!     >  LR(22),PR(22),              !.. storage for NO+ sources and sinks
+!     >  EINSCO1(INV),EINSCO2(INV),  !.. Einstein coeffs for delv=1,2
+!    >  LRV(INV),                   !.. NO+(v) + e rate factors
+!     >  PNOPV,LNOPV,                !.. Sources and sinks of NO+(v)
+!     >  PCASC,LRAD,                 !.. Temp total cascade source, sink
+!     >  K_N2_Q,P_N2_Q,L_N2_Q        !.. N2 queching rate :- coeff, source, sink
 
       !.. Fractions of each source going to each vib. level. Assume
       !.. N+ + O2 fractions for each source. NEED UPDATE
-      REAL PRV1(INV),PRV2(INV),PRV3(INV),PRV4(INV),PRV5(INV),PRV6(INV),
-     >  PRV7(INV),PRV8(INV),PRV9(INV),PRV10(INV),PRV11(INV),PRV12(INV)
-      DATA PRV1/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
-      DATA PRV2/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
-      DATA PRV3/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
-      DATA PRV4/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
-      DATA PRV5/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
-      DATA PRV6/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
-      DATA PRV7/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
-      DATA PRV8/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
-      DATA PRV9/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
-      DATA PRV10/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
-      DATA PRV12/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
+!      REAL PRV1(INV),PRV2(INV),PRV3(INV),PRV4(INV),PRV5(INV),PRV6(INV),
+!     >  PRV7(INV),PRV8(INV),PRV9(INV),PRV10(INV),PRV11(INV),PRV12(INV)
+!      DATA PRV1/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
+!      DATA PRV2/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
+!      DATA PRV3/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
+!      DATA PRV4/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
+!      DATA PRV5/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
+!      DATA PRV6/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
+!     DATA PRV7/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
+!     DATA PRV8/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
+!     DATA PRV9/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
+!     DATA PRV10/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
+!     DATA PRV12/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
 
-      DATA K_N2_Q/7.0E-12/  !.. Quenching rate coeff. by N2
-      DATA EINSCO1/0.0,10.9,20.2,28.4,35.5,41.5,46.6,50.9,54.3,57.0,
-     >     58.9,60.2,60.8,60.7,59.9,5*60.0/  !.. Einstein coeff delv=1
-      DATA EINSCO2/0.0,0.0,.697,1.93,3.61,5.74,8.24,11.1,14.2,17.7,
-     >     21.3,25.1,29.0,33.2,37.4,5*40.0/ !.. Einstein coeff delv=1
+!      DATA K_N2_Q/7.0E-12/  !.. Quenching rate coeff. by N2
+!      DATA EINSCO1/0.0,10.9,20.2,28.4,35.5,41.5,46.6,50.9,54.3,57.0,
+!     >     58.9,60.2,60.8,60.7,59.9,5*60.0/  !.. Einstein coeff delv=1
+!      DATA EINSCO2/0.0,0.0,.697,1.93,3.61,5.74,8.24,11.1,14.2,17.7,
+!     >     21.3,25.1,29.0,33.2,37.4,5*40.0/ !.. Einstein coeff delv=1
       !.. rate factors for NO+(v)+e -> N + O. Sheehan and St-Maurice 2004
-      DATA LRV/1.0,19*0.3333/    
+!      DATA LRV/1.0,19*0.3333/    
       
       !... Evaluate total production and loss rates
-      PR(1)=VCON*RTS(3)*N2N*OPLS        !.. N2 + O+
-      PR(2)=N2PLS*ON*RTS(10)            !.. N2+ + O
-      PR(3)=O2P*N4S*RTS(21)             !.. O2+ + N(4S)
-      PR(4)=O2P*NNO*RTS(23)             !.. O2+ + NO
+!      PR(1)=VCON*RTS(3)*N2N*OPLS        !.. N2 + O+
+!      PR(2)=N2PLS*ON*RTS(10)            !.. N2+ + O
+!      PR(3)=O2P*N4S*RTS(21)             !.. O2+ + N(4S)
+!      PR(4)=O2P*NNO*RTS(23)             !.. O2+ + NO
       !.. N+ + O2 -> O2+ + N(2D,4S) or NO+ + O(1S)
-      PR(5)=(RTS(30)+RTS(66)+RTS(59))*NPLUS*O2N
-      PR(6)=RTS(37)*N2P*ON              !.. N2+ + O
-      PR(7)=RTS(24)*OPLS*NNO            !.. O+ + NO
-      PR(8)=PLYNOP*NNO                  !.. Lyman-a + NO
-      PR(9)=O2P*N2D*RTS(77)             !.. Fox: O2+ + N(2D)
-      PR(10)=N2PLS*NNO*RTS(80)          !.. Fox: N2+ + NO
-      PR(11)=NPLUS*NNO*RTS(81)          !.. Fox: N+ + NO
-      PR(12)=RTS(83)*NNO*OP2D           !.. Fox: O+(2D) + NO
-      PR(13)=OP2D*RTS(90)*N2N           !.. -> NO+ + N, Li et al. [1997] 
-      LR(1)=NE*RTS(5)                   !.. NO+ + e
+!      PR(5)=(RTS(30)+RTS(66)+RTS(59))*NPLUS*O2N
+!      PR(6)=RTS(37)*N2P*ON              !.. N2+ + O
+!      PR(7)=RTS(24)*OPLS*NNO            !.. O+ + NO
+!      PR(8)=PLYNOP*NNO                  !.. Lyman-a + NO
+!      PR(9)=O2P*N2D*RTS(77)             !.. Fox: O2+ + N(2D)
+!      PR(10)=N2PLS*NNO*RTS(80)          !.. Fox: N2+ + NO
+!      PR(11)=NPLUS*NNO*RTS(81)          !.. Fox: N+ + NO
+!      PR(12)=RTS(83)*NNO*OP2D           !.. Fox: O+(2D) + NO
+!      PR(13)=OP2D*RTS(90)*N2N           !.. -> NO+ + N, Li et al. [1997] 
+!      LR(1)=NE*RTS(5)                   !.. NO+ + e
 
       !..Total source term used in main program to calculate [e]
-      P1=PR(1)+PR(2)+PR(3)+PR(4)+PR(5)+PR(6)+PR(7)+PR(8)
-     >    +PR(9)+PR(10)+PR(11)+PR(12)+PR(13)
-      NOP=P1/LR(1)         !.. NO+ density
+!      P1=PR(1)+PR(2)+PR(3)+PR(4)+PR(5)+PR(6)+PR(7)+PR(8)
+!     >    +PR(9)+PR(10)+PR(11)+PR(12)+PR(13)
+!      NOP=P1/LR(1)         !.. NO+ density
 
-      DO IJ=1,INV
-        NOPV(IJ)=0.0
-      ENDDO
-      NOPTOT=0.0
+!     DO IJ=1,INV
+!        NOPV(IJ)=0.0
+!      ENDDO
+!      NOPTOT=0.0
 
       !.. loop down evaluating the vibrational populations. Must start 
       !.. less than INV-1 because need cascade from v+2
-      DO IV=INV-4,1,-1
+!      DO IV=INV-4,1,-1
         !... chemical production for v=IV = total source * fraction 
-        PNOPV=PR(1)*PRV1(IV)+PR(2)*PRV2(IV)+PR(3)*PRV3(IV)+
-     >    PR(4)*PRV4(IV)+PR(5)*PRV5(IV)+PR(6)*PRV6(IV)+
-     >    PR(7)*PRV7(IV)+PR(8)*PRV8(IV)+PR(9)*PRV9(IV)+
-     >    PR(10)*PRV10(IV)+PR(11)*PRV11(IV)+PR(12)*PRV12(IV)
+!        PNOPV=PR(1)*PRV1(IV)+PR(2)*PRV2(IV)+PR(3)*PRV3(IV)+
+!     >    PR(4)*PRV4(IV)+PR(5)*PRV5(IV)+PR(6)*PRV6(IV)+
+!     >    PR(7)*PRV7(IV)+PR(8)*PRV8(IV)+PR(9)*PRV9(IV)+
+!     >    PR(10)*PRV10(IV)+PR(11)*PRV11(IV)+PR(12)*PRV12(IV)
 
         !.. cascade production from v+1, v+2
-        PCASC=NOPV(IV+1)*EINSCO1(IV+1)+NOPV(IV+2)*EINSCO2(IV+2)
-        LRAD=EINSCO1(IV)+EINSCO2(IV)   !.. total radiative loss
+!        PCASC=NOPV(IV+1)*EINSCO1(IV+1)+NOPV(IV+2)*EINSCO2(IV+2)
+!        LRAD=EINSCO1(IV)+EINSCO2(IV)   !.. total radiative loss
 
-        L_N2_Q=K_N2_Q*N2N              !.. sink of quanta by N2 quenching
-        IF(IV.EQ.1) L_N2_Q=0.0
+!        L_N2_Q=K_N2_Q*N2N              !.. sink of quanta by N2 quenching
+!        IF(IV.EQ.1) L_N2_Q=0.0
 
-        P_N2_Q=K_N2_Q*N2N*NOPV(IV+1)   !.. source of quanta by N2 quenching
-        LNOPV=LR(1)*LRV(IV)            !.. recombination rate for level IV
+!        P_N2_Q=K_N2_Q*N2N*NOPV(IV+1)   !.. source of quanta by N2 quenching
+!        LNOPV=LR(1)*LRV(IV)            !.. recombination rate for level IV
 
         !.. evaluate NO+(iV) population
-        NOPV(IV)=(PNOPV+PCASC+P_N2_Q)/(LNOPV+LRAD+L_N2_Q)
-        NOPTOT=NOPTOT+NOPV(IV)  !.. total NO+ concentration
+!        NOPV(IV)=(PNOPV+PCASC+P_N2_Q)/(LNOPV+LRAD+L_N2_Q)
+!        NOPTOT=NOPTOT+NOPV(IV)  !.. total NO+ concentration
 
           !... diagnostic print. Set alt range to invoke
-          IF(JPR.GT.0.AND.Z.GE.0.AND.Z.LT.10)
-     >     WRITE(6,'(F10.1,I7,1P,22E10.2)') 
-     >     Z,IV,PNOPV,P1,PCASC,P_N2_Q,LNOPV,LRAD,L_N2_Q,
-     >     NOPV(IV),NOP,NOPTOT
-      ENDDO
+!          IF(JPR.GT.0.AND.Z.GE.0.AND.Z.LT.10)
+!     >     WRITE(6,'(F10.1,I7,1P,22E10.2)') 
+!     >     Z,IV,PNOPV,P1,PCASC,P_N2_Q,LNOPV,LRAD,L_N2_Q,
+!     >     NOPV(IV),NOP,NOPTOT
+!      ENDDO
 
-      PR(9)=PR(9)+PR(10)+PR(11)+PR(12)         !.. for printing only
-      IF(JPT.EQ.1.AND.JPR.GT.0) WRITE(I,96)
- 96   FORMAT(/5X,'NO+',34X,'PRODUCTION',69X,':LOSS RATE'/
-     > ,3X,'ALT NO+(v=0) NO+(v=1) NO+(v=2)  NO+(v=3) O++N2    N2++O',
-     >  4X,'O2++N4S   O2++NO   N++O2    N2P+O   O++NO   hv+NO',
-     >  4X,'Other_P   NO++e')
-      IF(JPR.GT.0) WRITE(I,'(F6.1,1P,22E9.2)')  Z,
-     >   (NOPV(K),K=1,4),(PR(K),K=1,9),LR(1)*NOP
+!      PR(9)=PR(9)+PR(10)+PR(11)+PR(12)         !.. for printing only
+!      IF(JPT.EQ.1.AND.JPR.GT.0) WRITE(I,96)
+! 96   FORMAT(/5X,'NO+',34X,'PRODUCTION',69X,':LOSS RATE'/
+!     > ,3X,'ALT NO+(v=0) NO+(v=1) NO+(v=2)  NO+(v=3) O++N2    N2++O',
+!     >  4X,'O2++N4S   O2++NO   N++O2    N2P+O   O++NO   hv+NO',
+!     >  4X,'Other_P   NO++e')
+!      IF(JPR.GT.0) WRITE(I,'(F6.1,1P,22E9.2)')  Z,
+!     >   (NOPV(K),K=1,4),(PR(K),K=1,9),LR(1)*NOP
 
-      RETURN
-      END
+
+!      END SUBROUTINE CNOPV
 C
 C
 C.................................... RATES.FOR ................. 
@@ -1138,7 +1157,7 @@ C..... Calculate secondary ion production, electron heating rate and 3371 excita
       REAL SZADEG              !-- solar zenith angle {0 -> 90 degrees}
       REAL F107, F107A         !-- F107 = Solar 10.7 cm flux
       REAL TE,TN               !-- electron, neutral temperatures (K)
-      REAL XN(3),OXN,O2N,N2N   !-- XN, O, O2, N2, neutral densities  (cm-3)
+      REAL XN(3),OXN,O2N,N2N !-- XN, O, O2, N2, neutral densities (cm-3)
       REAL XNE                 !-- electron density  (cm-3)
       REAL XN2D                !-- N(2D) density for N(2D) + e -> 2.5 eV
       REAL XOP2D               !-- O+(2D) density for O+(2D) + e -> 3.3 eV
@@ -1363,18 +1382,21 @@ c      COMMON/SOL/UVFAC(59),EUV
  55   RETURN
       END
 C::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-      SUBROUTINE FACFLX(EE,UVFAC,FFAC)
+      Pure SUBROUTINE FACFLX(EE,UVFAC,FFAC)
 C....... solar UVFAC factors. Correspond to the first 9 wavelengths
 C....... TORR et al.[1979] GRL page 771 table 3. UVFAC(9) is for 304A
-      REAL UVFAC(59)
+      implicit None
+      REAL, Intent(in) :: UVFAC(59),EE
+      Real, Intent(out) :: FFAC
+    
       FFAC=(7*UVFAC(9)+UVFAC(8)+0.2*UVFAC(6))/8.2
       IF(EE.GT.30.AND.EE.LE.38) FFAC=(2*UVFAC(7)+.5*UVFAC(5))/2.5
       IF(EE.GT.38.AND.EE.LE.45) FFAC=UVFAC(4)
       IF(EE.GT.45.AND.EE.LE.66) FFAC=UVFAC(3)
       IF(EE.GT.66.AND.EE.LE.108) FFAC=UVFAC(2)
       IF(EE.GT.108) FFAC=UVFAC(1)
-      RETURN
-      END
+
+      END SUBROUTINE FACFLX
 C::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       SUBROUTINE SIGEXS(E,TE,XNE,SIGOX,SIGN2,SIGEE)
 C..... Program for evaluating the total inelastic cross sections
@@ -1408,8 +1430,8 @@ C........ total ionization cross sections from Keiffer and Dunn ....
 C
       SIGOX=SIGO1D+SIGO+0.5*SIGION
       SIGN2=SIGN2+SIGION
-      RETURN
-      END
+
+      END SUBROUTINE SIGEXS
 C::::::::::::::::::::::: TXSION ::::::::::::::::::::::::::::::::::
 C..... total ionization cross sections for O, O2, and N2
 C..... ionization cross sections keiffer and dunn ........
@@ -1438,8 +1460,8 @@ C..... with the Schram et al. cross sections at high energies
       !... O+ cross section from Brook et al. J. Phys. B. Vol 11 p 3115, 1978
       SIGIT(1)=0.0
       IF(E.GT.12.0) SIGIT(1)=7.33E-15*(1-2.0/E)**34.3*E**(-0.7)
-      RETURN
-      END
+
+      END SUBROUTINE TXSION
 C:::::::::::::::::::::::::::::::::::: OXRAT ::::::::::::::::::::::::::::::::
       SUBROUTINE OXRAT(E,R4S,R2D,R2P)
 C....... This subroutine returns the electron impact branching ratios
@@ -1459,14 +1481,14 @@ C....... 1979 page 1468
          R4S=R4S/RTOT
          R2D=R2D/RTOT
          ENDIF
-      RETURN
-      END
+
+      END SUBROUTINE OXRAT
 C::::::::::::::::::::: T_XS_N2 :::::::::::::::::::::::::::
 C.... This function calculates the N2 total photoionization
 C.... cross section. P. Richards 2003-10-04
       REAL FUNCTION T_XS_N2(EP)
       IMPLICIT NONE
-      REAL EP   !... photon energy
+      REAL,intent(in) :: EP   !... photon energy
       REAL ESAVE
       DATA ESAVE/0.0/
 
@@ -1494,8 +1516,7 @@ C.... cross section. P. Richards 2003-10-04
       !.. old parameterization
       !..T_XS_N2=3.39E-17*EXP(-0.0263*EP)
 
-      RETURN
-      END
+      END FUNCTION T_XS_N2
 C::::::::::::::::::::: T_XS_OX :::::::::::::::::::::::::::
 C.... This function calculates the OX total photoionization
 C.... cross section. P. Richards 2003-10-04
@@ -1503,7 +1524,7 @@ C.... Samson and Pareek Phys. Rev. A, 31, 1470, 1985
 
       REAL FUNCTION T_XS_OX(EP)
       IMPLICIT NONE
-      REAL EP   !... photon energy
+      REAL, Intent(in) :: EP   !... photon energy
       REAL ESAVE
       DATA ESAVE/0.0/
 
@@ -1529,8 +1550,7 @@ C.... Samson and Pareek Phys. Rev. A, 31, 1470, 1985
       !.. old parameterization
       !.. T_XS_OX=27.2E-18*EXP(-3.09E-2*EP)
 
-      RETURN
-      END
+      END FUNCTION T_XS_OX
 C
 C
 C:::::::::::::::::::::: OXSIGS :::::::::::::::::::::::::::::::::::::
@@ -1538,7 +1558,12 @@ C:::::::::::::::::::::: OXSIGS :::::::::::::::::::::::::::::::::::::
 C....... Inelastic cross sections for electron impact on atomic oxygen
 C....... E=electron energy, SIGEX(22)=array of partial cross sections,
 C....... SIGEXT=total excitation cross section, and S
-      DIMENSION SIGEX(22),SO1D(7)
+      implicit None
+      Real, Intent(in) :: E
+      Real, Intent(out) :: SIGEX(22), SIGEXT
+      Real SO1D(7)
+      Integer I
+
       DO 9 I=1,22
  9    SIGEX(I)=0.0
       !..- CROSS SECTION FOR O(1D) - New Doering cross section from JGR
@@ -1562,8 +1587,8 @@ C....... O(5S) 1356 A Stone And Zipf Corrected By Zipf And Erdman 1985
       !..- reparameterized 1 May 92 using FITXS.FOR (PGR)
       IF(E.GT.10.0) SIGEX(6)=4.867E-12*(1.0-9.0/E)**2.67/ E**4.0
       SIGEXT=SIGEX(1)+(SIGEX(2)+SIGEX(3)+SIGEX(4)+SIGEX(5)+SIGEX(6))
-      RETURN
-      END
+
+      END SUBROUTINE OXSIGS
 C
 C
 C.................... RSPRIM.FOR ..................................
@@ -1859,7 +1884,10 @@ C........ this program determines the cross sections, solar fluxes, and
 C........ given in m. torr et al g.r.l 1979 p771, table 2 and 3. but
 C........ the longer wavelengths come first
       IMPLICIT NONE
-      INTEGER  I,IN,IS,ISW,J,L,LAMAX,LMAX,NNI
+      Integer, Intent(In) :: ISW
+      Integer, Intent(INOUT) :: LMAX
+
+      INTEGER  I,IN,IS,J,L,LAMAX,NNI
       REAL EUV,FFAC, SIGABS,SIGION,TPOT,UVFAC,ZFLUX,ZLAM
       REAL  X1(111),X2(111),X3(18),ZLX(37),ZFX(37)
       COMMON/SIGS/ZFLUX(37),SIGABS(3,37),ZLAM(37),SIGION(3,37),
