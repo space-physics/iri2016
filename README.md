@@ -8,11 +8,9 @@ A Python interface to the International Reference Ionosphere (IRI) 2016 model.
 
 It requires [Time Utilities](https://github.com/rilma/TimeUtilities).
 
-### Installing
+## Installing
 
-```
-python setup.py install
-```
+    python setup.py develop
 
 ## Examples
 
@@ -40,3 +38,18 @@ Use this [script](scripts/iri2DExample01.py) to generate a plot of Ne, Te, and T
 Use this [script](scripts/iri2DExample02.py) to generate a plot of foF2 a function of geographic latitude and longitude:
 
 ![alt tag](figures/iri2DExample02.png)
+
+## Reference
+These commands are not normally needed unless you want to work with the Fortran code more directly.
+
+### Compile IRI2016 Fortran
+
+    cd bin
+    cmake ../source
+    make
+    ./testiri2016
+
+### Manual f2py compile
+
+    cd source
+    f2py -m iri2016 -c iriwebg.for irisub.for irifun.for iritec.for iridreg.for igrf.for cira.for iriflip.for 
