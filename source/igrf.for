@@ -1378,7 +1378,7 @@ C  when geolat is the geographic pole
       end function cgmglo
 C
 C
-      Real FUNCTION DFRIDR(func,x,h,err)
+      Real FUNCTION DFRIDR(CGMfunc,x,h,err)
 C **********************************************************************
 C  Numerical Recipes Fortran 77 Version 2.07
 C  Copyright (c) 1986-1995 by Numerical Recipes Software
@@ -1386,18 +1386,18 @@ C **********************************************************************
 ! must not have intent in general for external
 ! f2py does not understand functions calling functions on the fly
 ! example: f2py -m igrf -c irifun.for igrf.for skip: dfridr
-
-      real, external :: func 
+      implicit none
+      real, external :: CGMfunc 
 
       REAL, intent(in) :: h,x
       real :: err
 
+      integer konsol
       LOGICAL mess
       Real,PARAMETER :: CON=1.4,CON2=CON*CON,BIG=1.E30,SAFE=2.
       Integer, Parameter :: NTAB=10
-
-
-        COMMON/iounit/konsol,mess        
+     
+      COMMON/iounit/konsol,mess        
 
       INTEGER i,j
       REAL errt,fac,hh,a(NTAB,NTAB)
@@ -1407,11 +1407,11 @@ C **********************************************************************
           return
           endif
        hh = h
-       a(1,1) = (func(x+hh)-func(x-hh))/(2.0*hh)
+       a(1,1) = (CGMfunc(x+hh) - CGMfunc(x-hh))/(2.0*hh)
        err = BIG
       do 12 i=2,NTAB
         hh = hh/CON
-        a(1,i) = (func(x+hh)-func(x-hh))/(2.0*hh)
+        a(1,i) = (CGMfunc(x+hh) - CGMfunc(x-hh))/(2.0*hh)
         fac = CON2
         do 11 j=2,i
           a(j,i) = (a(j-1,i)*fac-a(j-1,i-1))/(fac-1.)

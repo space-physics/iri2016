@@ -58,4 +58,3 @@ This is something `f2py` can't access directly, so we tell `f2py` not to hook in
 ### manual f2py: IGRF only
 
     f2py -m igrf -c irifun.for igrf.for skip: dfridr
-

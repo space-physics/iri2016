@@ -15,7 +15,7 @@ iriSource1 = ['iriwebg.for', 'irisub.for', 'irifun.for',
 sources1 = [join(sourcePath, s) for s in iriSource1]
 
 ext1 = Extension(name='iriweb', sources=sources1, 
-                 f2py_options=['skip:dfridr'],
+                 f2py_options=['--quiet','skip:','dfridr',':'],
                  extra_f77_compile_args=f77CompileArgs)
 
 
@@ -37,8 +37,8 @@ if __name__ == '__main__':
 
     setup(name=name,
           packages=[name],
-        version='1.0.1',
-        author='Ronald Ilma',
+        version='1.1.0',
+        author=['Ronald Ilma','Michael Hirsch, Ph.D.'],
         url = 'https://github.com/rilma/pyIRI2016',
         description='IRI2016 International Reference Ionosphere via Python',
         classifiers=[
@@ -52,4 +52,7 @@ if __name__ == '__main__':
         ext_package=name,
         ext_modules=[ ext1 ],
         data_files=iriDataFiles,
+        install_requires=['timeutil'],
+        dependency_links=[
+      'https://github.com/rilma/TimeUtilities/zipball/master#egg=timeutil']
         )
