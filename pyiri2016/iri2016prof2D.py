@@ -1,7 +1,7 @@
 
 from pyigrf.pyigrf import GetIGRF
-from pyiri2016.iri2016 import IRI2016
-from pyiri2016.iri2016prof import IRI2016Profile
+from pyiri2016 import IRI2016
+from pyiri2016 import IRI2016Profile
 from pyiri2016.iriweb import irisubgl, firisubl
 from numpy import arange, array, ceil, empty, floor, isnan, linspace, \
     log10, meshgrid, nan, tile, transpose, where
@@ -586,9 +586,4 @@ class IRI2016_2DProf(IRI2016Profile):
         X0, Y0 = meshgrid(self.data2D['lon'],self.data2D['lat'])
         self.m.contour(X0, Y0, transpose(self.data2D['dip']), colors='k', linestyles='--')
         #print(X.shape, Y.shape, arr.shape)
-#------------------------------------------------------------------------------
 
-
-if __name__ == '__main__':
-
-    pass
