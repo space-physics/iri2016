@@ -238,8 +238,7 @@ C
 C
       EDENS=10.**EL
 C
-      RETURN
-      END
+      END SUBROUTINE F00
 C
 C
       BLOCK DATA
@@ -26051,4 +26050,4 @@ C     outermost loop: I (11 groups of heights)
      * 8.114,
      * 8.068/
 C
-      END
+      END BLOCK DATA

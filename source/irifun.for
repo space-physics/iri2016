@@ -5715,7 +5715,7 @@ c
 c
       subroutine read_data_SD(month,coeff_month)
 c------------------------------------------------------------------
-c    subroutine to read arrays mcsat11.datÖ mcsat22.dat
+c    subroutine to read arrays mcsat11.dat mcsat22.dat
 c    with coefficients of hmF2 spatial decomposition
 c    for for 12 month, 24 UT hour and two solar activity levels
 c------------------------------------------------------------------
