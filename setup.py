@@ -4,14 +4,11 @@ pipreq=['timeutil']
 # %%
 import pip
 try:
-    try:
-        import conda.cli
-        conda.cli.main('install',*req)
-    except Exception:
-        pip.main(['install',*req])
-    pip.main(['install',*pipreq])
-except SyntaxError: # py27
-    pass
+    import conda.cli
+    conda.cli.main('install',*req)
+except Exception:
+    pip.main(['install'] + req)
+pip.main(['install'] + pipreq)
 # %%
 import setuptools # enables develop
 from numpy.distutils.core import Extension, setup
@@ -50,7 +47,7 @@ if __name__ == '__main__':
 
     setup(name=name,
           packages=[name],
-        version='1.2.0',
+        version='1.2.1',
         author=['Ronald Ilma','Michael Hirsch, Ph.D.'],
         url = 'https://github.com/rilma/pyIRI2016',
         description='IRI2016 International Reference Ionosphere via Python',
@@ -65,7 +62,6 @@ if __name__ == '__main__':
         ext_package=name,
         ext_modules=[ ext1 ],
         data_files=iriDataFiles,
-        install_requires=req+pipreq,
         dependency_links=[
       'https://github.com/rilma/TimeUtilities/zipball/master#egg=timeutil']
         )
