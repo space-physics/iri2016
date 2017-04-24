@@ -4,11 +4,14 @@ pipreq=['timeutil']
 # %%
 import pip
 try:
-    import conda.cli
-    conda.cli.main('install',*req)
-except Exception:
-    pip.main(['install',*req])
-pip.main(['install',*pipreq])
+    try:
+        import conda.cli
+        conda.cli.main('install',*req)
+    except Exception:
+        pip.main(['install',*req])
+    pip.main(['install',*pipreq])
+except Exception: # py27
+    pass
 # %%
 import setuptools # enables develop
 from numpy.distutils.core import Extension, setup
