@@ -10,7 +10,7 @@ try:
     except Exception:
         pip.main(['install',*req])
     pip.main(['install',*pipreq])
-except Exception: # py27
+except SyntaxError: # py27
     pass
 # %%
 import setuptools # enables develop
