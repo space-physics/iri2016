@@ -1,16 +1,23 @@
 #!/usr/bin/env python
+req = ['nose','numpy','scipy','matplotlib','seaborn','pathlib2',]
+pipreq=['timeutil']
+# %%
+import pip
+try:
+    import conda.cli
+    conda.cli.main('install',*req)
+except Exception:
+    pip.main(['install',*req])
+pip.main(['install',*pipreq])
+# %%
 import setuptools # enables develop
-from glob import glob
 from numpy.distutils.core import Extension, setup
+from glob import glob
 from os.path import join
-
 
 name = 'pyiri2016'
 sourcePath = 'source'
 f77CompileArgs = ['-w']
-
-req = ['nose','numpy','scipy','matplotlib','seaborn','pathlib2',
-       'timeutil']
 
 iriSource1 = ['iriwebg.for', 'irisub.for', 'irifun.for',
     'iritec.for', 'iridreg.for', 'igrf.for', 'cira.for', 'iriflip.for']
@@ -55,7 +62,7 @@ if __name__ == '__main__':
         ext_package=name,
         ext_modules=[ ext1 ],
         data_files=iriDataFiles,
-        install_requires=req,
+        install_requires=req+pipreq,
         dependency_links=[
       'https://github.com/rilma/TimeUtilities/zipball/master#egg=timeutil']
         )
