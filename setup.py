@@ -62,6 +62,7 @@ if __name__ == '__main__':
         ext_package=name,
         ext_modules=[ ext1 ],
         data_files=iriDataFiles,
+        install_requires=pipreq,  # for those not on PyPi
         dependency_links=[
       'https://github.com/rilma/TimeUtilities/zipball/master#egg=timeutil']
         )
