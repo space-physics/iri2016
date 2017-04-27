@@ -1,8 +1,4 @@
-
-from pyigrf.pyigrf import GetIGRF
-from pyiri2016 import IRI2016
-from pyiri2016 import IRI2016Profile
-from pyiri2016.iriweb import irisubgl, firisubl
+from pathlib import Path
 from numpy import arange, array, ceil, empty, floor, isnan, linspace, \
     log10, meshgrid, nan, tile, transpose, where
 from numpy.ma import masked_where
@@ -12,11 +8,15 @@ from os.path import dirname, isdir, join, realpath
 from os import mkdir
 import pyapex, seaborn
 from scipy.interpolate import interp2d#, RectBivariateSpline
-from timeutil.timeutil import TimeUtilities
-
-
-CurrFolder = dirname(realpath(__file__))
-DataFolder = join(CurrFolder, 'data')
+#
+from pyigrf.pyigrf import GetIGRF
+from pyiri2016 import IRI2016
+from pyiri2016 import IRI2016Profile
+from pyiri2016.iriweb import irisubgl, firisubl
+from timeutil import TimeUtilities
+#
+cwd = Path(__file__).parent
+DataFolder = cwd / 'data'
 
 
 class IRI2016_2DProf(IRI2016Profile):

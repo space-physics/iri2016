@@ -5,7 +5,7 @@ except (ImportError,AttributeError):  # Python < 3.5
     from pathlib2 import Path
 #%%
 from .iriweb import iriwebg
-from timeutil.timeutil import TimeUtilities
+from timeutil import TimeUtilities
 from numpy import arange, nan, ones, squeeze, where
 
 class IRI2016(object):
