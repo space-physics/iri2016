@@ -1,5 +1,5 @@
-
-from pyiri2016.iri2016 import IRI2016
+#!/usr/bin/env python
+from pyiri2016 import IRI2016
 
 
 if __name__ == '__main__':

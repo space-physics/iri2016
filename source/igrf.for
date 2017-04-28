@@ -914,20 +914,20 @@ C        RH = (RE + HI)/RE
         SCO = TH/UMR
         SLA = 90.- SCO
 
-      RETURN
-      END
+      END SUBROUTINE GEODIP
 
 C 
 C 
 		function fmodip(xlat)
+
+        real, intent(in) :: xlat
 		
 		common/findRLAT/xlong,year
 		
       	call igrf_dip(xlat,xlong,year,300.,dec,dip,dipl,ymodip)
       	fmodip=ymodip
 
-      	return
-      	end
+      	end function fmodip
 C
 C
       SUBROUTINE GEOCGM01(ICOR,IYEAR,HI,DAT,PLA,PLO)
@@ -1265,10 +1265,8 @@ C  Written by Therese Moretto in August 1994 (revised by V. Papitashvili
 C  in January 1999).
 C  *********************************************************************
 
-      real cgmgla,cgmglo,dfridr
+      real,external :: cgmgla,cgmglo,dfridr
       logical cr360,cr0
-
-      external cgmgla,cgmglo,dfridr
 
       common/cgmgeo/clat,cr360,cr0,rh
 
@@ -1319,8 +1317,7 @@ C  GEOLON if |GEOLAT| = 90 deg. - see CGMGLO for details.
 
        OVL_ANG = OVL_ANG*57.2957751
 
-      return
-      end
+      end function OVL_ANG
 C
 C
       real function cgmgla(clon)
@@ -1329,7 +1326,7 @@ C  This function returns the geocentric latitude as a function of CGM
 C  longitude with the CGM latitude held in common block CGMGEO.
 C  Essentially this function just calls the subroutine CORGEO.
 C  *********************************************************************
-
+      real clon
       logical cr360,cr0
       common/cgmgeo/cclat,cr360,cr0,rh
 
@@ -1339,8 +1336,7 @@ C  *********************************************************************
        call CORGEO(geolat,geolon,rr,dla,dlo,cclat,clon,pmi)
          cgmgla = geolat
 
-      return
-      end
+      end function cgmgla
 C
 C
       real function cgmglo(clon)
@@ -1350,7 +1346,7 @@ C  longitude. If cr360 is true, geolon+360 deg is returned when geolon
 C  is less than 90 deg. If cr0 is true, geolon-360 deg is returned
 C  when geolon is larger than 270 degrees.
 C *********************************************************************
-
+      real clon 
       logical cr360,cr0
 
       common/cgmgeo/cclat,cr360,cr0,rh
@@ -1364,10 +1360,10 @@ C *********************************************************************
 C  Geographic longitude geolon could be any number (e.g., discontinued)
 C  when geolat is the geographic pole
 
-	 if(abs(geolat).ge.89.99) then
+      if(abs(geolat).ge.89.99) then
 	       clon = clon - 0.01
 	       goto 1
-	 endif
+      endif
 
        if(cr360.and.(geolon.le.90.)) then
            cgmglo = geolon + 360.
@@ -1377,25 +1373,31 @@ C  when geolat is the geographic pole
                                        else
            cgmglo = geolon
          endif
-	 endif
+	  endif
 
-      return
-      end
+      end function cgmglo
 C
 C
-      FUNCTION DFRIDR(func,x,h,err)
+      Real FUNCTION DFRIDR(CGMfunc,x,h,err)
 C **********************************************************************
 C  Numerical Recipes Fortran 77 Version 2.07
 C  Copyright (c) 1986-1995 by Numerical Recipes Software
 C **********************************************************************
+! must not have intent in general for external
+! f2py does not understand functions calling functions on the fly
+! example: f2py -m igrf -c irifun.for igrf.for skip: dfridr
+      implicit none
+      real, external :: CGMfunc 
 
-      INTEGER NTAB
-      REAL dfridr,err,h,x,func,CON,CON2,BIG,SAFE
+      REAL, intent(in) :: h,x
+      real :: err
+
+      integer konsol
       LOGICAL mess
-      PARAMETER (CON=1.4,CON2=CON*CON,BIG=1.E30,NTAB=10,SAFE=2.)
-      EXTERNAL func
-
-        COMMON/iounit/konsol,mess        
+      Real,PARAMETER :: CON=1.4,CON2=CON*CON,BIG=1.E30,SAFE=2.
+      Integer, Parameter :: NTAB=10
+     
+      COMMON/iounit/konsol,mess        
 
       INTEGER i,j
       REAL errt,fac,hh,a(NTAB,NTAB)
@@ -1405,11 +1407,11 @@ C **********************************************************************
           return
           endif
        hh = h
-       a(1,1) = (func(x+hh)-func(x-hh))/(2.0*hh)
+       a(1,1) = (CGMfunc(x+hh) - CGMfunc(x-hh))/(2.0*hh)
        err = BIG
       do 12 i=2,NTAB
         hh = hh/CON
-        a(1,i) = (func(x+hh)-func(x-hh))/(2.0*hh)
+        a(1,i) = (CGMfunc(x+hh) - CGMfunc(x-hh))/(2.0*hh)
         fac = CON2
         do 11 j=2,i
           a(j,i) = (a(j-1,i)*fac-a(j-1,i-1))/(fac-1.)
@@ -1423,8 +1425,7 @@ C **********************************************************************
          if(abs(a(i,i)-a(i-1,i-1)).ge.SAFE*err) return
   12   continue
 
-      return
-      END
+      END FUNCTION DFRIDR
 C
 C
       real function AZM_ANG(sla,slo,cla,pla,plo)
@@ -3617,7 +3618,7 @@ C  THE CALCULATIONS ARE TERMINATED IF ONLY GEO-MAG TRANSFORMATION
 C  IS TO BE DONE  (IHOUR>24 IS THE AGREED CONDITION FOR THIS CASE):
 
    5   IF (IHOUR.GT.24) RETURN
-
+! subroutine sun is in irifun.for
       CALL SUN(IY,IDAY,IHOUR,MIN,ISEC,GST,SLONG,SRASN,SDEC)
 
 C  S1,S2, AND S3 ARE THE COMPONENTS OF THE UNIT VECTOR EXGSM=EXGSE
@@ -3939,8 +3940,10 @@ C      Output:
 C             MLT..magnetic local time in decimal hours
 C      Required subroutines: DPMTRX
 C--------------------------------------------------------------------
-       INTEGER IYYYY,DDD
-       REAL UTHR,GLAT,GLON,MLT
+       INTEGER,intent(in) :: IYYYY,DDD
+       REAL, intent(in) :: UTHR,GLAT,GLON
+       Real, intent(out) :: MLT
+
        REAL DTOR,PI,XG,YG,ZG
        REAL XXM(3),YYM(3),ZZM(3)
        INTEGER IHOUR,MIN,ISEC
@@ -4002,8 +4005,10 @@ C      MX(N),MY(N),MZ(N)..coordinates of the B vector in geographic system
 C                for years stored in YR(N)
 C      N..number of elements of arrays MX,MY,MZ and YR
 C--------------------------------------------------------------------------
-       INTEGER IYYYY,DDD
-       REAL XM(3),YM(3),ZM(3)
+       INTEGER, Intent(in) :: IYYYY,
+     &   DDD
+       REAL, Intent(out) :: XM(3),YM(3),ZM(3)
+
        REAL YR(10),MX(10),MY(10),MZ(10)
        REAL INTERP,YEAR
        REAL M,MXI,MYI,MZI,ZM12
@@ -4020,7 +4025,7 @@ c IGRF coefficients (dipole) calculated in FELDCOF in IGRF.FOR
 
 C normalization of the vector of the dipole exis of the magnetic field
        M=SQRT(MXI*MXI+MYI*MYI+MZI*MZI)
-       MYZ=SQRT(MYI*MYI+MZI*MZI)
+       MYZ = SQRT(MYI*MYI+MZI*MZI)
        ZM(1)=MXI/M
        ZM(2)=MYI/M
        ZM(3)=MZI/M
@@ -4031,7 +4036,7 @@ C normalization of the vector of the dipole exis of the magnetic field
        XM(1)=YM(2)*ZM(3)-YM(3)*ZM(2)
        XM(2)=YM(3)*ZM(1)-YM(1)*ZM(3)
        XM(3)=YM(1)*ZM(2)-YM(2)*ZM(1)
-       RETURN
-       END
+
+       END SUBROUTINE DPMTRX
 C
 C --------------------- end IGRF.FOR ----------------------------------

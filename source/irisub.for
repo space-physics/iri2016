@@ -350,6 +350,9 @@ C*********     ALL TIMES ARE IN DECIMAL HOURS       **************
 C*****************************************************************
 C*****************************************************************
 C*****************************************************************
+      real, intent(inout) :: OARR(100)
+      real, intent(out) :: OUTF(30,1000)
+
       INTEGER    DAYNR,DDO,DO2,SEASON,SEADAY
       REAL       LATI,LONGI,MO2,MO,MODIP,NMF2,MAGBR,INVDIP,IAPO,  
      &           NMF1,NME,NMD,MM,MLAT,MLONG,NMF2S,NMES,INVDPC
@@ -362,8 +365,8 @@ c      CHARACTER FILNAM*53
      &  FF0(988),XM0(441),F2(13,76,2),FM3(9,49,2),ddens(5,11),
      &  elg(7),FF0N(988),XM0N(441),F2N(13,76,2),FM3N(9,49,2),
      &  INDAP(13),AMP(4),HXL(4),SCL(4),XSM(4),MM(5),DTI(4),AHH(7),
-     &  STTE(6),DTE(5),ATE(7),TEA(6),XNAR(2),param(2),OARR(100),
-     &  OUTF(30,1000),DDO(4),DO2(2),DION(7),
+     &  STTE(6),DTE(5),ATE(7),TEA(6),XNAR(2),param(2),
+     &  DDO(4),DO2(2),DION(7),
      &  osfbr(25),D_MSIS(9),T_MSIS(2),IAPO(7),SWMI(25),ab_mlat(48),
      &  DAT(11,4), PLA(4), PLO(4)
 
