@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-req = ['nose','numpy','scipy','matplotlib','seaborn','pathlib2',]
+req = ['nose','numpy','scipy','matplotlib','seaborn','pandas','pathlib2',]
 pipreq=['timeutil']
 # %%
 import pip
