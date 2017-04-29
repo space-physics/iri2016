@@ -1,4 +1,4 @@
-[![alt tag](https://zenodo.org/badge/DOI/10.5281/zenodo.240895.svg)](https://doi.org/10.5281/zenodo.240895)
+[![Build Status](https://travis-ci.org/rilma/pyIRI2016.svg?branch=master)](https://travis-ci.org/rilma/pyIRI2016)
 [![alt tag](https://zenodo.org/badge/DOI/10.5281/zenodo.240895.svg)](https://doi.org/10.5281/zenodo.240895)
 
 # pyIRI2016
