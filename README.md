@@ -10,6 +10,9 @@ A Python interface to the International Reference Ionosphere (IRI) 2016 model.
 
 ## Installing
 
+    pip install pyiri2016
+
+Or
     python setup.py develop
 
 This also installs [Time Utilities](https://github.com/rilma/TimeUtilities).
