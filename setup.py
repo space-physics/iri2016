@@ -1,16 +1,7 @@
 #!/usr/bin/env python
-req = ['nose','numpy','scipy','matplotlib','seaborn','pandas','pathlib2',]
-pipreq=['timeutil']
+req = ['nose','numpy','scipy','pathlib2',
+        'timeutil']
 # %%
-import pip
-try:
-    import conda.cli
-    conda.cli.main('install',*req)
-except Exception:
-    pip.main(['install'] + req)
-pip.main(['install'] + pipreq)
-# %%
-import setuptools # enables develop
 from numpy.distutils.core import Extension, setup
 from glob import glob
 from os.path import join
@@ -62,7 +53,8 @@ if __name__ == '__main__':
         ext_package=name,
         ext_modules=[ ext1 ],
         data_files=iriDataFiles,
-        install_requires=pipreq,  # for those not on PyPi
+        install_requires=req,
+        extras_requires={'plot':['matplotlib','seaborn'],},
         dependency_links=[
       'https://github.com/rilma/TimeUtilities/zipball/master#egg=timeutil']
         )

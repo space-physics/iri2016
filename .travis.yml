@@ -1,9 +1,8 @@
 language: python
+fast_finish: true
 
 python:
   - 2.7
-  - 3.4
-  - 3.5
   - 3.6
 
 os:
@@ -21,26 +20,11 @@ addons:
       - gfortran
 
 before_install:
-    - if [[ $TRAVIS_OS_NAME == osx ]]; then
-        wget http://repo.continuum.io/miniconda/Miniconda-latest-MacOSX-x86_64.sh -O miniconda.sh;
-      else 
-        wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
-      fi
-
-install:
-    - bash miniconda.sh -b -p $HOME/miniconda
-    - export PATH=$HOME/miniconda/bin:$PATH
-    - hash -r
-    
-    - conda config --set always_yes yes --set changeps1 no
-    - conda update -q conda
-    - conda create -n test python=$TRAVIS_PYTHON_VERSION
-    - source activate test
     - pip -q install coveralls
+    # temp for pip < 9.1
+    - pip -q install numpy
 
-    - conda install numpy scipy matplotlib seaborn
-
-    - python setup.py develop
+install: pip install -e .
 
 script: coverage run tests/test.py -v
 
