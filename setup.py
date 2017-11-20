@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-req = ['nose','numpy','scipy','pathlib2',
+req = ['nose','numpy','pathlib2',
         'timeutil']
 # %%
 from setuptools import find_packages
@@ -55,8 +55,8 @@ if __name__ == '__main__':
         ext_modules=[ ext1 ],
         data_files=iriDataFiles,
         install_requires=req,
-        extras_requires={'plot':['matplotlib','seaborn'],},
+        extras_requires={'plot':['matplotlib','seaborn','scipy',],},
         dependency_links=[
-      'https://github.com/rilma/TimeUtilities/zipball/master#egg=timeutil'],
+      'https://github.com/rilma/TimeUtilities/zipball/master#egg=timeutil-999.0'],
         python_requires='>=2.7',
         )
