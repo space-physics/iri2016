@@ -2,6 +2,7 @@
 req = ['nose','numpy','scipy','pathlib2',
         'timeutil']
 # %%
+from setuptools import find_packages
 from numpy.distutils.core import Extension, setup
 from glob import glob
 from os.path import join
@@ -37,7 +38,7 @@ iriDataFiles = [(join(name, join('data', 'ccir')), ccirData),
 if __name__ == '__main__':
 
     setup(name=name,
-          packages=[name],
+          packages=find_packages(),
         version='1.2.2',
         author=['Ronald Ilma','Michael Hirsch, Ph.D.'],
         url = 'https://github.com/rilma/pyIRI2016',
@@ -56,5 +57,6 @@ if __name__ == '__main__':
         install_requires=req,
         extras_requires={'plot':['matplotlib','seaborn'],},
         dependency_links=[
-      'https://github.com/rilma/TimeUtilities/zipball/master#egg=timeutil']
+      'https://github.com/rilma/TimeUtilities/zipball/master#egg=timeutil'],
+        python_requires='>=2.7',
         )
