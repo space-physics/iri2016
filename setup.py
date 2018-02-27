@@ -41,6 +41,7 @@ if __name__ == '__main__':
           author=['Michael Hirsch, Ph.D.','Ronald Ilma'],
           url = 'https://github.com/scivision/pyIRI2016',
           description='IRI2016 International Reference Ionosphere from Python',
+          long_description=open('README.rst').read(),
           classifiers=[
           'Intended Audience :: Science/Research',
           'Development Status :: 5 - Production/Stable',
