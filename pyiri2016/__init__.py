@@ -7,7 +7,7 @@ except (ImportError,AttributeError):  # Python < 3.5
 import datetime
 from dateutil.parser import parse
 from iri2016 import iriwebg
-from numpy import arange, nan, ones, squeeze, where
+from numpy import arange, nan, ones, squeeze
 
 class IRI2016(object):
 
@@ -155,20 +155,17 @@ class IRI2016(object):
 
 
     def _RmZeros(self, inputs):
+        """ Replace "zero" values with 'NaN'
+        """
+        inputs[inputs == 0.0] = nan
 
-        """ Replace "zero" values with 'NaN' """
-
-        ind = where(inputs == 0.0)[0]
-        if (len(ind) > 0): inputs[ind] = nan
-        return(inputs)
+        return inputs
 
 
     def _RmNeg(self, inputs):
-
         """ Replace negative values with 'NaN'  """
+        inputs[inputs < 0.0] = nan
 
-        ind = where(inputs < 0.)[0]
-        if len(ind) > 0: inputs[ind] = nan
         return inputs
 
 
