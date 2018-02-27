@@ -21,10 +21,10 @@ Nplot=4
 
 
 if Nplot>2:
-    fig = figure(figsize=(16,12))
+    fig = figure(1,figsize=(16,12))
     axs = fig.subplots(2,2, sharex=True).ravel()
 else:
-    fig = figure(figsize=(16,6))
+    fig = figure(1,figsize=(16,6))
     axs = fig.subplots(1,2).ravel()
 
 pn = axs[0]
@@ -56,9 +56,16 @@ pn.legend(loc='best')
 
 if Nplot > 2:
     pn = axs[2]
-    sim.out.loc[:,'ne'].plot(ax=pn)
+
+    for alt in arange(100,250,10):
+        sim = IRI2016Profile(hrlim=hrlim, hrstp=hrstp, lat=lat, lon=lon, alt=alt,
+                             option='time', verbose=False, time='2017-08-10')
+
+        pn.plot(sim.out.time, sim.out.loc[:,'ne'], label=alt)
+    pn.set_xlabel('time UTC (hours)')
     pn.set_ylabel('[m$^{-3}$]')
-    pn.set_title(f'altitude: {sim.alt} km')
+    pn.set_title(f'$N_e$ vs. altitude and time')
+    pn.legend(loc='best')
 
 if Nplot > 4:
     pn = axs[4]
