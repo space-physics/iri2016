@@ -2,14 +2,8 @@
 from pyiri2016 import IRI2016
 
 
-if __name__ == '__main__':
-
-    def main1():
-
-        Obj = IRI2016()
-        IRIData, IRIDATAAdd = Obj.IRI()
-        print(IRIData['ne'])
-        print(IRIDATAAdd['NmF2'], IRIDATAAdd['hmF2'])
-
-
-    main1()
+Obj = IRI2016()
+IRIData, IRIDATAAdd = Obj.IRI()
+print('Ne {:.3e}'.format(IRIData['ne']))
+print('NmF2 {:.3e}'.format(IRIDATAAdd['NmF2']))
+print('hmF2 {:.3e}'.format(IRIDATAAdd['hmF2']))

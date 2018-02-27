@@ -4,7 +4,9 @@ try:
 except (ImportError,AttributeError):  # Python < 3.5
     from pathlib2 import Path
 #%%
-from .iriweb import iriwebg
+from datetime import datetime
+from dateutil.parser import parse
+from iri2016 import iriwebg
 from timeutil import TimeUtilities
 from numpy import arange, nan, ones, squeeze, where
 
@@ -67,9 +69,9 @@ class IRI2016(object):
 
 #%%
 
-    def IRI(self, ap=5, dom=21, f107=150, glat=0., glon=0.,
-                hrlt=12., month=3, ssn=150, var=1, vbeg=130.,
-                vend=130.+1., vstp=1., year=1980):
+    def IRI(self, ap=5, f107=150, glat=0., glon=0., time=datetime.now(),
+                hrlt=12., ssn=150, var=1, vbeg=130.,
+                vend=130.+1., vstp=1.):
 
 #        doy = squeeze(TimeUtilities().CalcDOY(year, month, dom))
 
@@ -84,7 +86,7 @@ class IRI2016(object):
 
         #------------------------------------------------------------------------------
         #
-        if year < 1958:
+        if time.year < 1958:
 
             addinp[10 - 1] = ssn  # RZ12  (This switches 'jf[17 - 1]' to '0' and
                                 # uses correlation function to estimate IG12)
@@ -101,11 +103,9 @@ class IRI2016(object):
          #
          #------------------------------------------------------------------------------
 
-        mmdd = int(1e2 * month) + dom                  # month and dom (MMDD)
+        mmdd = int(1e2 * time.month) + time.day               # month and dom (MMDD)
 
-        #
-        # more inputs ...
-        #
+# %% more inputs
         jmag = 0            #  0: geographic; 1: geomagnetic
         iut = 0             #  0: for LT;     1: for UT
         height = 300.       #  in km
@@ -117,17 +117,14 @@ class IRI2016(object):
         ivstp = vstp
 
         # Ionosphere (IRI)
-        a, b = iriwebg(jmag, jf, glat, glon, year, mmdd, iut, hrlt,
+        a, b = iriwebg(jmag, jf, glat, glon, int(time.year), mmdd, iut, hrlt,
             height, h_tec_max, ivar, ivbeg, ivend, ivstp, addinp, self.iriDataFolder)
 
         bins = arange(ivbeg, ivend + ivstp * 0., ivstp)
         a = a[:, arange(len(bins))]
         b = b[:, arange(len(bins))]
 
-        #
-        # Data Conditioning ...
-        #
-
+# %%
         # IRI Standard Ne (in m-3)
         neIRI = squeeze(self._RmZeros(self._RmNeg(a[0, :]))[0])
 
@@ -179,12 +176,15 @@ class IRI2016(object):
 
 class IRI2016Profile(IRI2016):
 
-    def __init__(self, alt=300., altlim=[90.,150.], altstp=2., dom=21, htecmax=0,
-                    hour=12., hrlim=[0., 24.], hrstp=.25,
+    def __init__(self, alt=300., altlim=[90.,150.], altstp=2.,  htecmax=0,
+                    time=datetime.now(), hrlim=[0., 24.], hrstp=.25,
                     iut=1, jmag=0,
                     lat=0., latlim=[-90, 90], latstp=10.,
                     lon=0., lonlim=[-180,180], lonstp=20.,
-                    month=11, option=1, verbose=True, year=2003):
+                    option=1, verbose=False):
+
+        if isinstance(time,str):
+            time = parse(time)
 
         self.iriDataFolder = Path(__file__).parent / 'data'
 
@@ -218,11 +218,12 @@ class IRI2016Profile(IRI2016):
         self.jmag = jmag
         self.lat = lat
         self.lon = lon
-        self.month, self.dom = month, dom
-        self.mmdd = month * 100 + dom
-        self.year = year
+        self.month = time.month
+        self.dom = time.day
+        self.mmdd = self.month * 100 + self.dom
+        self.year = time.year
         self.iut = iut
-        self.hour = hour
+        self.hour = time.hour
         self.alt = alt
 
         self.verbose = verbose
@@ -233,10 +234,6 @@ class IRI2016Profile(IRI2016):
         elif option == 3: self.LonProfile()
         elif option == 8: self.HrProfile()
 
-    #
-    # End of '__init__'
-    #####
-
 
     def _CallIRI(self):
 
@@ -244,9 +241,6 @@ class IRI2016Profile(IRI2016):
                             self.iut, self.hour, self.alt, self.htecmax, self.option, self.vbeg,
                             self.vend, self.vstp, self.addinp, self.iriDataFolder)
 
-    #
-    # End of '_CallIRI'
-    #####
 
     def _Hr2HHMMSS(self):
 
@@ -254,9 +248,6 @@ class IRI2016Profile(IRI2016):
         self.MM = int((self.hour - float(self.HH)) * 60)
         self.SS = int((self.hour - float(self.HH)) * 60 - float(self.MM))
 
-    #
-    # End of '_Hr2HHMMSS'
-    #####
 
     def _GetTitle(self):
 
@@ -307,10 +298,6 @@ class IRI2016Profile(IRI2016):
                     (varval, edens, edratio, a[2,i], a[3,i], a[4,i], a[5,i], a[10,i], a[6,i],
                     a[7,i], a[8,i], a[9,i], b[32,i], b[38,i], b[40,i], b[45,i], b[50,i], b[51,i]))
 
-    #
-    # End of 'HeiProfile'
-    #####
-
 
     def LatProfile(self):
 
@@ -325,10 +312,6 @@ class IRI2016Profile(IRI2016):
             print('\tGLON\tGLAT\tNmF2\t\thmF2\tB0')
             for j in range(len(latbins)):
                 print('%8.3f %8.3f %8.3e %8.3f %8.3f' % (self.lon, latbins[j], self.b[0, j], self.b[1, j], self.b[9, j]))
-
-    #
-    # End of 'LatProfile'
-    #####
 
 
     def LonProfile(self):
@@ -345,10 +328,6 @@ class IRI2016Profile(IRI2016):
             for j in range(len(lonbins)):
                 print('%8.3f %8.3f %8.3e %8.3f %8.3f' % (lonbins[j], self.lat, self.b[0, j], self.b[1, j], self.b[9, j]))
 
-    #
-    # End of 'LonProfile'
-    #####
-
 
     def HrProfile(self):
 
@@ -363,25 +342,3 @@ class IRI2016Profile(IRI2016):
             print('   GLON     GLAT\tHR\tNmF2\thmF2\tB0')
             for j in range(len(hrbins)):
                 print('%8.3f %8.3f %8.3f %8.3e %8.3f %8.3f' % (self.lon, self.lat, hrbins[j], self.b[0, j], self.b[1, j], self.b[9, j]))
-
-    #
-    # End of 'HrProfile'
-    #####
-
-
-#
-# End of 'IRI2016Profile'
-#####
-
-
-if __name__ == '__main__':
-
-    def main1():
-
-        Obj = IRI2016()
-        IRIData, IRIDATAAdd = Obj.IRI()
-        print(IRIData['ne'])
-        print(IRIDATAAdd['NmF2'], IRIDATAAdd['hmF2'])
-
-
-    main1()

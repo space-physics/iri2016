@@ -1,18 +1,30 @@
 from pathlib import Path
+import logging
 from numpy import arange, array, ceil, empty, floor, isnan, linspace, \
     log10, meshgrid, nan, tile, transpose, where
 from numpy.ma import masked_where
-from matplotlib.pyplot import clf, close, cm, colorbar, figure, savefig, show
-from mpl_toolkits.basemap import Basemap
-from os.path import dirname, isdir, join, realpath
-from os import mkdir
-import pyapex, seaborn
+from matplotlib.pyplot import  close, cm, colorbar, figure, savefig
+try:
+    from mpl_toolkits.basemap import Basemap
+except ImportError:
+    print('TODO: this code needs to be updated to cartopy')
+    Basemap=None
+
+try:
+    import pyapex
+except ImportError:
+    pyapex=None
+
+try:
+    from pyigrf.pyigrf import GetIGRF
+except ImportError:
+    GetIGRF = None
+
 from scipy.interpolate import interp2d#, RectBivariateSpline
 #
-from pyigrf.pyigrf import GetIGRF
 from pyiri2016 import IRI2016
 from pyiri2016 import IRI2016Profile
-from pyiri2016.iriweb import irisubgl, firisubl
+from iri2016 import irisubgl, firisubl
 from timeutil import TimeUtilities
 #
 cwd = Path(__file__).parent
@@ -53,17 +65,14 @@ class IRI2016_2DProf(IRI2016Profile):
      #   self._GetTitle()
 
         altbins = arange(self.vbeg, self.vend + self.vstp, self.vstp)
-        self.data2D = {'alt' : altbins, 'hour' : hrbins, \
-                    'Ne' : Ne, 'Te' : Te, 'Ti' : Ti, \
+        self.data2D = {'alt' : altbins, 'hour' : hrbins,
+                    'Ne' : Ne, 'Te' : Te, 'Ti' : Ti,
                     'title1' : self.title1, 'title2' : self.title2}
         if FIRI:
-            self.FIRI2D = {'alt' : altbins, 'hour' : hrbins, \
-                'Ne' : NeFIRI, \
+            self.FIRI2D = {'alt' : altbins, 'hour' : hrbins,
+                           'Ne' : NeFIRI,
                 'title1' : self.title1, 'title2' : self.title2}
 
-    #
-    # End of 'HeightVsTime'
-    #####
 
 
     def LatVsLon(self, lonlim=[-180., 180.], lonstp=20.):
@@ -92,19 +101,13 @@ class IRI2016_2DProf(IRI2016Profile):
                     'title' : self.title3}
 
 
-    #
-    # End of 'LatVsLon'
-    #####
-
-
     def LatVsFL(self, date=[2003, 11, 21], FIRI=False, IGRF=False, time=[23, 15, 0], \
         gc=[-77.76, -11.95], \
         hlim=[80., 200.], hstp=1., mlatlim=[-10., 10.], mlatstp=.1):
 
-        #
-        # INPUTS
-        #
-
+        if pyapex is None:
+            logging.error('PyApex is needed for LatVsFL')
+            return
         # Date
         year, month, day = date
 
@@ -207,17 +210,13 @@ class IRI2016_2DProf(IRI2016Profile):
         self.f107cm = oarr[40, 0]
         self.ap, self.Ap = oarr[50, 0], oarr[51, 0]
 
-    #
-    # End of 'LatVsFL'
-    #####
-
 
     def _Get_Title(self):
 
         dateStr = 'DATE: {:4d}/{:02d}/{:02d}'.format(self.date[0], self.date[1], self.date[2])
         timeStr = 'TIME: {:02d}:{:02d} UT'.format(self.time[0], self.time[1])
         f107Str = 'F107: {:6.2f}'.format(self.f107cm)
-        apStr = 'ap: {:3d}'.format(int(self.ap))
+#        apStr = 'ap: {:3d}'.format(int(self.ap))
         ApStr = 'Ap: {:3d}'.format(int(self.Ap))
         gmlon = self.qdcoordl[0, 0, 0]
         gmlonStr = '{:7.2f} {:s}'.format(abs(gmlon), 'E' if gmlon > 0. else 'W')
@@ -225,12 +224,11 @@ class IRI2016_2DProf(IRI2016Profile):
         self._title1 = '{:s} - {:s}  -  MAG. LON.:{:s}'.format(dateStr, timeStr, gmlonStr)
         self._title2 = '{:s} - {:s}'.format(f107Str, ApStr)
 
-    #
-    # End of '_GetTitle'
-    ######
-
 
     def getIGRF(self, coordl, year):
+        if GetIGRF is None:
+            logging.error('pyIGRF is not installed')
+            return
 
         for lon, alt, lat in coordl:
 
@@ -300,11 +298,6 @@ class IRI2016_2DProf(IRI2016Profile):
 
                 counter += 1
 
-        show()
-
-    #
-    # End of 'PlotLatVsFL'
-    #####
 
     def PlotLatVsFLFIRI(self, save=False, verbose=False):
 
@@ -318,13 +311,13 @@ class IRI2016_2DProf(IRI2016Profile):
 
         X, Y = transpose(self.coordl[:, 2, :]), transpose(self.coordl[:, 1, :])
 
-        f = figure(figsize=(16, 6))
+        fg = figure(figsize=(16, 6))
 
         for ir in range(nrow):
 
             for ic in range(ncol):
 
-                pn = f.add_subplot(spID + (counter + 1))
+                pn = fg.add_subplot(spID + (counter + 1))
 
                 if counter == 0:
                     Z = log10(self.neFIRI)
@@ -350,24 +343,23 @@ class IRI2016_2DProf(IRI2016Profile):
 
                 counter += 1
 
-        if not save:
-            show()
-        else:
-            gpath = '../figures/' + '{:04d}{:02d}{:02d}/'.format(self.year, self.month, self.dom)
-            if not isdir(gpath): mkdir(gpath)
-            self.figname = gpath + 'firi-{:02d}{:02d}.jpg'.format(self.time[0], self.time[1])
-            if verbose: print('Saving at: {:s}'.format(self.figname))
-            savefig(self.figname, bbox_inches='tight', format='jpg', dpi=100)
+        if save:
+            gpath = Path('../figures')/ '{:04d}{:02d}{:02d}/'.format(self.year, self.month, self.dom)
+            gpath.mkdir(parents=True, exist_ok=True)
+
+            figname = gpath / 'firi-{:02d}{:02d}.jpg'.format(self.time[0], self.time[1])
+            if verbose:
+                print('Saving at: {:s}'.format(figname))
+            savefig(str(figname), bbox_inches='tight', format='jpg', dpi=100)
+
+            close(fg)
 
 
-        clf()
-        close()
 
-    #
-    # End of 'PlotLatVsFL'
-    #####
-
-    def Plot2D(self):
+    def Plot2D(self, save=False):
+        if Basemap is None:
+            logging.error('TODO: this needs to be updated to cartopy')
+            return
 
         f = figure(figsize=(24, 6))
 
@@ -427,17 +419,14 @@ class IRI2016_2DProf(IRI2016Profile):
         elif self.option == 8:
             pass
 
-        if True: show()
-        elif False:
-            gpath = '../figures/' + '{:04d}{:02d}{:02d}/'.format(self.year, self.month, self.dom)
-            if not isdir(gpath): mkdir(gpath)
-            figname = gpath + 'iri-{:02d}{:02d}.jpg'.format(self.HH, self.MM)
-            savefig(figname, bbox_inches='tight', format='jpg', dpi=100)
+        if save:
+            gpath = Path('../figures') / '{:04d}{:02d}{:02d}/'.format(self.year, self.month, self.dom)
+            gpath.mkdir(parents=True, exist_ok=True)
+
+            figname = gpath / 'iri-{:02d}{:02d}.jpg'.format(self.HH, self.MM)
+            savefig(str(figname), bbox_inches='tight', format='jpg', dpi=100)
             # convert -resize 50% -delay 20 -loop 0 *.jpg myimage.gif
 
-    #
-    # End of 'Plot2D'
-    #####
 
     def PlotFIRI2D(self):
 
@@ -471,13 +460,6 @@ class IRI2016_2DProf(IRI2016Profile):
         cp = colorbar(ipc)
         cp.set_label('Log$_{10}$N$_e$(m$^{-3}$)')
 
-        if True: show()
-        elif False:
-            pass
-
-    #
-    # End of 'PlotFIRI2D'
-    #####
 
     def _RoundLim(self, lim):
 
@@ -507,8 +489,6 @@ class IRI2016_2DProf(IRI2016Profile):
         f.add_subplot(236)
         self.MapPColorInt(self.data2DInt['B0'], 250., 100.)
 
-        show()
-
 
     def MapPColor(self, arr, vmax, vmin):
 
@@ -527,7 +507,7 @@ class IRI2016_2DProf(IRI2016Profile):
             labels=[True, False, False, True])
 
         X, Y = meshgrid(self.data2D['lon'], self.data2D['lat'])
-        ipc = self.m.pcolor(X, Y, transpose(arr), cmap=cm.jet, vmax=vmax, vmin=vmin)
+#        ipc = self.m.pcolor(X, Y, transpose(arr), cmap=cm.jet, vmax=vmax, vmin=vmin)
         self.m.contour(X, Y, transpose(self.data2D['dip']), colors='k', linestyles='--')
 
         #self.m.plot(X, Y, color='k', linestyle='None', marker='o')
@@ -561,10 +541,6 @@ class IRI2016_2DProf(IRI2016Profile):
         self.data2DTX = {}
         self.data2DTX['foF2'] = interp2d(x0, y0, 9.*transpose(self.data2D['NmF2'])**.5*1e-6)(lon0, lat0)[0]
 
-    #
-    # End of 'IntLatVsLon'
-    #####
-
 
     def MapPColorInt(self, arr, vmax, vmin):
 
@@ -581,7 +557,7 @@ class IRI2016_2DProf(IRI2016Profile):
         self.m.drawmeridians(arange(meridiansLim[0], meridiansLim[1], 5.), labels=[True,False,False,True])
 
         X, Y = meshgrid(self.data2DInt['lon'], self.data2DInt['lat'])
-        ipc = self.m.pcolor(X, Y, transpose(arr), cmap=cm.jet, vmax=vmax, vmin=vmin)
+#        ipc = self.m.pcolor(X, Y, transpose(arr), cmap=cm.jet, vmax=vmax, vmin=vmin)
 
         X0, Y0 = meshgrid(self.data2D['lon'],self.data2D['lat'])
         self.m.contour(X0, Y0, transpose(self.data2D['dip']), colors='k', linestyles='--')
