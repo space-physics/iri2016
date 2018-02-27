@@ -15,7 +15,7 @@ src = ['iriwebg.for', 'irisub.for', 'irifun.for',
 
 src = [join('fortran', s) for s in src]
 
-ext = Extension(name='iri2016', sources=src, 
+ext = Extension(name='iri2016', sources=src,
                  f2py_options=['--quiet','skip:','dfridr',':'],
                  extra_f77_compile_args=['-w'])
 
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     setup(name=name,
           packages=find_packages(),
-          version='1.2.3',
+          version='1.3.0',
           author=['Michael Hirsch, Ph.D.','Ronald Ilma'],
           url = 'https://github.com/scivision/pyIRI2016',
           description='IRI2016 International Reference Ionosphere from Python',

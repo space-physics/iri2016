@@ -7,7 +7,6 @@ except (ImportError,AttributeError):  # Python < 3.5
 from datetime import datetime
 from dateutil.parser import parse
 from iri2016 import iriwebg
-from timeutil import TimeUtilities
 from numpy import arange, nan, ones, squeeze, where
 
 class IRI2016(object):
@@ -70,13 +69,10 @@ class IRI2016(object):
 #%%
 
     def IRI(self, ap=5, f107=150, glat=0., glon=0., time=datetime.now(),
-                hrlt=12., ssn=150, var=1, vbeg=130.,
-                vend=130.+1., vstp=1.):
+            ssn=150, var=1, vbeg=130.,   vend=130.+1., vstp=1.):
 
         time = parse(time)
 #        doy = squeeze(TimeUtilities().CalcDOY(year, month, dom))
-
-        hh, mm, ss = TimeUtilities().ToHMS(hrlt)
 
         # IRI options
         jf = self.Switches()
@@ -118,7 +114,7 @@ class IRI2016(object):
         ivstp = vstp
 
         # Ionosphere (IRI)
-        a, b = iriwebg(jmag, jf, glat, glon, int(time.year), mmdd, iut, hrlt,
+        a, b = iriwebg(jmag, jf, glat, glon, int(time.year), mmdd, iut, time.hour,
             height, h_tec_max, ivar, ivbeg, ivend, ivstp, addinp, self.iriDataFolder)
 
         bins = arange(ivbeg, ivend + ivstp * 0., ivstp)
