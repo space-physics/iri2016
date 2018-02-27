@@ -55,5 +55,5 @@ if __name__ == '__main__':
         extras_require={'plot':['matplotlib','seaborn','scipy','timeutil','pyigrf12','cartopy','pyapex'],
                          'tests':tests_require,},
         tests_require = tests_require,
-        python_requires='>=2.7',
+        python_requires='>=3.6',
         )
