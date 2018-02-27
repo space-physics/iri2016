@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-install_requires = ['python-dateutil','numpy','pathlib2']
+install_requires = ['python-dateutil','numpy','xarray']
 tests_require = ['nose','coveralls']
 name = 'pyiri2016'
 # %%

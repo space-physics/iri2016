@@ -1,9 +1,4 @@
-try:
-    from pathlib import Path
-    Path().expanduser()
-except (ImportError,AttributeError):  # Python < 3.5
-    from pathlib2 import Path
-#%%
+from pathlib import Path
 import datetime
 from dateutil.parser import parse
 import xarray
