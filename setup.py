@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     setup(name=name,
           packages=find_packages(),
-          version='1.3.0',
+          version='1.3.1',
           author=['Michael Hirsch, Ph.D.','Ronald Ilma'],
           url = 'https://github.com/scivision/pyIRI2016',
           description='IRI2016 International Reference Ionosphere from Python',
