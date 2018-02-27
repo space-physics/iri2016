@@ -6,6 +6,7 @@ except (ImportError,AttributeError):  # Python < 3.5
 #%%
 import datetime
 from dateutil.parser import parse
+import xarray
 from iri2016 import iriwebg
 from numpy import arange, nan, ones, squeeze
 
@@ -45,7 +46,7 @@ class IRI2016(object):
         jf[19 - 1] = 1; #   19    F1 probability model   critical solar zenith angle (old)   1
         jf[20 - 1] = 1; #   20    standard F1            standard F1 plus L condition        1
         jf[21 - 1] = 1; #   21    ion drift computed     ion drift not computed              0
-        jf[22 - 1] = 1; #   22    ion densities in %     ion densities in m-3                1
+        jf[22 - 1] = 0; #   22    ion densities in %     ion densities in m-3                1
         jf[23 - 1] = 0; #   23    Te_tops (Aeros,ISIS)   Te_topside (TBT-2011)               0
         jf[24 - 1] = 0; #   24    D-region: IRI-95       Special: 3 D-region models (FIRI)   1
         jf[25 - 1] = 1; #   25    F107D from APF107.DAT  F107D user input (oarr(41))         1
@@ -171,7 +172,7 @@ class IRI2016(object):
 
 class IRI2016Profile(IRI2016):
 
-    def __init__(self, alt=300., altlim=[90.,150.], altstp=2.,  htecmax=0,
+    def __init__(self, alt=None, altlim=[90.,150.], altstp=2.,  htecmax=0,
                     time=datetime.datetime.now(), hrlim=[0., 24.], hrstp=.25,
                     iut=1, jmag=0,
                     lat=0., latlim=[-90, 90], latstp=10.,
@@ -312,11 +313,11 @@ class IRI2016Profile(IRI2016):
 
         if self.verbose:
 
-            latbins = list(map(lambda x : self.vbeg + float(x) * self.vstp, range(self.numstp)))
+            lat = arange(self.vbeg, self.numstp*self.vstp, self.vstp)
 
             print('\tGLON\tGLAT\tNmF2\t\thmF2\tB0')
-            for j in range(len(latbins)):
-                print('%8.3f %8.3f %8.3e %8.3f %8.3f' % (self.lon, latbins[j], self.b[0, j], self.b[1, j], self.b[9, j]))
+            for j in range(lat.size):
+                print('%8.3f %8.3f %8.3e %8.3f %8.3f' % (self.lon, lat[j], self.b[0, j], self.b[1, j], self.b[9, j]))
 
 
     def LonProfile(self):
@@ -327,11 +328,11 @@ class IRI2016Profile(IRI2016):
 
         if self.verbose:
 
-            lonbins = list(map(lambda x : self.vbeg + float(x) * self.vstp, range(self.numstp)))
+            lon = arange(self.vbeg, self.numstp*self.vstp, self.vstp)
 
             print('\tGLON\tGLAT\tNmF2\t\thmF2\tB0')
-            for j in range(len(lonbins)):
-                print('%8.3f %8.3f %8.3e %8.3f %8.3f' % (lonbins[j], self.lat, self.b[0, j], self.b[1, j], self.b[9, j]))
+            for j in range(lon.size):
+                print('%8.3f %8.3f %8.3e %8.3f %8.3f' % (lon[j], self.lat, self.b[0, j], self.b[1, j], self.b[9, j]))
 
 
     def HrProfile(self):
@@ -340,9 +341,14 @@ class IRI2016Profile(IRI2016):
 
         self._GetTitle()
 
-        if self.verbose:
+        t = arange(self.vbeg,self.numstp*self.vstp,self.vstp)
 
-            t = arange(self.vbeg,self.numstp*self.vstp,self.vstp)
+        self.out = xarray.DataArray(self.a[:9,:97].T,
+                                    coords={'time':t,
+                                            'sim':['ne','Tn','Ti','Te','nO+','nH+','nHe+','nO2+','nNO+']},
+                                    dims=['time','sim'])
+
+        if self.verbose:
 
             print('   GLON     GLAT\tHR\tNmF2\thmF2\tB0')
             for j in range(t.size):

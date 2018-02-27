@@ -9,7 +9,8 @@ hrlim = [0, 24]
 hrstp = 0.25
 lat = -11.95; lon = -76.77
 lat = 38; lon = -100
-sim = IRI2016Profile(hrlim=hrlim, hrstp=hrstp, lat=lat, lon=lon, option='time', verbose=False, time='2017-08-21')
+sim = IRI2016Profile(hrlim=hrlim, hrstp=hrstp, lat=lat, lon=lon, alt=150.,
+                     option='time', verbose=False, time='2017-08-21')
 
 hrbins = arange(hrlim[0], hrlim[1] + hrstp, hrstp)
 
@@ -55,6 +56,12 @@ pn.legend(loc='best')
 
 if Nplot > 2:
     pn = axs[2]
+    sim.out.loc[:,'ne'].plot(ax=pn)
+    pn.set_ylabel('[m$^{-3}$]')
+    pn.set_title(f'altitude: {sim.alt} km')
+
+if Nplot > 4:
+    pn = axs[4]
     tec = sim.b[36, index]
     pn.plot(hrbins, tec, label=r'TEC')
     pn.set_xlim(hrbins[[0, -1]])
@@ -63,7 +70,7 @@ if Nplot > 2:
     #pn.set_yscale('log')
     pn.legend(loc='best')
 
-    pn = axs[3]
+    pn = axs[5]
     vy = sim.b[43, index]
     pn.plot(hrbins, vy, label=r'V$_y$')
     pn.set_xlim(hrbins[[0, -1]])
