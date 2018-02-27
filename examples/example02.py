@@ -2,4 +2,4 @@
 from pyiri2016 import IRI2016Profile
 
 
-sim = IRI2016Profile(option=1)
+sim = IRI2016Profile(option='vertical')

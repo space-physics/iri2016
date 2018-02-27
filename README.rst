@@ -1,6 +1,6 @@
 .. image:: https://travis-ci.org/scivision/pyIRI2016.svg?branch=master
     :target: https://travis-ci.org/scivision/pyIRI2016
-    
+
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.240895.svg
     :target: https://doi.org/10.5281/zenodo.240895
 
@@ -10,7 +10,7 @@ pyIRI2016
 
 .. image:: figures/iri2DExample02.gif
 
-A Python interface to the International Reference Ionosphere (IRI) 2016 model. 
+A Python interface to the International Reference Ionosphere (IRI) 2016 model.
 
 Install
 =======
@@ -44,7 +44,7 @@ Latitudinal profile
 
 GMT profile
 -----------
-`plot densities and height at the peak of F2, F2, and E regions vs universal time <examples/iri1DExample08.py>`_
+`plot densities and height at the peak of F2, F2, and E regions vs universal time <examples/iri_timeprofile.py>`_
 
 .. image:: figures/iri1DExample08.png
 
@@ -73,13 +73,13 @@ Fortran compile
     cmake ../fortran
 
     make
-    
+
     ./testiri2016
 
 
 f2py compile
 ------------
-The function `DFRIDR()` inside `igrf.for` dynamically calls other functions. 
+The function `DFRIDR()` inside `igrf.for` dynamically calls other functions.
 This is something `f2py` can't access directly, so we tell `f2py` not to hook into function `DFRIDF()` with the end statement `skip: dfridr`::
 
     f2py -m iri2016 -c iriwebg.for irisub.for irifun.for iritec.for iridreg.for igrf.for  cira.for iriflip.for  skip: dfridr

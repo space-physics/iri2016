@@ -176,7 +176,7 @@ class IRI2016Profile(IRI2016):
                     iut=1, jmag=0,
                     lat=0., latlim=[-90, 90], latstp=10.,
                     lon=0., lonlim=[-180,180], lonstp=20.,
-                    option=1, verbose=False):
+                    option='vertical', verbose=False):
 
         if isinstance(time,str):
             time = parse(time)
@@ -189,25 +189,29 @@ class IRI2016Profile(IRI2016):
 
         self.option = option
 
-        if option == 1:     # Height Profile
+        if option == 'vertical':     # Height Profile
+            self.simtype = 1
             self.vbeg = altlim[0]
             self.vend = altlim[1]
             self.vstp = altstp
-        elif option == 2:   # Latitude Profile
+        elif option == 'lat':   # Latitude Profile
+            self.simtype = 2
             self.vbeg = latlim[0]
             self.vend = latlim[1]
             self.vstp = latstp
-        elif option == 3:   # Longitude Profile
+        elif option == 'lon':   # Longitude Profile
+            self.simtype = 3
             self.vbeg = lonlim[0]
             self.vend = lonlim[1]
             self.vstp = lonstp
-        elif option == 8:   # Local Time Profile
+        elif option == 'time':   # Local Time Profile
+            self.simtype = 8
             self.vbeg = hrlim[0]
             self.vend = hrlim[1]
             self.vstp = hrstp
         else:
-            print('Invalid option!')
-            return
+            raise ValueError(f'Invalid option {option}')
+
 
         self.htecmax = htecmax
         self.jmag = jmag
@@ -224,16 +228,20 @@ class IRI2016Profile(IRI2016):
         self.verbose = verbose
         self.numstp = int((self.vend - self.vbeg) / self.vstp) + 1
 
-        if option == 1: self.HeiProfile()
-        elif option == 2: self.LatProfile()
-        elif option == 3: self.LonProfile()
-        elif option == 8: self.HrProfile()
+        if option == 'vertical':
+            self.HeiProfile()
+        elif option == 'lat':
+            self.LatProfile()
+        elif option == 'lon':
+            self.LonProfile()
+        elif option == 'time':
+            self.HrProfile()
 
 
     def _CallIRI(self):
 
         self.a, self.b = iriwebg(self.jmag, self.jf, self.lat, self.lon, self.year, self.mmdd,
-                            self.iut, self.hour, self.alt, self.htecmax, self.option, self.vbeg,
+                            self.iut, self.hour, self.alt, self.htecmax, self.simtype, self.vbeg,
                             self.vend, self.vstp, self.addinp, self.iriDataFolder)
 
 
@@ -246,7 +254,7 @@ class IRI2016Profile(IRI2016):
 
     def _GetTitle(self):
 
-        dateStr = 'DATE: {:4d}-{:02d}-{:02d}'.format(self.year, self.month, self.dom)
+        dateStr = f'{self.year:4d}-{self.month:02d}-{self.dom:02d}'
         self._Hr2HHMMSS()
         timeStr = 'TIME: {:02d}:{:02d} UT'.format(self.HH, self.MM)
         latStr = '{:6.2f} {:s}'.format(abs(self.lat), 'N' if self.lat > 0 else 'S')
@@ -258,10 +266,12 @@ class IRI2016Profile(IRI2016):
         ApStr = 'Ap: {:3d}'.format(int(self.b[51, 0]))
 #        KpStr = 'Kp: {:3d}'.format(int(self.b[82, 0]))
 
-        if self.option in [1, 8]:
+        if self.option == 'vertical':
             self.title1 = '{:s} - {:s}  -  {:s}, {:s}'.format(dateStr, timeStr, latStr, lonStr)
-        elif self.option == 2:
+        elif self.option == 'lat':
             self.title1 = '{:s} - {:s}  -  GEOG. LON.: {:s}'.format(dateStr, timeStr, lonStr)
+        elif self.option == 'time':
+            self.title1 = f'{dateStr}   {latStr}, {lonStr}'
         else:
             pass
 

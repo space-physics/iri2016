@@ -11,7 +11,7 @@ altstp = 5.
 lat, lon = -11.95, -76.77
 
 iri2016Obj = IRI2016Profile(altlim=altlim, altstp=altstp, lat=lat, \
-    lon=lon, time='2003-11-21', option=1, verbose=False)
+    lon=lon, time='2003-11-21', option='vertical', verbose=False)
 
 altbins = arange(altlim[0], altlim[1] + altstp, altstp)
 

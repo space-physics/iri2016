@@ -12,7 +12,7 @@ altlim = [90., 200.]
 altstp = 2.
 
 sim = IRI2016Profile(altlim=altlim, altstp=altstp, lat=lat,
-    lon=lon, time=time, option=1, verbose=False)
+    lon=lon, time=time, option='vertical', verbose=False)
 
 altbins = np.arange(altlim[0], altlim[1] + altstp, altstp)
 
