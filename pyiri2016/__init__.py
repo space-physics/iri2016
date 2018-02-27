@@ -342,8 +342,8 @@ class IRI2016Profile(IRI2016):
 
         if self.verbose:
 
-            hrbins = list(map(lambda x : self.vbeg + float(x) * self.vstp, range(self.numstp)))
+            t = arange(self.vbeg,self.numstp*self.vstp,self.vstp)
 
             print('   GLON     GLAT\tHR\tNmF2\thmF2\tB0')
-            for j in range(len(hrbins)):
-                print('%8.3f %8.3f %8.3f %8.3e %8.3f %8.3f' % (self.lon, self.lat, hrbins[j], self.b[0, j], self.b[1, j], self.b[9, j]))
+            for j in range(t.size):
+                print('%8.3f %8.3f %8.3f %8.3e %8.3f %8.3f' % (self.lon, self.lat, t[j], self.b[0, j], self.b[1, j], self.b[9, j]))
