@@ -1,7 +1,7 @@
 from pathlib import Path
 import logging
 from numpy import arange, array, ceil, empty, floor, isnan, linspace, \
-    log10, meshgrid, nan, tile, transpose, where
+    log10, meshgrid, nan, tile, transpose, where, hypot
 from numpy.ma import masked_where
 from matplotlib.pyplot import  close, cm, colorbar, figure, savefig
 try:
@@ -16,15 +16,15 @@ except ImportError:
     pyapex=None
 
 try:
-    from pyigrf.pyigrf import GetIGRF
+    import pyigrf12
 except ImportError:
-    GetIGRF = None
+    pyigrf12 = None
 
 from scipy.interpolate import interp2d#, RectBivariateSpline
 #
 from pyiri2016 import IRI2016
 from pyiri2016 import IRI2016Profile
-from iri2016 import irisubgl, firisubl
+import iri2016
 from timeutil import TimeUtilities
 #
 cwd = Path(__file__).parent
@@ -119,7 +119,7 @@ class IRI2016_2DProf(IRI2016Profile):
 
         # hlim -> Height range at equator, in km
         # hstp -> height resolution at equator, in km
-        # mlatlim -> Geom. latitude range, in degrees
+        # mlatlim -> Geom. latitude range, in degreesgetIGRF
         # mlatstp -> Geom. latitude resolution, in degrees
 
         #
@@ -181,7 +181,7 @@ class IRI2016_2DProf(IRI2016Profile):
 
             if len(ind[0]) > 0:
 
-                outf, oarr = irisubgl(jf, jmag, year, mmdd, hour2, \
+                outf, oarr = iri2016.irisubgl(jf, jmag, year, mmdd, hour2, \
                     curr_coordl[ind[0], :], DataFolder)
 
                 self.ne[ind[0], fl] = outf[0, :]
@@ -190,7 +190,7 @@ class IRI2016_2DProf(IRI2016Profile):
                 self.ti[ind[0], fl] = outf[2, :]
                 self.te[ind[0], fl] = outf[3, :]
 
-                if FIRI: self.neFIRI[ind[0], fl], ierr = firisubl(year, doy, hour2, \
+                if FIRI: self.neFIRI[ind[0], fl], ierr = iri2016.firisubl(year, doy, hour2, \
                     curr_coordl[ind[0], :], DataFolder)
 
                 self.nHe[ind[0], fl] = outf[20, :]
@@ -201,8 +201,10 @@ class IRI2016_2DProf(IRI2016Profile):
                 self.nH[ind[0], fl] = outf[26, :]
                 self.nN[ind[0], fl] = outf[27, :]
 
-                self.babs[ind[0], fl] = list(self.getIGRF(curr_coordl[ind[0], :], date2)) \
-                    if IGRF else outf[19, :]
+                if IGRF:
+                    self.babs[ind[0], fl] = list(self.getIGRF(curr_coordl[ind[0], :], date2))
+                else:
+                    self.babs[ind[0], fl] = outf[19, :]
 
         self.hlim = hlim
 
@@ -225,19 +227,19 @@ class IRI2016_2DProf(IRI2016Profile):
         self._title2 = '{:s} - {:s}'.format(f107Str, ApStr)
 
 
-    def getIGRF(self, coordl, year):
-        if GetIGRF is None:
+    def getIGRF(self, coordl, yeardec):
+        if pyigrf12 is None:
             logging.error('pyIGRF is not installed')
             return
 
-        for lon, alt, lat in coordl:
+        for glon, alt, glat in coordl:
 
-            bn, be, bd, xl, icode = GetIGRF(lat, lon, alt, year)
+            Bnorth, Beast, Bdown, Btotal = pyigrf12.runigrf12(yeardec, glat, glon, alt)
 
             # Horizontal component
-            bh = (bn**2 + be**2)**.5
+            Bh = hypot(Bnorth, Beast)
 
-            yield bh
+            yield Bh
 
 
     def PlotLatVsFL(self):

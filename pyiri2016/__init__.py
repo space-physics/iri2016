@@ -4,7 +4,7 @@ try:
 except (ImportError,AttributeError):  # Python < 3.5
     from pathlib2 import Path
 #%%
-from datetime import datetime
+import datetime
 from dateutil.parser import parse
 from iri2016 import iriwebg
 from numpy import arange, nan, ones, squeeze, where
@@ -68,10 +68,11 @@ class IRI2016(object):
 
 #%%
 
-    def IRI(self, ap=5, f107=150, glat=0., glon=0., time=datetime.now(),
+    def IRI(self, ap=5, f107=150, glat=0., glon=0., time=datetime.datetime.now(),
             ssn=150, var=1, vbeg=130.,   vend=130.+1., vstp=1.):
 
-        time = parse(time)
+        if isinstance(time, str):
+            time = parse(time)
 #        doy = squeeze(TimeUtilities().CalcDOY(year, month, dom))
 
         # IRI options
@@ -174,7 +175,7 @@ class IRI2016(object):
 class IRI2016Profile(IRI2016):
 
     def __init__(self, alt=300., altlim=[90.,150.], altstp=2.,  htecmax=0,
-                    time=datetime.now(), hrlim=[0., 24.], hrstp=.25,
+                    time=datetime.datetime.now(), hrlim=[0., 24.], hrstp=.25,
                     iut=1, jmag=0,
                     lat=0., latlim=[-90, 90], latstp=10.,
                     lon=0., lonlim=[-180,180], lonstp=20.,

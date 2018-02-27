@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-install_requires = ['python-dateutil','numpy','pathlib2',
-                    'timeutil']
+install_requires = ['python-dateutil','numpy','pathlib2']
 tests_require = ['nose','coveralls']
 name = 'pyiri2016'
 # %%
@@ -52,7 +51,7 @@ if __name__ == '__main__':
         ext_modules = [ext],
         data_files = iriDataFiles,
         install_requires = install_requires,
-        extras_require={'plot':['matplotlib','seaborn','scipy',],
+        extras_require={'plot':['matplotlib','seaborn','scipy','timeutil','pyigrf12','cartopy','pyapex'],
                          'tests':tests_require,},
         tests_require = tests_require,
         python_requires='>=2.7',
