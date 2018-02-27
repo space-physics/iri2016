@@ -8,8 +8,6 @@ python:
 os:
   - linux
 
-notifications:
-  email: false
 
 git:
   depth: 3
@@ -20,12 +18,11 @@ addons:
       - gfortran
 
 before_install:
-    - pip -q install coveralls
     # temp for pip < 9.1
     - pip -q install numpy
 
-install: pip install -e . --process-dependency-links
+install: pip install -e .[tests]
 
-script: coverage run tests/test.py -v
+script: coverage run tests/test_all.py -v
 
 after_success: coveralls

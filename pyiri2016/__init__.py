@@ -73,6 +73,7 @@ class IRI2016(object):
                 hrlt=12., ssn=150, var=1, vbeg=130.,
                 vend=130.+1., vstp=1.):
 
+        time = parse(time)
 #        doy = squeeze(TimeUtilities().CalcDOY(year, month, dom))
 
         hh, mm, ss = TimeUtilities().ToHMS(hrlt)
