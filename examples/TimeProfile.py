@@ -5,10 +5,11 @@ from matplotlib.pyplot import figure, show
 
 """ Time Profile Example """
 
-hrlim = [0, 24]
-hrstp = 0.25
-lat = -11.95; lon = -76.77
-lat = 38; lon = -100
+hrlim = [0, 24] # [0,24] does whole day(s)
+hrstp = 0.1 # time step [decimal hours]
+#lat = -11.95; lon = -76.77
+lat = 65; lon = -147.5
+alts = arange(100, 200, 10)
 sim = IRI2016Profile(hrlim=hrlim, hrstp=hrstp, lat=lat, lon=lon, alt=150.,
                      option='time', verbose=False, time='2017-08-21')
 
@@ -57,11 +58,11 @@ pn.legend(loc='best')
 if Nplot > 2:
     pn = axs[2]
 
-    for alt in arange(100,250,10):
+    for alt in alts:
         sim = IRI2016Profile(hrlim=hrlim, hrstp=hrstp, lat=lat, lon=lon, alt=alt,
                              option='time', verbose=False, time='2017-08-10')
 
-        pn.plot(sim.out.time, sim.out.loc[:,'ne'], label=alt)
+        pn.plot(sim.out.time, sim.out.loc[:,'ne'], marker='.', label=alt)
     pn.set_xlabel('time UTC (hours)')
     pn.set_ylabel('[m$^{-3}$]')
     pn.set_title(f'$N_e$ vs. altitude and time')

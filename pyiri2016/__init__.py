@@ -168,7 +168,7 @@ class IRI2016(object):
 class IRI2016Profile(IRI2016):
 
     def __init__(self, alt=None, altlim=[90.,150.], altstp=2.,  htecmax=0,
-                    time=datetime.datetime.now(), hrlim=[0., 24.], hrstp=.25,
+                    time=datetime.datetime.now(), hrlim=[0., 24.], hrstp=None,
                     iut=1, jmag=0,
                     lat=0., latlim=[-90, 90], latstp=10.,
                     lon=0., lonlim=[-180,180], lonstp=20.,
@@ -338,7 +338,7 @@ class IRI2016Profile(IRI2016):
 
         t = arange(self.vbeg,self.numstp*self.vstp,self.vstp)
 
-        self.out = xarray.DataArray(self.a[:9,:97].T,
+        self.out = xarray.DataArray(self.a[:9,:t.size].T,
                                     coords={'time':t,
                                             'sim':['ne','Tn','Ti','Te','nO+','nH+','nHe+','nO2+','nNO+']},
                                     dims=['time','sim'])
