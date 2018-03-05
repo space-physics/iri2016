@@ -22,10 +22,10 @@ Nplot=4
 
 
 if Nplot>2:
-    fig = figure(1,figsize=(16,12))
+    fig = figure(figsize=(16,12))
     axs = fig.subplots(2,2, sharex=True).ravel()
 else:
-    fig = figure(1,figsize=(16,6))
+    fig = figure(figsize=(16,6))
     axs = fig.subplots(1,2).ravel()
 
 pn = axs[0]
