@@ -1,5 +1,5 @@
 
-              subroutine iriwebg(inJMAG,inJF,inALATI,inALONG,inIYYYY,
+      subroutine iriwebg(inJMAG,inJF,inALATI,inALONG,inIYYYY,
      &       inMMDD,inIUT,inDHOUR,inHEIGHT,inH_TEC_MAX,
      &       inIVAR,inVBEG,inVEND,inVSTP,inADDINP,dirdata,outA,outB)
 
@@ -18,11 +18,11 @@
 Cf2py       intent(in) inJMAG, inJF, inALATI, inALONG, inIYYYY, inMMDD
 Cf2py       intent(in) inIUT, inDHOUR, inHEIGHT, inH_TEC_MAX, inIVAR
 Cf2py       intent(in) inVBEG, inVEND, inVSTP, inADDINP, dirdata
-              
+
 
               common /folders/ dirdata1
               dirdata1 = trim(dirdata)
-              
+
               call read_ig_rz
         call readapf107
 
@@ -59,21 +59,21 @@ C       hmF2 or M(3000)F2
                      jf(9) = .false.
                      b(2,1) = addinp(2)
               endif
-C       Ne(300km)              
+C       Ne(300km)
               if(addinp(3).ne.-1) then
                      jf(10) = .false.
                      do i = 1, 1000
                             b(15,i) = addinp(3)
                      end do
               endif
-C       Ne(400km)              
+C       Ne(400km)
               if(addinp(4).ne.-1) then
                      jf(10) = .false.
                      do i = 1, 1000
                             b(16,i) = addinp(4)
                      end do
               endif
-C       Ne(550km)              
+C       Ne(550km)
               if(addinp(5).ne.-1) then
                      jf(10) = .false.
                      jf(23) = .false.
@@ -81,34 +81,34 @@ C       Ne(550km)
                             b(16,i) = addinp(5)
                      end do
               endif
-C       foF1 or NmF1              
+C       foF1 or NmF1
               if(addinp(6).ne.-1) then
                      jf(13) = .false.
                      b(3,1) = addinp(6)
               endif
-C       hmF1              
+C       hmF1
               if(addinp(7).ne.-1) then
                      jf(14) = .false.
                      b(4,1) = addinp(7)
               endif
-C       foE or NmE              
+C       foE or NmE
               if(addinp(8).ne.-1) then
                      jf(15) = .false.
                      b(5,1) = addinp(8)
               endif
-C       hmE              
+C       hmE
               if(addinp(9).ne.-1) then
                      jf(16) = .false.
                      b(6,1) = addinp(9)
               endif
-C       Rz12              
+C       Rz12
               if(addinp(10).ne.-1) then
                      jf(17) = .false.
                      do i = 1, 1000
                             b(33,i) = addinp(10)
                      end do
               endif
-C       F10.7              
+C       F10.7
               if(addinp(11).ne.-1) then
                      jf(21) = .true.
                      jf(23) = .false.
@@ -119,7 +119,7 @@ C       F10.7
                             b(41,i) = addinp(11)
                      end do
               endif
-C       IG12              
+C       IG12
               if(addinp(12).ne.-1) then
                      jf(27) = .false.
                      do i = 1, 1000
@@ -152,7 +152,7 @@ C       IG12
             integer jmag,iyyyy,mmdd
             real alati,along,dhour,heibeg,heiend,heistp
             character*256 dirdata,dirdata1
-            
+
 
 Cf2py       intent(in) jf,jmag,iyyyy,mmdd,alati,along,dhour
 Cf2py       intent(in) heibeg,heiend,heistp,dirdata
@@ -197,13 +197,13 @@ Cf2py       integer intent(hide),depend(coordl) :: lenl=shape(coordl,0)
 
             do i=1,lenl
 
-                along = real(coordl(i,1),kind(along))                
+                along = real(coordl(i,1),kind(along))
                 alati = real(coordl(i,3),kind(alati))
 
                 heibeg = real(coordl(i,2),kind(heibeg))
                 heiend = heibeg + 1.0
                 heistp = 1.0
-                
+
                 call iri_sub(jf,jag,alati,along,iyyyy,mmdd,dhour,
      &              heibeg,heiend,heistp,outf,oarr)
 
@@ -212,8 +212,8 @@ Cf2py       integer intent(hide),depend(coordl) :: lenl=shape(coordl,0)
                 end do
 
                 do j=1,100
-                    oarr1(j,i) = oarr(j)                    
-                end do                
+                    oarr1(j,i) = oarr(j)
+                end do
 
             end do
 
@@ -227,7 +227,7 @@ Cf2py       integer intent(hide),depend(coordl) :: lenl=shape(coordl,0)
 
         integer yyyy,ddd,lenl,i
         real coordl(lenl,3)
-        real uhour              
+        real uhour
         character*256 dirdata,dirdata1
 
         integer mm,dd,nrdaymo,nmonth
@@ -237,21 +237,21 @@ Cf2py       integer intent(hide),depend(coordl) :: lenl=shape(coordl,0)
 Cf2py   intent(in) yyyy,ddd,uhour,coordl,dirdata
 Cf2py   integer intent(hide),depend(coordl) :: lenl=shape(coordl,0)
 
-        
+
           common /folders/ dirdata1
-          dirdata1 = trim(dirdata)              
+          dirdata1 = trim(dirdata)
 
           call initialize
         call read_ig_rz
 
-        call moda(1,yyyy,mm,dd,ddd,nrdaymo)       
+        call moda(1,yyyy,mm,dd,ddd,nrdaymo)
         call tcon(yyyy,mm,dd,ddd,rz,ig,rsn,nmonth)
               f107d = 63.75 + rz(3) * (0.728 + rz(3) * 0.00089)
 
           do i=1,lenl
 
                  glon = real(coordl(i,1),kind(glon))
-                 hei = real(coordl(i,2),kind(hei))                                     
+                 hei = real(coordl(i,2),kind(hei))
                  glat = real(coordl(i,3),kind(glat))
 
                  call ut_lt(0,uhour,lhour,glon,yyyy,ddd)
@@ -260,7 +260,7 @@ Cf2py   integer intent(hide),depend(coordl) :: lenl=shape(coordl,0)
                  call f00(hei,glat,ddd,xhi,f107d1,edens,ierr)
                  edens1(i) = edens
                  ierr1(i) = ierr
-          
+
           end do
 
         end subroutine firisubl

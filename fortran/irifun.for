@@ -5312,7 +5312,7 @@ C     SYNTHESIZES THE VALUE OF HMF2 FROM THE MODEL
 C     **********************************************************
       CALL SCHNEVPDH (RZ,RLAT,FLON,dum,T,L,dum,dum,HMF2)
         RETURN
-9999  STOP
+9999  error STOP
       END SUBROUTINE SHAMDHMF2
 C
 C
@@ -5537,7 +5537,7 @@ c     change to intercept form of fourier series.
       BE = Y
       BV = Z
       RETURN
-  999 STOP
+  999 error STOP
       END SUBROUTINE SCHNEVPDH
 C
 C
@@ -5727,7 +5727,7 @@ c     .. array arguments ..
 c     .. local scalars ..
       integer coeff_month_read(1:12)
       character(256) filedata
-      integer i, j
+      integer i, j,u
 c     .. local arrays ..
       double precision coeff_month_all(0:148,0:47,1:12)
       save coeff_month_all
@@ -5738,12 +5738,12 @@ c
 C
       if (coeff_month_read(month) .eq. 0) then
         write(filedata, 10) month+10
-        filename=trim(trim(trim(dirdata1)//'/mcsat/')//trim(filedata))
-        open(10, File=filename, status='old')
+        filename=trim(trim(dirdata1)//'/mcsat/'//filedata)
+        open(newunit=u, File=filename, status='old')
         do j=0,47
-          read(10,20) (coeff_month_all(i,j,month),i=0,148)
+          read(u,20) (coeff_month_all(i,j,month),i=0,148)
         end do
-        close(10)
+        close(u)
         coeff_month_read(month) = 1
       end if
 c
@@ -6719,7 +6719,7 @@ C     SYNTHESIZES THE VALUE OF B0 FROM THE MODEL
 C     **********************************************************
       CALL SCHNEVPD(RZ,RLAT,FLON,dum,T,L,dum,dum,B)
         RETURN
-9999  STOP
+9999  error STOP
       END
 C
 C
@@ -6876,7 +6876,7 @@ C     **********************************************************
       CALL SCHNEVPD(RZ,FLAT,FLON,dum,T,L,dum,dum,B)
 C
       RETURN
-9999  STOP
+9999  error STOP
       END
 C
 C
@@ -7100,7 +7100,7 @@ c     change to intercept form of fourier series.
       BE = Y
       BV = Z
       RETURN
-  999 STOP
+  999 error STOP
       END
 C
 C
@@ -7216,7 +7216,7 @@ C     NUMERICAL ERROR UNACCEPTABLY LARGE DUE TO ADDING OF
 C     LARGE AND SMALL NUMBERS.
       if (mess) WRITE(konsol,108) M,FN,CONST,J,A,B
   108 FORMAT (//12H ** ERROR **/1X,I5,F10.5,E15.7,I5,2D15.7)
-      STOP
+      error STOP
 C     SERIES TRUNCATED SUCCESSFULLY.
   110 PS = PNM
       DPS = DPNM
@@ -8369,7 +8369,7 @@ C
             END
 c
 c
-           subroutine read_ig_rz
+      subroutine read_ig_rz()
 c----------------------------------------------------------------
 c Reads the Rz12 and IG12 indices file IG_RZ.DAT from I/O UNIT=12
 c and stores the indices in COMMON:
@@ -8418,11 +8418,13 @@ c----------------------------------------------------------------
            integer      iyst,iyend,iymst,iupd,iupm,iupy,imst,imend
            real            aig(806),arz(806)
            character(256) dirdata1,filename
+           integer u
 
            common /igrz/aig,arz,iymst,iymend
            common /folders/ dirdata1
            filename = trim(trim(dirdata1) // '/index/ig_rz.dat' )
-           open(unit=12,file=filename,FORM='FORMATTED',status='old')
+           print *,'reading ',filename
+           open(newunit=u,file=filename,FORM='FORMATTED',status='old')
 
 c-web- special for web version
 c            open(unit=12,file=
@@ -8432,8 +8434,8 @@ c     *         FORM='FORMATTED',status='old')
 c Read the update date, the start date and the end date (mm,yyyy), and
 c get number of data points to read.
 
-            read(12,*) iupd,iupm,iupy
-            read(12,*) imst,iyst,imend,iyend
+            read(u,*) iupd,iupm,iupy
+            read(u,*) imst,iyst,imend,iyend
             iymst=iyst*100+imst
             iymend=iyend*100+imend
 
@@ -8443,8 +8445,8 @@ c 1st year \ full years       \last y\ before & after
             inum_vals= 3-imst+(iyend-iyst)*12 +imend
 
 c read all the IG12 (ionoindx) and Rz12 (indrz) values
-            read(12,*) (aig(i),i=1,inum_vals)
-            read(12,*) (arz(i),i=1,inum_vals)
+            read(u,*) (aig(i),i=1,inum_vals)
+            read(u,*) (arz(i),i=1,inum_vals)
 c            do 1 jj=1,inum_vals
 c                rrr=arz(jj)
 c                ggg=aig(jj)
@@ -8462,13 +8464,12 @@ c                arz(jj)=rrr
 c                aig(jj)=ggg
 c1               continue
 
-            close(unit=12)
+      close(u)
 
-            return
-            end
+      end subroutine read_ig_rz
 c
 c
-           subroutine tcon(yr,mm,day,idn,rz,ig,rsn,nmonth)
+      subroutine tcon(yr,mm,day,idn,rz,ig,rsn,nmonth)
 c----------------------------------------------------------------
 c input:        yr,mm,day       year(yyyy),month(mm),day(dd)
 c               idn             day of year(ddd)
@@ -8487,25 +8488,32 @@ c month. The indices for the given day are obtained by linear
 c interpolation and are stored in rz(3) and ig(3).
 c----------------------------------------------------------------
 
-           integer      yr,mm,day,iyst,iyend,iymst
-           integer      imst,iymend
-           real            ionoindx(806),indrz(806)
-           real            ig(3),rz(3)
-           logical      mess
+      integer,intent(in) ::  yr,mm,day
+      real, intent(out) :: rsn, ig(3),rz(3)
+      integer, intent(out) :: nmonth
 
-           common       /iounit/konsol,mess
-           common      /igrz/ionoindx,indrz,iymst,iymend
+       integer  iyst,iyend,iymst
+       integer      imst,iymend
+       real            ionoindx(806),indrz(806)
+
+       logical      mess
+
+       common       /iounit/konsol,mess
+       common      /igrz/ionoindx,indrz,iymst,iymend
 
         iytmp=yr*100+mm
-        if (iytmp.lt.iymst.or.iytmp.gt.iymend) then
-               if(mess) write(konsol,8000) iytmp,iymst,iymend
-8000           format(1x,I10,'** OUT OF RANGE **'/,5x,
+      if (iytmp < iymst.or.iytmp > iymend) then
+        print '(A5,I4,A1,I2,A1,I2)','date ',yr,'-',mm,'-',day
+        write(konsol,8000) iytmp,iymst,iymend
+
+8000  format(1x,I10,'** OUT OF RANGE **'/,5x,
      &  'The file IG_RZ.DAT which contains the indices Rz12',
      &  ' and IG12'/5x,'currently only covers the time period',
      &  ' (yymm) : ',I6,'-',I6)
-               nmonth=-1
-               return
-               endif
+
+        nmonth=-1
+        error stop
+      endif
 
             iyst=iymst/100
             imst=iymst-iyst*100
@@ -8557,8 +8565,8 @@ c               if((yr/4*4.eq.yr).and.(yr/100*100.ne.yr)) idd2=381
                 ig(3)=ig(2)+(ig(1)-ig(2))*rsn
 
 1927    nmonth=imm2
-            return
-            end
+
+      end subroutine tcon
 C
 C
             subroutine readapf107

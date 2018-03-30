@@ -3,7 +3,7 @@ import logging
 from numpy import arange, array, ceil, empty, floor, isnan, linspace, \
     log10, meshgrid, nan, tile, transpose, where, hypot
 from numpy.ma import masked_where
-from matplotlib.pyplot import  close, cm, colorbar, figure, savefig
+from matplotlib.pyplot import  close, cm, colorbar, figure
 try:
     from mpl_toolkits.basemap import Basemap
 except ImportError:
@@ -351,8 +351,8 @@ class IRI2016_2DProf(IRI2016Profile):
 
             figname = gpath / 'firi-{:02d}{:02d}.jpg'.format(self.time[0], self.time[1])
             if verbose:
-                print('Saving at: {:s}'.format(figname))
-            savefig(str(figname), bbox_inches='tight', format='jpg', dpi=100)
+                print('Saving',figname)
+            fg.savefig(figname, bbox_inches='tight', format='jpg', dpi=100)
 
             close(fg)
 
@@ -363,11 +363,11 @@ class IRI2016_2DProf(IRI2016Profile):
             logging.error('TODO: this needs to be updated to cartopy')
             return
 
-        f = figure(figsize=(24, 6))
+        fg = figure(figsize=(24, 6))
 
         if self.option == 1:
 
-            pn = f.add_subplot(131)
+            pn = fg.add_subplot(131)
             X, Y = meshgrid(self.data2D['hour'], self.data2D['alt'])
             ipc = pn.pcolor(X, Y, transpose(log10(self.data2D['Ne'])), cmap=cm.jet, vmax=13, vmin=9)
             pn.set_title(self.data2D['title1'])
@@ -376,7 +376,7 @@ class IRI2016_2DProf(IRI2016Profile):
             cp1 = colorbar(ipc)
             cp1.set_label('Log$_{10}$N$_e$(m$^{-3}$)')
 
-            pn = f.add_subplot(132)
+            pn = fg.add_subplot(132)
             ipc = pn.pcolor(X, Y, transpose(self.data2D['Te']), cmap=cm.jet, vmax=4000, vmin=100)
             pn.set_title(self.data2D['title2'])
             pn.set_xlabel('Hour (UT)')
@@ -384,7 +384,7 @@ class IRI2016_2DProf(IRI2016Profile):
             cp1 = colorbar(ipc)
             cp1.set_label('T$_e$ ($^\circ$)')
 
-            pn = f.add_subplot(133)
+            pn = fg.add_subplot(133)
             ipc = pn.pcolor(X, Y, transpose(self.data2D['Ti']), cmap=cm.jet, vmax=4000, vmin=100)
             pn.set_xlabel('Hour (UT)')
             pn.set_ylabel('Altitude (km)')
@@ -394,7 +394,7 @@ class IRI2016_2DProf(IRI2016Profile):
 
         elif self.option == 2:
 
-            pn1 = f.add_subplot(111)
+            pn1 = fg.add_subplot(111)
 
             m = Basemap(llcrnrlon=self.data2D['lon'][0], llcrnrlat=self.data2D['lat'][0], \
                         urcrnrlon=self.data2D['lon'][-1], urcrnrlat=self.data2D['lat'][-1], \
@@ -426,7 +426,7 @@ class IRI2016_2DProf(IRI2016Profile):
             gpath.mkdir(parents=True, exist_ok=True)
 
             figname = gpath / 'iri-{:02d}{:02d}.jpg'.format(self.HH, self.MM)
-            savefig(str(figname), bbox_inches='tight', format='jpg', dpi=100)
+            fg.savefig(figname, bbox_inches='tight', format='jpg', dpi=100)
             # convert -resize 50% -delay 20 -loop 0 *.jpg myimage.gif
 
 

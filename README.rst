@@ -31,20 +31,20 @@ Usage
 Height-profile
 ---------------
 
-`plot density and temperatures vs height <examples/iri1DExample01.py>`_
+`plot density and temperatures vs height <AltitudeProfile.py>`_
 
 .. image:: figures/iri1DExample01.png
 
 Latitudinal profile
 -------------------
 
-`plot densities and height at the peak of F2, F2, and E regions vs geographic latitude <examples/iri1DExample02.py>`_
+`plot densities and height at the peak of F2, F2, and E regions vs geographic latitude <LatitudeProfile.py>`_
 
 .. image:: figures/iri1DExample02.png
 
 GMT profile
 -----------
-`plot densities and height at the peak of F2, F2, and E regions vs universal time <examples/iri_timeprofile.py>`_
+`plot densities and height at the peak of F2, F2, and E regions vs universal time <TimeProfile.py>`_
 
 .. image:: figures/iri1DExample08.png
 
@@ -74,7 +74,7 @@ Fortran compile
 
     make
 
-    ./testiri2016
+    make test
 
 
 f2py compile

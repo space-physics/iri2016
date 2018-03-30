@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 install_requires = ['python-dateutil','numpy','xarray']
-tests_require = ['nose','coveralls']
+tests_require = ['pytest','nose','coveralls']
 name = 'pyiri2016'
 # %%
 from setuptools import find_packages
@@ -9,7 +9,8 @@ from glob import glob
 from os.path import join
 
 
-src = ['iriwebg.for', 'irisub.for', 'irifun.for',
+src = [#'iriwebg.for',
+       'irisub.for', 'irifun.for',
               'iritec.for', 'iridreg.for', 'igrf.for', 'cira.for', 'iriflip.for']
 
 src = [join('fortran', s) for s in src]
@@ -37,17 +38,17 @@ if __name__ == '__main__':
 
     setup(name=name,
           packages=find_packages(),
-          version='1.3.1',
+          version='1.4.0',
           author=['Michael Hirsch, Ph.D.','Ronald Ilma'],
           url = 'https://github.com/scivision/pyIRI2016',
           description='IRI2016 International Reference Ionosphere from Python',
           long_description=open('README.rst').read(),
           classifiers=[
-          'Intended Audience :: Science/Research',
           'Development Status :: 5 - Production/Stable',
+          'Intended Audience :: Science/Research',
           'License :: OSI Approved :: MIT License',
+          'Programming Language :: Python :: 3.6',
           'Topic :: Scientific/Engineering :: Atmospheric Science',
-          'Programming Language :: Python :: 3',
           ],
         ext_modules = [ext],
         data_files = iriDataFiles,
@@ -56,4 +57,6 @@ if __name__ == '__main__':
                          'tests':tests_require,},
         tests_require = tests_require,
         python_requires='>=3.6',
+        scripts=['AltitudeProfile.py','TimeProfile.py','LatitudeProfile.py'],
+        include_package_data=True,
         )

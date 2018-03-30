@@ -79,8 +79,8 @@ c
         call iri_tec (hbeg,hend,2,tec,tect,tecb)
 
         end subroutine IRIT13
-c
-c
+
+
         pure real function ioncorr(tec,f)
 c-----------------------------------------------------------------------
 c computes ionospheric correction IONCORR (in m) for given vertical
@@ -91,8 +91,8 @@ c-----------------------------------------------------------------------
         ioncorr = 40.3 * tec / (f*f)
 
         end function ioncorr
-c
-c
+
+
         subroutine iri_tec (hstart,hend,istep,tectot,tectop,tecbot)
 c-----------------------------------------------------------------------
 C subroutine to compute the total ionospheric content

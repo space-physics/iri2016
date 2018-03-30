@@ -21,8 +21,11 @@ before_install:
     # temp for pip < 9.1
     - pip -q install numpy
 
-install: pip install -e .[tests]
+install: pip -q install -e .[tests]
 
-script: coverage run tests/test_all.py -v
+script:
+  - pytest -v
 
-after_success: coveralls
+after_success: 
+ - coverage run tests/test_all.py
+ - coveralls

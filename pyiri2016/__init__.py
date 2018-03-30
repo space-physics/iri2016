@@ -1,244 +1,234 @@
 from pathlib import Path
-import datetime
+from datetime import datetime, timedelta
 from dateutil.parser import parse
 import xarray
-from iri2016 import iriwebg
-from numpy import arange, nan, ones, squeeze
+import numpy as np
+#
+import iri2016 # fortran
 
-class IRI2016(object):
+proot = Path(__file__).parents[1]
+simout = ['ne','Tn','Ti','Te','nO+','nH+','nHe+','nO2+','nNO+']
 
-    def __init__(self):
-        self.iriDataFolder = Path(__file__).parent / 'data'
+def datetimerange(start:datetime, end:datetime, step:timedelta) -> list:
+    """like range() for datetime!"""
+    if isinstance(start,str):
+        start = parse(start)
+
+    if isinstance(end,str):
+        end = parse(end)
+
+    assert isinstance(start, datetime)
+    assert isinstance(end, datetime)
+    assert isinstance(step, timedelta)
+
+    return [start + i*step for i in range((end-start) // step)]
 
 
-    def Switches(self):
-        """
-         IRI switches to turn on/off several options
-        """
+def Switches():
+    """
+     IRI switches to turn on/off several options
+    """
 
-        jf = ones(50)
+    jf = np.ones(50,dtype=bool)
 
-                        #    i          1                       0                 standard version
-                        #    ------------------------------------------------------------------------
-        jf[ 1 - 1] = 1; #    1    Ne computed            Ne not computed                     1
-        jf[ 2 - 1] = 1; #    2    Te, Ti computed        Te, Ti not computed                 1
-        jf[ 3 - 1] = 1; #    3    Ne & Ni computed       Ni not computed                     1
-        jf[ 4 - 1] = 0; #    4    B0 - Table option      B0 - other models jf(31)            0
-        jf[ 5 - 1] = 0; #    5    foF2 - CCIR            foF2 - URSI                         0
-        jf[ 6 - 1] = 0; #    6    Ni - DS-95 & DY-85     Ni - RBV-10 & TTS-03                0
-        jf[ 7 - 1] = 1; #    7    Ne - Tops: f10.7<188   f10.7 unlimited                     1
-        jf[ 8 - 1] = 1; #    8    foF2 from model        foF2 or NmF2 - user input           1
-        jf[ 9 - 1] = 1; #    9    hmF2 from model        hmF2 or M3000F2 - user input        1
-        jf[10 - 1] = 1; #   10    Te - Standard          Te - Using Te/Ne correlation        1
-        jf[11 - 1] = 1; #   11    Ne - Standard Profile  Ne - Lay-function formalism         1
-        jf[12 - 1] = 1; #   12    Messages to unit 6     to meesages.text on unit 11         1
-        jf[13 - 1] = 1; #   13    foF1 from model        foF1 or NmF1 - user input           1
-        jf[14 - 1] = 1; #   14    hmF1 from model        hmF1 - user input (only Lay version)1
-        jf[15 - 1] = 1; #   15    foE  from model        foE or NmE - user input             1
-        jf[16 - 1] = 1; #   16    hmE  from model        hmE - user input                    1
-        jf[17 - 1] = 1; #   17    Rz12 from file         Rz12 - user input                   1
-        jf[18 - 1] = 1; #   18    IGRF dip, magbr, modip old FIELDG using POGO68/10 for 1973 1
-        jf[19 - 1] = 1; #   19    F1 probability model   critical solar zenith angle (old)   1
-        jf[20 - 1] = 1; #   20    standard F1            standard F1 plus L condition        1
-        jf[21 - 1] = 1; #   21    ion drift computed     ion drift not computed              0
-        jf[22 - 1] = 0; #   22    ion densities in %     ion densities in m-3                1
-        jf[23 - 1] = 0; #   23    Te_tops (Aeros,ISIS)   Te_topside (TBT-2011)               0
-        jf[24 - 1] = 0; #   24    D-region: IRI-95       Special: 3 D-region models (FIRI)   1
-        jf[25 - 1] = 1; #   25    F107D from APF107.DAT  F107D user input (oarr(41))         1
-        jf[26 - 1] = 0; #   26    foF2 storm model       no storm updating                   1
-        jf[27 - 1] = 1; #   27    IG12 from file         IG12 - user                         1
-        jf[28 - 1] = 0; #   28    spread-F probability   not computed                        0
-        jf[29 - 1] = 0; #   29    IRI01-topside          new options as def. by JF(30)       0
-        jf[30 - 1] = 0; #   30    IRI01-topside corr.    NeQuick topside model               0
-                        # (29,30) = (1,1) IRIold, (0,1) IRIcor, (0,0) NeQuick, (1,0) Gulyaeva
-        jf[31 - 1] = 1; #   31    B0,B1 ABT-2009         B0 Gulyaeva h0.5                    1
-        jf[32 - 1] = 1; #   32    F10.7_81 from file     PF10.7_81 - user input (oarr(46))   1
-        jf[33 - 1] = 0; #   33    Auroral boundary model on/off  true/false                  0
-        jf[34 - 1] = 0; #   34    Messages on            Messages off                        1
-        jf[35 - 1] = 0; #   35    foE storm model        no foE storm updating               0
-                        #   ..    ....
-                        #   50    ....
-                        #   ------------------------------------------------------------------
+                    #    i          1                       0                 standard version
+                    #    ------------------------------------------------------------------------
+    jf[ 1 - 1] = 1; #    1    Ne computed            Ne not computed                     1
+    jf[ 2 - 1] = 1; #    2    Te, Ti computed        Te, Ti not computed                 1
+    jf[ 3 - 1] = 1; #    3    Ne & Ni computed       Ni not computed                     1
+    jf[ 4 - 1] = 0; #    4    B0 - Table option      B0 - other models jf(31)            0
+    jf[ 5 - 1] = 0; #    5    foF2 - CCIR            foF2 - URSI                         0
+    jf[ 6 - 1] = 0; #    6    Ni - DS-95 & DY-85     Ni - RBV-10 & TTS-03                0
+    jf[ 7 - 1] = 1; #    7    Ne - Tops: f10.7<188   f10.7 unlimited                     1
+    jf[ 8 - 1] = 1; #    8    foF2 from model        foF2 or NmF2 - user input           1
+    jf[ 9 - 1] = 1; #    9    hmF2 from model        hmF2 or M3000F2 - user input        1
+    jf[10 - 1] = 1; #   10    Te - Standard          Te - Using Te/Ne correlation        1
+    jf[11 - 1] = 1; #   11    Ne - Standard Profile  Ne - Lay-function formalism         1
+    jf[12 - 1] = 1; #   12    Messages to unit 6     to meesages.text on unit 11         1
+    jf[13 - 1] = 1; #   13    foF1 from model        foF1 or NmF1 - user input           1
+    jf[14 - 1] = 1; #   14    hmF1 from model        hmF1 - user input (only Lay version)1
+    jf[15 - 1] = 1; #   15    foE  from model        foE or NmE - user input             1
+    jf[16 - 1] = 1; #   16    hmE  from model        hmE - user input                    1
+    jf[17 - 1] = 1; #   17    Rz12 from file         Rz12 - user input                   1
+    jf[18 - 1] = 1; #   18    IGRF dip, magbr, modip old FIELDG using POGO68/10 for 1973 1
+    jf[19 - 1] = 1; #   19    F1 probability model   critical solar zenith angle (old)   1
+    jf[20 - 1] = 1; #   20    standard F1            standard F1 plus L condition        1
+    jf[21 - 1] = 1; #   21    ion drift computed     ion drift not computed              0
+    jf[22 - 1] = 0; #   22    ion densities in %     ion densities in m-3                1
+    jf[23 - 1] = 0; #   23    Te_tops (Aeros,ISIS)   Te_topside (TBT-2011)               0
+    jf[24 - 1] = 1; #   24    D-region: IRI-95       Special: 3 D-region models (FIRI)   1
+    jf[25 - 1] = 1; #   25    F107D from APF107.DAT  F107D user input (oarr(41))         1
+    jf[26 - 1] = 0; #   26    foF2 storm model       no storm updating                   1
+    jf[27 - 1] = 1; #   27    IG12 from file         IG12 - user                         1
+    jf[28 - 1] = 0; #   28    spread-F probability   not computed                        0
+    jf[29 - 1] = 0; #   29    IRI01-topside          new options as def. by JF(30)       0
+    jf[30 - 1] = 0; #   30    IRI01-topside corr.    NeQuick topside model               0
+                    # (29,30) = (1,1) IRIold, (0,1) IRIcor, (0,0) NeQuick, (1,0) Gulyaeva
+    jf[31 - 1] = 1; #   31    B0,B1 ABT-2009         B0 Gulyaeva h0.5                    1
+    jf[32 - 1] = 1; #   32    F10.7_81 from file     PF10.7_81 - user input (oarr(46))   1
+    jf[33 - 1] = 0; #   33    Auroral boundary model on/off  true/false                  0
+    jf[34 - 1] = 0; #   34    Messages on            Messages off                        1
+    jf[35 - 1] = 0; #   35    foE storm model        no foE storm updating               0
+                    #   ..    ....
+                    #   50    ....
+                    #   ------------------------------------------------------------------
 
-        return jf
+    return jf
 
 #%%
+def IRI( time, altkm, glat, glon, ap=None, f107=None, ssn=None, var=None):
 
-    def IRI(self, ap=5, f107=150, glat=0., glon=0., time=datetime.datetime.now(),
-            ssn=150, var=1, vbeg=130.,   vend=130.+1., vstp=1.):
+    if isinstance(time, str):
+        time = parse(time)
 
-        if isinstance(time, str):
-            time = parse(time)
+    altkm = np.atleast_1d(altkm)
+
 #        doy = squeeze(TimeUtilities().CalcDOY(year, month, dom))
 
-        # IRI options
-        jf = self.Switches()
+    # IRI options
+    jf = Switches()
 
-        # additional "input parameters" (necessary to scale the empirical model results
-        # to measurements)
-        addinp = -ones(12)
+    # additional "input parameters" (necessary to scale the empirical model results
+    # to measurements)
+#    addinp = -np.ones(12)
 
-        #------------------------------------------------------------------------------
-        #
-        if time.year < 1958:
+    #------------------------------------------------------------------------------
+    #
+#    if time.year < 1958:
+#
+#        addinp[10 - 1] = ssn  # RZ12  (This switches 'jf[17 - 1]' to '0' and
+#                            # uses correlation function to estimate IG12)
+#
+#        jf[25 - 1] = 1        #   25    F107D from APF107.DAT  F107D user input (oarr(41))         1
+#        jf[27 - 1] = 1        #   27    IG12 from file         IG12 - user                         1
+#        jf[32 - 1] = 1        #   32    F10.7_81 from file     PF10.7_81 - user input (oarr(46))   1
+#
+#    else:  # case for solar and geomagnetic indices from files
+#
+#        jf[17 - 1] = 1        #   17    Rz12 from file         Rz12 - user input                   1
+#        jf[26 - 1] = 1        #   26    foF2 storm model       no storm updating                   1
+#        jf[35 - 1] = 1        #   35    foE storm model        no foE storm updating               0
+#     #
+#     #------------------------------------------------------------------------------
 
-            addinp[10 - 1] = ssn  # RZ12  (This switches 'jf[17 - 1]' to '0' and
-                                # uses correlation function to estimate IG12)
-
-            jf[25 - 1] = 1        #   25    F107D from APF107.DAT  F107D user input (oarr(41))         1
-            jf[27 - 1] = 1        #   27    IG12 from file         IG12 - user                         1
-            jf[32 - 1] = 1        #   32    F10.7_81 from file     PF10.7_81 - user input (oarr(46))   1
-
-        else:  # case for solar and geomagnetic indices from files
-
-            jf[17 - 1] = 1        #   17    Rz12 from file         Rz12 - user input                   1
-            jf[26 - 1] = 1        #   26    foF2 storm model       no storm updating                   1
-            jf[35 - 1] = 1        #   35    foE storm model        no foE storm updating               0
-         #
-         #------------------------------------------------------------------------------
-
-        mmdd = int(1e2 * time.month) + time.day               # month and dom (MMDD)
-
+    mmdd = 100*time.month + time.day               # month and dom (MMDD)
+    # hour + 25 denotes UTC time
+    dhour = (time.hour + 25) + time.minute/60.
 # %% more inputs
-        jmag = 0            #  0: geographic; 1: geomagnetic
-        iut = 0             #  0: for LT;     1: for UT
-        height = 300.       #  in km
-        h_tec_max = 2000    #  0: no TEC; otherwise: upper boundary for integral
-        ivar = var          #  1: altitude; 2: latitude; 3: longitude; ...
+    jmag = 0            #  0: geographic; 1: geomagnetic
+  #  iut = 0             #  0: for LT;     1: for UT
+  #  height = 300.       #  in km
+  #  h_tec_max = 2000    #  0: no TEC; otherwise: upper boundary for integral
+  #  ivar = var          #  1: altitude; 2: latitude; 3: longitude; ...
 
-        ivbeg = vbeg
-        ivend = vend
-        ivstp = vstp
-
-        # Ionosphere (IRI)
-        a, b = iriwebg(jmag, jf, glat, glon, int(time.year), mmdd, iut, time.hour,
-            height, h_tec_max, ivar, ivbeg, ivend, ivstp, addinp, self.iriDataFolder)
-
-        bins = arange(ivbeg, ivend + ivstp * 0., ivstp)
-        a = a[:, arange(len(bins))]
-        b = b[:, arange(len(bins))]
-
-# %%
-        # IRI Standard Ne (in m-3)
-        neIRI = squeeze(self._RmZeros(self._RmNeg(a[0, :]))[0])
-
-        # IRI Temperature (in K)
-        teIRI = squeeze(a[4 - 1, :][0])
-        tiIRI = squeeze(a[3 - 1, :][0])
-
-        # FIRI Ne (in m-3)
-        iri_ne_firi = squeeze(self._RmNeg(a[13 - 1, :])[0])
-
-        ######### Ionic density (NO+, O2+, O+, H+, He+, N+, Cluster Ions)
-        # Ionic density (O+, O2+, NO+)
-        oplusIRI = squeeze(self._RmZeros(a[5 - 1, :])[0]) / 100. * neIRI       # in m-3
-        o2plusIRI = squeeze(self._RmZeros(a[8 - 1, :])[0]) / 100. * neIRI      # in m-3
-        noplusIRI = squeeze(self._RmZeros(a[9 - 1, :])[0]) / 100. * neIRI      # in m-3
-
-        # more ionic densities (H+, He+, N+)
-        hplusIRI = squeeze(self._RmZeros(a[6 - 1, :])[0]) / 100. * neIRI       # in m-3
-        heplusIRI = squeeze(self._RmZeros(a[7 - 1, :])[0]) / 100. * neIRI      # in m-3
-        nplusIRI = squeeze(self._RmZeros(a[11 - 1, :])[0]) / 100. * neIRI      # in m-3
-
-        iri = {'ne' : neIRI, 'te' : teIRI, 'ti' : tiIRI, 'neFIRI' : iri_ne_firi,
-            'oplus' : oplusIRI, 'o2plus' : o2plusIRI, 'noplus' : noplusIRI,
-            'hplus' : hplusIRI, 'heplus' : heplusIRI, 'nplus' : nplusIRI}
-
-        iriadd = { 'NmF2' : b[1 - 1, :][0], 'hmF2' : b[2 - 1, :][0],
-                'B0' : b[10 - 1, :][0] }
-
-        return iri, iriadd
+    # Ionosphere (IRI)
+#        a, b = iriwebg(jmag, jf, glat, glon, int(time.year), mmdd, iut, time.hour,
+#            height, h_tec_max, ivar, ivbeg, ivend, ivstp, addinp, self.iriDataFolder)
 
 
-    def _RmZeros(self, inputs):
-        """ Replace "zero" values with 'NaN'
-        """
-        inputs[inputs == 0.0] = nan
 
-        return inputs
+    outf,oarr = iri2016.iri_sub(jf, jmag, glat, glon,
+                                time.year, mmdd, dhour, altkm,
+                                proot/'data/')
+
+# %% collect output
+    dsf = {k: (('time','alt_km','lat','lon'),np.atleast_2d(v[None,:,None,None])) for (k,v) in zip(simout, outf[:9,:])}
+
+    dsf.update({'NmF2':(('time','lat','lon'),np.atleast_3d(oarr[0]))})
+    dsf.update({'hmF2':(('time','lat','lon'),np.atleast_3d(oarr[1]))})
+    dsf.update({'NmF1':(('time','lat','lon'),np.atleast_3d(oarr[2]))})
+    dsf.update({'hmF1':(('time','lat','lon'),np.atleast_3d(oarr[3]))})
+    dsf.update({'NmE':(('time','lat','lon'),np.atleast_3d(oarr[4]))})
+    dsf.update({'hmE':(('time','lat','lon'),np.atleast_3d(oarr[5]))})
+    dsf.update({'B0':(('time','lat','lon'),np.atleast_3d(oarr[9]))})
+
+    iri = xarray.Dataset(dsf,
+                     coords={'time':[time],'alt_km':altkm,'lat':[glat],'lon':[glon]},
+                     attrs={'f107':oarr[40], 'ap':oarr[50],
+                            'glat':glat,'glon':glon,'time':time,
+                            })
+
+# FIRI Ne (in m-3)
+#        iri_ne_firi = self._RmNeg(a[13 - 1, :])[0]
+
+## Ionic density (NO+, O2+, O+, H+, He+, N+, Cluster Ions)
+
+#        iri = {'ne' : neIRI, 'te' : teIRI, 'ti' : tiIRI, 'neFIRI' : iri_ne_firi,
+#            'oplus' : oplusIRI, 'o2plus' : o2plusIRI, 'noplus' : noplusIRI,
+#            'hplus' : hplusIRI, 'heplus' : heplusIRI, 'nplus' : nplusIRI}
+
+#        iriadd = { 'NmF2' : b[1 - 1, :][0], 'hmF2' : b[2 - 1, :][0],
+#                'B0' : b[10 - 1, :][0] }
+
+    return iri
 
 
-    def _RmNeg(self, inputs):
-        """ Replace negative values with 'NaN'  """
-        inputs[inputs < 0.0] = nan
+def timeprofile(tlim:tuple, dt:timedelta,
+                altkm:np.ndarray, glat:float, glon:float) -> xarray.Dataset:
+    """compute IRI90 altitude profile over time range for fixed lat/lon
+    """
 
-        return inputs
+    T = datetimerange(tlim[0], tlim[1], dt)
 
+    altkm = np.atleast_1d(altkm)
 
-class IRI2016Profile(IRI2016):
+    iono = None
 
-    def __init__(self, alt=None, altlim=[90.,150.], altstp=2.,  htecmax=0,
-                    time=datetime.datetime.now(), hrlim=[0., 24.], hrstp=None,
-                    iut=1, jmag=0,
-                    lat=0., latlim=[-90, 90], latstp=10.,
-                    lon=0., lonlim=[-180,180], lonstp=20.,
-                    option='vertical', verbose=False):
-
-        if isinstance(time,str):
-            time = parse(time)
-
-        self.iriDataFolder = Path(__file__).parent / 'data'
-
-        self.jf = self.Switches()
-
-        self.addinp = list(map(lambda x : -1, range(12)))
-
-        self.option = option
-
-        if option == 'vertical':     # Height Profile
-            self.simtype = 1
-            self.vbeg = altlim[0]
-            self.vend = altlim[1]
-            self.vstp = altstp
-        elif option == 'lat':   # Latitude Profile
-            self.simtype = 2
-            self.vbeg = latlim[0]
-            self.vend = latlim[1]
-            self.vstp = latstp
-        elif option == 'lon':   # Longitude Profile
-            self.simtype = 3
-            self.vbeg = lonlim[0]
-            self.vend = lonlim[1]
-            self.vstp = lonstp
-        elif option == 'time':   # Local Time Profile
-            self.simtype = 8
-            self.vbeg = hrlim[0]
-            self.vend = hrlim[1]
-            self.vstp = hrstp
+    f107 =[]; ap=[]
+    for t in T:
+        iri = IRI(t, altkm, glat, glon)
+        if iono is None:
+            iono = iri
         else:
-            raise ValueError(f'Invalid option {option}')
+            iono = xarray.merge((iono,iri))
+
+        f107.append(iri.f107)
+        ap.append(iri.ap)
 
 
-        self.htecmax = htecmax
-        self.jmag = jmag
-        self.lat = lat
-        self.lon = lon
-        self.month = time.month
-        self.dom = time.day
-        self.mmdd = self.month * 100 + self.dom
-        self.year = time.year
-        self.iut = iut
-        self.hour = time.hour
-        self.alt = alt
+    iono.attrs = iri.attrs
+    iono.attrs['f107'] = f107
+    iono.attrs['ap'] = ap
 
-        self.verbose = verbose
-        self.numstp = int((self.vend - self.vbeg) / self.vstp) + 1
-
-        if option == 'vertical':
-            self.HeiProfile()
-        elif option == 'lat':
-            self.LatProfile()
-        elif option == 'lon':
-            self.LonProfile()
-        elif option == 'time':
-            self.HrProfile()
+    return iono
 
 
-    def _CallIRI(self):
+def geoprofile(latlim:tuple, dlat:float, glon:float,
+                altkm:np.ndarray, time:datetime) -> xarray.Dataset:
+    """compute IRI90 altitude profiles at time, over lat or lon range
+    """
 
-        self.a, self.b = iriwebg(self.jmag, self.jf, self.lat, self.lon, self.year, self.mmdd,
-                            self.iut, self.hour, self.alt, self.htecmax, self.simtype, self.vbeg,
-                            self.vend, self.vstp, self.addinp, self.iriDataFolder)
+    glat = np.arange(*latlim,dlat)
+
+    altkm = np.atleast_1d(altkm)
+
+    iono = None
+
+    f107 =[]; ap=[]
+    for l in glat:
+        iri = IRI(time, altkm, l, glon)
+        if iono is None:
+            iono = iri
+        else:
+            iono = xarray.merge((iono,iri))
+
+        f107.append(iri.f107)
+        ap.append(iri.ap)
+
+
+    iono.attrs = iri.attrs
+    iono.attrs['f107'] = f107
+    iono.attrs['ap'] = ap
+
+    return iono
+
+
+
+#    def _CallIRI(self):
+#
+#        self.a, self.b = iriwebg(self.jmag, self.jf, self.lat, self.lon, self.year, self.mmdd,
+#                            self.iut, self.hour, self.alt, self.htecmax, self.simtype, self.vbeg,
+#                            self.vend, self.vstp, self.addinp, self.iriDataFolder)
 
 
     def _Hr2HHMMSS(self):
@@ -298,53 +288,3 @@ class IRI2016Profile(IRI2016):
                 print('%8.3f %10.3f %8.3f %8.3f %8.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %7.3f %7.3f %7.3f %7.3f' %
                     (varval, edens, edratio, a[2,i], a[3,i], a[4,i], a[5,i], a[10,i], a[6,i],
                     a[7,i], a[8,i], a[9,i], b[32,i], b[38,i], b[40,i], b[45,i], b[50,i], b[51,i]))
-
-
-    def LatProfile(self):
-
-        self._CallIRI()
-
-        self._GetTitle()
-
-        if self.verbose:
-
-            lat = arange(self.vbeg, self.numstp*self.vstp, self.vstp)
-
-            print('\tGLON\tGLAT\tNmF2\t\thmF2\tB0')
-            for j in range(lat.size):
-                print('%8.3f %8.3f %8.3e %8.3f %8.3f' % (self.lon, lat[j], self.b[0, j], self.b[1, j], self.b[9, j]))
-
-
-    def LonProfile(self):
-
-        self._CallIRI()
-
-        self._GetTitle()
-
-        if self.verbose:
-
-            lon = arange(self.vbeg, self.numstp*self.vstp, self.vstp)
-
-            print('\tGLON\tGLAT\tNmF2\t\thmF2\tB0')
-            for j in range(lon.size):
-                print('%8.3f %8.3f %8.3e %8.3f %8.3f' % (lon[j], self.lat, self.b[0, j], self.b[1, j], self.b[9, j]))
-
-
-    def HrProfile(self):
-
-        self._CallIRI()
-
-        self._GetTitle()
-
-        t = arange(self.vbeg,self.numstp*self.vstp,self.vstp)
-
-        self.out = xarray.DataArray(self.a[:9,:t.size].T,
-                                    coords={'time':t,
-                                            'sim':['ne','Tn','Ti','Te','nO+','nH+','nHe+','nO2+','nNO+']},
-                                    dims=['time','sim'])
-
-        if self.verbose:
-
-            print('   GLON     GLAT\tHR\tNmF2\thmF2\tB0')
-            for j in range(t.size):
-                print('%8.3f %8.3f %8.3f %8.3e %8.3f %8.3f' % (self.lon, self.lat, t[j], self.b[0, j], self.b[1, j], self.b[9, j]))

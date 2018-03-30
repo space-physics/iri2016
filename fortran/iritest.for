@@ -135,7 +135,7 @@ c
         read(5,*) jchoice
           do i=1,50
                 jf(i)=.true.
-                enddo
+          enddo
           if(piktab.eq.4) jf(24)=.false.
         if(jchoice.eq.0) then
 c defaults for jf(1:50)
