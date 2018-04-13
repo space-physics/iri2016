@@ -6,7 +6,7 @@ import numpy as np
 #
 import iri2016 # fortran
 
-proot = Path(__file__).parents[1]
+proot = Path(__file__).parent
 simout = ['ne','Tn','Ti','Te','nO+','nH+','nHe+','nO2+','nNO+']
 
 def datetimerange(start:datetime, end:datetime, step:timedelta) -> list:

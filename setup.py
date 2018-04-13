@@ -3,42 +3,37 @@ install_requires = ['python-dateutil','numpy','xarray']
 tests_require = ['pytest','nose','coveralls']
 name = 'pyiri2016'
 # %%
+from pathlib import Path
 from setuptools import find_packages
 from numpy.distutils.core import Extension, setup
-from glob import glob
-from os.path import join
-
+# %%
 
 src = [#'iriwebg.for',
        'irisub.for', 'irifun.for',
               'iritec.for', 'iridreg.for', 'igrf.for', 'cira.for', 'iriflip.for']
 
-src = [join('fortran', s) for s in src]
+F = Path('fortran')
+src = [str(F/s) for s in src]
 
 ext = Extension(name='iri2016', sources=src,
                  f2py_options=['--quiet','skip:','dfridr',':'],
                  extra_f77_compile_args=['-w'])
 
 
-ccirData = glob(join(join('data', 'ccir'), '*.asc'))
-igrfData = glob(join(join('data', 'igrf'), '*.dat'))
-indexData = glob(join(join('data', 'index'), '*.dat'))
-mcsatData = glob(join(join('data', 'mcsat'), '*.dat'))
-ursiData = glob(join(join('data', 'ursi'), '*.asc'))
+R = Path(name) / 'data'
+iridata = (list((R/'ccir').glob('*.asc')) + 
+           list((R/'igrf').glob('*.dat')) +
+           list((R/'index').glob('*.dat')) +
+           list((R/'mcsat').glob('*.dat')) +
+           list((R/'ursi').glob('*.asc')))
 
-
-iriDataFiles = [(join(name, join('data', 'ccir')), ccirData),
-                (join(name, join('data', 'igrf')), igrfData),
-                (join(name, join('data', 'index')), indexData),
-                (join(name, join('data', 'mcsat')), mcsatData),
-                (join(name, join('data', 'ursi')), ursiData)
-                ]
+iridata = list(map(str,iridata)) # even for Numpy 1.14 due to numpy.distutils
 
 if __name__ == '__main__':
 
     setup(name=name,
           packages=find_packages(),
-          version='1.4.0',
+          version='1.4.1',
           author=['Michael Hirsch, Ph.D.','Ronald Ilma'],
           url = 'https://github.com/scivision/pyIRI2016',
           description='IRI2016 International Reference Ionosphere from Python',
@@ -51,7 +46,7 @@ if __name__ == '__main__':
           'Topic :: Scientific/Engineering :: Atmospheric Science',
           ],
         ext_modules = [ext],
-        data_files = iriDataFiles,
+        data_files = iridata,
         install_requires = install_requires,
         extras_require={'plot':['matplotlib','seaborn','scipy','timeutil','pyigrf12','cartopy','pyapex'],
                          'tests':tests_require,},
