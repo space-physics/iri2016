@@ -18,7 +18,14 @@ A Python interface to the International Reference Ionosphere (IRI) 2016 model.
 
 Install
 =======
-::
+Any Fortran compiler will do, for example:
+
+* Linux: `apt install gfortran`
+* Mac: `brew install gcc`
+* `Windows <https://www.scivision.co/windows-gcc-gfortran-cmake-make-install/>`_
+
+
+and then from your Python >= 3.6 install (such as `Miniconda <https://conda.io/miniconda.html>`_)::
 
     pip install pyiri2016
 
