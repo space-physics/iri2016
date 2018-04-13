@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 import pyiri2016 as iri
-import pyiri2016.plots as piri
-from matplotlib.pyplot import show
 """ Geog. Latitude Profile Example """
-
-
 
 latlim = [-60, 60]
 latstp = 2.
