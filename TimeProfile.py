@@ -2,11 +2,8 @@
 """ Time Profile: IRI2016 """
 import numpy as np
 from datetime import timedelta
-from matplotlib.pyplot import show
 #
 import pyiri2016 as iri
-import pyiri2016.plots as piri
-
 
 # %% user parameters
 #lat = -11.95; lon = -76.77
@@ -17,6 +14,16 @@ alt_km = np.arange(120, 180, 20)
 sim = iri.timeprofile(('2012-08-21','2012-08-22'),timedelta(hours=0.25),
                             alt_km,glat,glon)
 
-piri.timeprofile(sim)
+if __name__ == '__main__':
+    from argparse import ArgumentParser
+    p = ArgumentParser()
+    p.add_argument('-q','--quiet',help='disable plotting',action='store_true')
+    p = p.parse_args()
 
-show()
+
+    if not p.quiet:
+        from matplotlib.pyplot import show
+        import pyiri2016.plots as piri
+        
+        piri.timeprofile(sim)
+        show()

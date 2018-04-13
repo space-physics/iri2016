@@ -18,11 +18,16 @@ def test_main1():
     print('assert passed')
     
     
-def test_other_directory():
+def test_top_scripts():
+    """ uses tempdir so as to show directory-agnostic module behavior (essential!)"""
+    scripts = ['AltitudeProfile.py','TimeProfile.py','LatitudeProfile.py']
     with tempfile.TemporaryDirectory() as d:
-        shutil.copy(root/'AltitudeProfile.py', d)
         print('running script from directory',d)
-        subprocess.check_call(['python','AltitudeProfile.py','-q'],cwd=d)
+        
+        for s in scripts:
+            shutil.copy(root/s, d)
+            print('testing',s)
+            subprocess.check_call(['python',s,'-q'], cwd=d)
 
 
 if __name__ == '__main__':
