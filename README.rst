@@ -1,5 +1,9 @@
 .. image:: https://travis-ci.org/scivision/pyIRI2016.svg?branch=master
     :target: https://travis-ci.org/scivision/pyIRI2016
+    
+.. image:: https://coveralls.io/repos/github/scivision/pyIRI2016/badge.svg?branch=master
+    :target: https://coveralls.io/github/scivision/pyIRI2016?branch=master
+
 
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.240895.svg
     :target: https://doi.org/10.5281/zenodo.240895
