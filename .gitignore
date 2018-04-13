@@ -1,3 +1,4 @@
+.pytest_cache/
 baseIRI2016
 testiri2016
 bin/
