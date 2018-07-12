@@ -1,31 +1,36 @@
 language: python
-fast_finish: true
-
-python:
-  - 3.6
-
-os:
-  - linux
-
+sudo: required
+dist: xenial
 group: travis_latest
 
 git:
   depth: 3
+  quiet: true
+
+python:
+  - 3.6
+  - 3.7
+
+os:
+  - linux
 
 addons:
   apt:
     packages:
       - gfortran
 
-before_install:
-    # temp for pip < 9.1
-    - pip -q install numpy
+install:
+  - pip install -e .[tests]
 
-install: pip -q install -e .[tests]
+install: pip install -e .[tests]
 
 script:
-  - pytest -v
+  - pytest -sv
+  - flake8
+  - mypy . --ignore-missing-imports
 
-after_success: 
- - coverage run tests/test_all.py
- - coveralls
+after_success:
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then
+    pytest --cov;
+    coveralls;
+    fi

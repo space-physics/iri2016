@@ -1,16 +1,17 @@
 import xarray
 from matplotlib.pyplot import figure
 
-def timeprofile(iono:xarray.Dataset):
-    # %% Plots
-    Nplot=3
 
-    if Nplot>2:
-        fig = figure(figsize=(16,12))
-        axs = fig.subplots(3,1, sharex=True).ravel()
+def timeprofile(iono: xarray.Dataset):
+    # %% Plots
+    Nplot = 3
+
+    if Nplot > 2:
+        fig = figure(figsize=(16, 12))
+        axs = fig.subplots(3, 1, sharex=True).ravel()
     else:
-        fig = figure(figsize=(16,6))
-        axs = fig.subplots(1,2).ravel()
+        fig = figure(figsize=(16, 6))
+        axs = fig.subplots(1, 2).ravel()
 
     fig.suptitle(f'{str(iono.time[0].values)[:-13]} to {str(iono.time[-1].values)[:-13]}\n Glat, Glon: {iono.glat}, {iono.glon}')
 
@@ -51,7 +52,7 @@ def timeprofile(iono:xarray.Dataset):
         ax.plot(iono.time, tec, label=r'TEC')
         ax.set_xlabel('Hour (UT)')
         ax.set_ylabel('(m$^{-2}$)')
-        #ax.set_yscale('log')
+        # ax.set_yscale('log')
         ax.legend(loc='best')
 
         ax = axs[5]
@@ -65,16 +66,15 @@ def timeprofile(iono:xarray.Dataset):
         a.grid(True)
 
 
-def altprofile(iono:xarray.Dataset):
-    fig = figure(figsize=(16,6))
-    axs = fig.subplots(1,2)
+def altprofile(iono: xarray.Dataset):
+    fig = figure(figsize=(16, 6))
+    axs = fig.subplots(1, 2)
 
     fig.suptitle(f'{str(iono.time[0].values)[:-13]}\n Glat, Glon: {iono.glat}, {iono.attrs["glon"]}')
 
-
     pn = axs[0]
     pn.plot(iono['ne'].squeeze(), iono.alt_km, label='N$_e$')
-    #pn.set_title(iri2016Obj.title1)
+    # pn.set_title(iri2016Obj.title1)
     pn.set_xlabel('Density (m$^{-3}$)')
     pn.set_ylabel('Altitude (km)')
     pn.set_xscale('log')
@@ -84,16 +84,17 @@ def altprofile(iono:xarray.Dataset):
     pn = axs[1]
     pn.plot(iono['Ti'].squeeze(), iono.alt_km, label='T$_i$')
     pn.plot(iono['Te'].squeeze(), iono.alt_km, label='T$_e$')
-    #pn.set_title(iri2016Obj.title2)
+    # pn.set_title(iri2016Obj.title2)
     pn.set_xlabel('Temperature (K)')
     pn.set_ylabel('Altitude (km)')
     pn.legend(loc='best')
     pn.grid(True)
 
-def latprofile(iono:xarray.Dataset):
 
-    fig = figure(figsize=(8,12))
-    axs = fig.subplots(2,1, sharex=True)
+def latprofile(iono: xarray.Dataset):
+
+    fig = figure(figsize=(8, 12))
+    axs = fig.subplots(2, 1, sharex=True)
 
     ax = axs[0]
 
@@ -101,11 +102,10 @@ def latprofile(iono:xarray.Dataset):
     ax.plot(iono.lat, iono['NmF1'].squeeze(), label='N$_m$F$_1$')
     ax.plot(iono.lat, iono['NmE'].squeeze(), label='N$_m$E')
     ax.set_title(str(iono.time[0].values)[:-13] + f'  latitude {iono.lat[[0, -1]].values}')
-    #ax.set_xlim(iono.lat[[0, -1]])
+    # ax.set_xlim(iono.lat[[0, -1]])
     ax.set_xlabel('Geog. Lat. ($^\circ$)')
     ax.set_ylabel('(m$^{-3}$)')
     ax.set_yscale('log')
-
 
     ax = axs[1]
     ax.plot(iono.lat, iono['hmF2'].squeeze(), label='h$_m$F$_2$')
