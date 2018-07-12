@@ -19,9 +19,6 @@ addons:
     packages:
       - gfortran
 
-install:
-  - pip install -e .[tests]
-
 install: pip install -e .[tests]
 
 script:
@@ -34,3 +31,4 @@ after_success:
     pytest --cov;
     coveralls;
     fi
+
