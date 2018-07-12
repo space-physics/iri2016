@@ -729,7 +729,7 @@ c 667    FORMAT('/var/www/omniweb/cgi/vitmo/IRI/',A13)
         if(ier/=0) then
           write(konsol,*)  'Error opening ',filename,
      &         ' in ',dirdata1,' with ',fout
-          error stop
+          stop 1
         endif
 
         READ (IU, *, IOSTAT=IER)
@@ -742,7 +742,7 @@ c 667    FORMAT('/var/www/omniweb/cgi/vitmo/IRI/',A13)
 
         if (ier/=0) then
           write(konsol,'(A,A13)') 'Error while reading ', filename
-          error stop
+          stop 1
         endif
 
         close(iu)

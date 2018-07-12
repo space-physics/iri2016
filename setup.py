@@ -7,7 +7,7 @@ src = [  # 'iriwebg.for',
     'irisub.for', 'irifun.for',
     'iritec.for', 'iridreg.for', 'igrf.for', 'cira.for', 'iriflip.for']
 
-F = Path('fortran')
+F = Path('src')
 src = [str(F/s) for s in src]
 
 ext = Extension(name='iri2016', sources=src,

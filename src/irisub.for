@@ -176,7 +176,7 @@ C
      &    altkm,Nalt,datadir,
      &    OUTF,OARR)
 
-       use, intrinsic:: iso_fortran_env, only: error_unit
+       use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 C-----------------------------------------------------------------
 C
 C INPUT:  JF(1:50)      true/false switches for several options
@@ -484,7 +484,8 @@ C ASTRONOMICAL UNION .
         heiend = altkm(Nalt)
         heistp = altkm(2) - altkm(1) ! assumes uniform alt grid
       if (.not.all(altkm(2:)-altkm(1:Nalt-1) == altkm(2)-altkm(1))) then
-         error stop   'uniform altitude grid required'
+         write(stderr,*) 'uniform altitude grid required'
+         stop 1
       endif
 
 
@@ -536,9 +537,9 @@ c-web- special for web version
 c-web- messages should be turned off with mess=jf(34)=.false.
 
         if(.not.jf(12).and.mess) then
-           open(newunit=konsol,file='messages.txt')
+           open(newunit=konsol,file='messages.txt', action='write')
         else
-           KONSOL = error_unit
+           KONSOL = stderr
         endif
 c
 c selection of density, temperature and ion composition options ......
@@ -950,7 +951,10 @@ C
      &                   and..not.igin.and..not.igino) goto 2910
 
         call tcon(iyear,month,iday,daynr,rzar,arig,ttt,nmonth)
-        if(nmonth.lt.0) error stop 'invalid month'	! jump to end of program
+        if(nmonth.lt.0) then
+          write(stderr,*) 'invalid month'	
+          stop 1
+        endif
 
         if(RZIN) then
         	rrr = arzin
@@ -1156,10 +1160,8 @@ C
 
         GOTO 4291
 
-8448    WRITE(konsol,8449) filename
-8449    FORMAT(1X////,
-     &    ' The file ',A30,'is not in your directory.')
-        error stop
+8448    WRITE(konsol,*) filename,' is not in your directory.'
+        stop 1
 C
 C LINEAR INTERPOLATION IN SOLAR ACTIVITY. IG12 used for foF2
 C

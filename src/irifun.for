@@ -5312,7 +5312,7 @@ C     SYNTHESIZES THE VALUE OF HMF2 FROM THE MODEL
 C     **********************************************************
       CALL SCHNEVPDH (RZ,RLAT,FLON,dum,T,L,dum,dum,HMF2)
         RETURN
-9999  error STOP
+9999  STOP 1
       END SUBROUTINE SHAMDHMF2
 C
 C
@@ -5537,7 +5537,7 @@ c     change to intercept form of fourier series.
       BE = Y
       BV = Z
       RETURN
-  999 error STOP
+  999  STOP 1
       END SUBROUTINE SCHNEVPDH
 C
 C
@@ -6719,7 +6719,7 @@ C     SYNTHESIZES THE VALUE OF B0 FROM THE MODEL
 C     **********************************************************
       CALL SCHNEVPD(RZ,RLAT,FLON,dum,T,L,dum,dum,B)
         RETURN
-9999  error STOP
+9999   STOP 1
       END
 C
 C
@@ -6876,7 +6876,7 @@ C     **********************************************************
       CALL SCHNEVPD(RZ,FLAT,FLON,dum,T,L,dum,dum,B)
 C
       RETURN
-9999  error STOP
+9999   STOP 1
       END
 C
 C
@@ -7100,7 +7100,7 @@ c     change to intercept form of fourier series.
       BE = Y
       BV = Z
       RETURN
-  999 error STOP
+  999  STOP 1
       END
 C
 C
@@ -7216,7 +7216,7 @@ C     NUMERICAL ERROR UNACCEPTABLY LARGE DUE TO ADDING OF
 C     LARGE AND SMALL NUMBERS.
       if (mess) WRITE(konsol,108) M,FN,CONST,J,A,B
   108 FORMAT (//12H ** ERROR **/1X,I5,F10.5,E15.7,I5,2D15.7)
-      error STOP
+       STOP 1
 C     SERIES TRUNCATED SUCCESSFULLY.
   110 PS = PNM
       DPS = DPNM
@@ -8512,7 +8512,7 @@ c----------------------------------------------------------------
      &  ' (yymm) : ',I6,'-',I6)
 
         nmonth=-1
-        error stop
+        stop 1
       endif
 
             iyst=iymst/100

@@ -1,6 +1,7 @@
 [![image](https://zenodo.org/badge/DOI/10.5281/zenodo.240895.svg)](https://doi.org/10.5281/zenodo.240895)
 [![image](https://travis-ci.org/scivision/pyIRI2016.svg?branch=master)](https://travis-ci.org/scivision/pyIRI2016)
 [![image](https://coveralls.io/repos/github/scivision/pyIRI2016/badge.svg?branch=master)](https://coveralls.io/github/scivision/pyIRI2016?branch=master)
+[![Build status](https://ci.appveyor.com/api/projects/status/euvvim6aus3dagwq?svg=true)](https://ci.appveyor.com/project/scivision/pyiri2016)
 [![PyPi version](https://img.shields.io/pypi/pyversions/pyiri2016.svg)](https://pypi.python.org/pypi/pyiri2016)
 [![PyPi formats](https://img.shields.io/pypi/format/pyiri2016.svg)](https://pypi.python.org/pypi/pyiri2016)
 [![PyPi Download stats](http://pepy.tech/badge/pyiri2016)](http://pepy.tech/project/pyiri2016)
@@ -14,13 +15,19 @@ A Python interface to the International Reference Ionosphere (IRI) 2016 model.
 
 ## Install
 
-Any Fortran compiler will do, for example:
+Any Fortran compiler will do. PyIRI2016 has been tested with compilers including:
+
+* Gfortran 5, 6, 7, 8
+* Intel `ifort`
+* PGI `pgf90`
+
+Install Gfortran by:
 
 -   Linux: `apt install gfortran`
 -   Mac: `brew install gcc`
 -   [Windows](https://www.scivision.co/windows-gcc-gfortran-cmake-make-install/)
 
-and then from your Python >= 3.6 install (such as [Miniconda](https://conda.io/miniconda.html)):
+and then from your Python &ge; 3.6 install (such as [Miniconda](https://conda.io/miniconda.html)):
 
     pip install pyiri2016
 
@@ -69,7 +76,7 @@ These commands are not normally needed unless you want to work with the Fortran 
     cd bin
     cmake ../fortran
 
-    cmake --build
+    cmake --build -j .
 
     ctest -V
 
