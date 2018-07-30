@@ -3,10 +3,10 @@
 import numpy as np
 from datetime import timedelta
 from argparse import ArgumentParser
-import pyiri2016 as iri
+import iri2016 as iri
 try:
     from matplotlib.pyplot import show
-    import pyiri2016.plots as piri
+    import iri2016.plots as piri
 except ImportError as e:
     print(e)
     piri = None  # type: ignore

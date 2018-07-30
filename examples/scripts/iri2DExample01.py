@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from pyiri2016.iri2016prof2D import IRI2016_2DProf
+from iri2016.iri2016prof2D import IRI2016_2DProf
 
 
 iri2016Obj = IRI2016_2DProf(altlim=[100., 1000.], altstp=5., hrstp=.25/3,

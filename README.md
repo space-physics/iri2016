@@ -1,13 +1,13 @@
 [![image](https://zenodo.org/badge/DOI/10.5281/zenodo.240895.svg)](https://doi.org/10.5281/zenodo.240895)
-[![image](https://travis-ci.org/scivision/pyIRI2016.svg?branch=master)](https://travis-ci.org/scivision/pyIRI2016)
-[![image](https://coveralls.io/repos/github/scivision/pyIRI2016/badge.svg?branch=master)](https://coveralls.io/github/scivision/pyIRI2016?branch=master)
-[![Build status](https://ci.appveyor.com/api/projects/status/euvvim6aus3dagwq?svg=true)](https://ci.appveyor.com/project/scivision/pyiri2016)
-[![PyPi version](https://img.shields.io/pypi/pyversions/pyiri2016.svg)](https://pypi.python.org/pypi/pyiri2016)
-[![PyPi formats](https://img.shields.io/pypi/format/pyiri2016.svg)](https://pypi.python.org/pypi/pyiri2016)
-[![PyPi Download stats](http://pepy.tech/badge/pyiri2016)](http://pepy.tech/project/pyiri2016)
+[![image](https://travis-ci.org/scivision/iri2016.svg?branch=master)](https://travis-ci.org/scivision/iri2016)
+[![image](https://coveralls.io/repos/github/scivision/iri2016/badge.svg?branch=master)](https://coveralls.io/github/scivision/iri2016?branch=master)
+[![Build status](https://ci.appveyor.com/api/projects/status/euvvim6aus3dagwq?svg=true)](https://ci.appveyor.com/project/scivision/iri2016)
+[![PyPi version](https://img.shields.io/pypi/pyversions/iri2016.svg)](https://pypi.python.org/pypi/iri2016)
+[![PyPi formats](https://img.shields.io/pypi/format/iri2016.svg)](https://pypi.python.org/pypi/iri2016)
+[![PyPi Download stats](http://pepy.tech/badge/iri2016)](http://pepy.tech/project/iri2016)
 
 
-# pyIRI2016
+# IRI2016 ionosphere model from Python and Matlab
 
 ![image](figures/iri2DExample02.gif)
 
@@ -15,7 +15,8 @@ A Python interface to the International Reference Ionosphere (IRI) 2016 model.
 
 ## Install
 
-Any Fortran compiler will do. PyIRI2016 has been tested with compilers including:
+Any Fortran compiler will do. 
+IRI2016 has been tested with compilers including:
 
 * Gfortran 5, 6, 7, 8
 * Intel `ifort`
@@ -29,7 +30,7 @@ Install Gfortran by:
 
 and then from your Python &ge; 3.6 install (such as [Miniconda](https://conda.io/miniconda.html)):
 
-    pip install pyiri2016
+    pip install iri2016
 
 or:
 

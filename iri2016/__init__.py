@@ -4,7 +4,7 @@ from dateutil.parser import parse
 import xarray
 import numpy as np
 #
-import iri2016  # fortran
+import iri16  # fortran
 
 proot = Path(__file__).parent
 simout = ['ne', 'Tn', 'Ti', 'Te', 'nO+', 'nH+', 'nHe+', 'nO2+', 'nNO+']
@@ -126,7 +126,7 @@ def IRI(time, altkm, glat, glon, ap=None, f107=None, ssn=None, var=None):
 #        a, b = iriwebg(jmag, jf, glat, glon, int(time.year), mmdd, iut, time.hour,
 #            height, h_tec_max, ivar, ivbeg, ivend, ivstp, addinp, self.iriDataFolder)
 
-    outf, oarr = iri2016.iri_sub(jf, jmag, glat, glon,
+    outf, oarr = iri16.iri_sub(jf, jmag, glat, glon,
                                  time.year, mmdd, dhour, altkm,
                                  proot/'data/')
 

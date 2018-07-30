@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from pyiri2016 import IRI
+from iri2016 import IRI
 
 
 IRIData, IRIDATAAdd = IRI()

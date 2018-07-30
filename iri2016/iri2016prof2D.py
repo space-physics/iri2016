@@ -22,7 +22,7 @@ except ImportError:
 
 from scipy.interpolate import interp2d  # , RectBivariateSpline
 #
-from pyiri2016 import IRI
+from iri2016 import IRI
 import iri2016
 from timeutil import TimeUtilities
 #

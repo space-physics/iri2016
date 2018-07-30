@@ -10,12 +10,12 @@ src = [  # 'iriwebg.for',
 F = Path('src')
 src = [str(F/s) for s in src]
 
-ext = Extension(name='iri2016', sources=src,
+ext = Extension(name='iri16', sources=src,
                 f2py_options=['--quiet', 'skip:', 'dfridr', ':'],
                 extra_f77_compile_args=['-w'])
 
 
-R = Path('pyiri2016') / 'data'
+R = Path('iri2016') / 'data'
 iridata = list(map(str,
                    (list((R/'ccir').glob('*.asc')) +
                     list((R/'igrf').glob('*.dat')) +
@@ -28,5 +28,4 @@ iridata = list(map(str, iridata))  # even for Numpy 1.14 due to numpy.distutils
 
 setup(ext_modules=[ext],
       data_files=iridata,
-      include_package_data=True,
       )
