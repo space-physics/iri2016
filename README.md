@@ -1,6 +1,6 @@
 [![image](https://zenodo.org/badge/DOI/10.5281/zenodo.240895.svg)](https://doi.org/10.5281/zenodo.240895)
-[![image](https://travis-ci.org/scivision/iri2016.svg?branch=master)](https://travis-ci.org/scivision/iri2016)
-[![image](https://coveralls.io/repos/github/scivision/iri2016/badge.svg?branch=master)](https://coveralls.io/github/scivision/iri2016?branch=master)
+[![Build Status](https://travis-ci.org/scivision/IRI2016.svg?branch=master)](https://travis-ci.org/scivision/IRI2016)
+[![image](https://coveralls.io/repos/github/scivision/IRI2016/badge.svg?branch=master)](https://coveralls.io/github/scivision/IRI2016?branch=master)
 [![Build status](https://ci.appveyor.com/api/projects/status/euvvim6aus3dagwq?svg=true)](https://ci.appveyor.com/project/scivision/pyiri2016)
 [![PyPi version](https://img.shields.io/pypi/pyversions/iri2016.svg)](https://pypi.python.org/pypi/iri2016)
 [![PyPi formats](https://img.shields.io/pypi/format/iri2016.svg)](https://pypi.python.org/pypi/iri2016)
