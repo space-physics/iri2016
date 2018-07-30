@@ -127,8 +127,8 @@ def IRI(time, altkm, glat, glon, ap=None, f107=None, ssn=None, var=None):
 #            height, h_tec_max, ivar, ivbeg, ivend, ivstp, addinp, self.iriDataFolder)
 
     outf, oarr = iri16.iri_sub(jf, jmag, glat, glon,
-                                 time.year, mmdd, dhour, altkm,
-                                 proot/'data/')
+                               time.year, mmdd, dhour, altkm,
+                               proot/'data/')
 
 # %% collect output
     dsf = {k: (('time', 'alt_km', 'lat', 'lon'), np.atleast_2d(v[None, :, None, None])) for (k, v) in zip(simout, outf[:9, :])}
