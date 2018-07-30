@@ -23,5 +23,5 @@ endif()
 
 # ---
 add_executable(testiri2016 irisub.for irifun.for iritec.for iridreg.for igrf.for cira.for iriflip.for test.f90)
-add_test(NAME IRI2016 COMMAND testiri2016 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../pyiri2016)
+add_test(NAME IRI2016 COMMAND testiri2016 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../iri2016)
 
