@@ -11,7 +11,7 @@ F = Path('src')
 src = [str(F/s) for s in src]
 
 ext = Extension(name='iri16', sources=src,
-                f2py_options=['--quiet', 'skip:', 'dfridr', ':'],
+                f2py_options=['skip:', 'dfridr', ':'],
                 extra_f77_compile_args=['-w'])
 
 
