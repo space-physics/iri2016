@@ -35,38 +35,26 @@ and then from your Python &ge; 3.6 install (such as [Miniconda](https://conda.io
 or:
 
     python -m pip install -e .
+    
+### Windows
+If you get ImportError on Windows for the Fortran module, try from the `iri2016` directory:
+```posh
+del *.pyd
+python setup.py build_ext --inplace --compiler=mingw32
+```
 
 ## Usage
 
-### Height-profile
-
-plot density and temperatures vs [altitude](AltitudeProfile.py)
-
-![image](figures/iri1DExample01.png)
-
-### Latitudinal profile
-
-plot densities and height at the peak of F2, F2, and E regions vs [geographic latitude](LatitudeProfile.py)
-
-![image](figures/iri1DExample02.png)
-
-### GMT profile
-
-plot densities and height at the peak of F2, F2, and E regions vs universal [time](TimeProfile.py)
-
-![image](figures/iri1DExample08.png)
-
-### Height vs GMT
-
-plot Ne, Te, and Ti as a function of height and universal [time](scripts/iri2DExample01.py)
-
-![image](figures/iri2DExample01.png)
-
-### Latitude vs Longitude
-
-plot of foF2 a function of geographic latitude and [longitude](scripts/iri2DExample02.py)
-
-![image](figures/iri2DExample02.png)
+* Height-profile: plot density and temperatures vs [altitude](AltitudeProfile.py)
+  ![image](figures/iri1DExample01.png)
+* Latitudinal profile: plot densities and height at the peak of F2, F2, and E regions vs [geographic latitude](LatitudeProfile.py)
+  ![image](figures/iri1DExample02.png)
+* GMT profile: plot densities and height at the peak of F2, F2, and E regions vs universal [time](TimeProfile.py)
+  ![image](figures/iri1DExample08.png)
+* Height vs GMT: plot Ne, Te, and Ti as a function of height and universal [time](scripts/iri2DExample01.py)
+  ![image](figures/iri2DExample01.png)
+* Latitude vs Longitude: plot of foF2 a function of geographic latitude and [longitude](scripts/iri2DExample02.py)
+  ![image](figures/iri2DExample02.png)
 
 ## Notes
 
@@ -77,7 +65,7 @@ These commands are not normally needed unless you want to work with the Fortran 
     cd bin
     cmake ../fortran
 
-    cmake --build -j .
+    cmake --build .
 
     ctest -V
 
