@@ -1,12 +1,8 @@
 #!/usr/bin/env python
 import iri2016 as iri
 from argparse import ArgumentParser
-try:
-    from matplotlib.pyplot import show
-    import iri2016.plots as piri
-except ImportError as e:
-    print(e)
-    piri = None  # type: ignore
+from matplotlib.pyplot import show
+import iri2016.plots as piri
 
 
 def main():
@@ -27,7 +23,7 @@ def main():
                           glon=P.glon,
                           time='2004-01-01T17')
 
-    if not P.quiet and piri is not None:
+    if not P.quiet:
         piri.latprofile(iono)
         show()
 

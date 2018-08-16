@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import numpy as np
+from pytest import approx
 import pytest
+import numpy as np
 from pathlib import Path
 import iri2016
 
@@ -11,8 +12,8 @@ def test_point():
 
     iri = iri2016.IRI('1980-03-21T12', 130., 0., 0.)
 
-    np.testing.assert_allclose((iri['ne'].item(), iri.NmF2, iri.hmF2),
-                               (267285184512.0, 2580958937088.0, 438.78643798828125))
+    assert [iri['ne'].item(), iri.NmF2, iri.hmF2] == approx([267285184512.0, 2580958937088.0, 438.78643798828125],
+                                                            rel=1e-4)
 
 
 def test_altitude_profile():
@@ -23,8 +24,8 @@ def test_altitude_profile():
 
     iri = iri2016.IRI(time, alt_km, glat, glon).squeeze()
 
-    np.testing.assert_allclose(iri['ne'][10], 4.931192e+09)
-    np.testing.assert_allclose((iri.NmF2, iri.hmF2), (82.14109e9, 317.35287))
+    assert iri['ne'][10] == approx(4.931192e+09, rel=1e-4)
+    assert (iri.NmF2, iri.hmF2) == approx((82.14109e9, 317.35287), rel=1e-4)
 
 
 if __name__ == '__main__':

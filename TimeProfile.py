@@ -4,12 +4,8 @@ import numpy as np
 from datetime import timedelta
 from argparse import ArgumentParser
 import iri2016 as iri
-try:
-    from matplotlib.pyplot import show
-    import iri2016.plots as piri
-except ImportError as e:
-    print(e)
-    piri = None  # type: ignore
+from matplotlib.pyplot import show
+import iri2016.plots as piri
 
 
 def main():
@@ -26,7 +22,7 @@ def main():
     sim = iri.timeprofile(('2012-08-21', '2012-08-22'), timedelta(hours=0.25),
                           alt_km, *P.latlon)
 
-    if not P.quiet and piri is not None:
+    if not P.quiet:
         piri.timeprofile(sim)
         show()
 

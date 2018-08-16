@@ -3,12 +3,8 @@
 import iri2016 as iri
 from argparse import ArgumentParser
 import numpy as np
-try:
-    from matplotlib.pyplot import show
-    import iri2016.plots as piri
-except ImportError as e:
-    print(e)
-    piri = None  # type: ignore
+from matplotlib.pyplot import show
+import iri2016.plots as piri
 
 
 def main():
@@ -25,7 +21,7 @@ def main():
 
     iono = iri.IRI('2012-08-21T12', alt_km, *P.latlon)
 
-    if not P.quiet and piri is not None:
+    if not P.quiet:
         piri.altprofile(iono)
         show()
 
