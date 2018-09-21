@@ -221,7 +221,6 @@ def geoprofile(latlim: tuple, dlat: float, glon: float,
 
     return iono
 
-
 #    def _CallIRI(self):
 #
 #        self.a, self.b = iriwebg(self.jmag, self.jf, self.lat, self.lon, self.year, self.mmdd,
