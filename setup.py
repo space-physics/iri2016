@@ -2,6 +2,17 @@
 import setuptools  # noqa: F401
 from pathlib import Path
 from numpy.distutils.core import Extension, setup
+import os
+from pathlib import Path
+
+
+if os.name == 'nt':
+    sfn = Path(__file__).parent / 'setup.cfg'
+    stxt = sfn.read_text()
+    if '[build_ext]' not in stxt:
+        with sfn.open('a') as f:
+            f.write("[build_ext]\ncompiler = mingw32")
+
 
 src = [  # 'iriwebg.for',
     'irisub.for', 'irifun.for',

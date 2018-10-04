@@ -3,7 +3,6 @@
 [![image](https://coveralls.io/repos/github/scivision/IRI2016/badge.svg?branch=master)](https://coveralls.io/github/scivision/IRI2016?branch=master)
 [![Build status](https://ci.appveyor.com/api/projects/status/euvvim6aus3dagwq?svg=true)](https://ci.appveyor.com/project/scivision/pyiri2016)
 [![PyPi version](https://img.shields.io/pypi/pyversions/iri2016.svg)](https://pypi.python.org/pypi/iri2016)
-[![PyPi formats](https://img.shields.io/pypi/format/iri2016.svg)](https://pypi.python.org/pypi/iri2016)
 [![PyPi Download stats](http://pepy.tech/badge/iri2016)](http://pepy.tech/project/iri2016)
 
 
@@ -65,9 +64,7 @@ Here's what's you'll need:
    python3
    ```
    If you need to install Python, consider [Miniconda](https://conda.io/miniconda.html) as it's a small install (normally, use the 64-bit version).
-2. Matlab &ge; R2014b
-3. The function [iri2016.m](iri2016.m) gives some examples of what you can do (run, plot) IRI2016 from Matlab calling Python (and ultimately the original Fortran code).
-   The functions in that file `xarrayind2vector()` and `xarray2mat()` translate Python's advanced Xarray N-D data structures to Matlab arrays.
+2. The function [iri2016.m](iri2016.m) gives some examples of what you can do (run, plot) IRI2016 from Matlab calling Python (and ultimately the original Fortran code).
 
 ## Notes
 

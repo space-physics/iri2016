@@ -18,8 +18,6 @@ init:
 
 install:
 - pip install -e .[tests]
-- cmd: del *.pyd
-- cmd: python setup.py build_ext --inplace --compiler=mingw32
 
 test_script: pytest -rsv
 
