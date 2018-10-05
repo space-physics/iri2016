@@ -3,7 +3,6 @@ import setuptools  # noqa: F401
 from pathlib import Path
 from numpy.distutils.core import Extension, setup
 import os
-from pathlib import Path
 
 
 if os.name == 'nt':
