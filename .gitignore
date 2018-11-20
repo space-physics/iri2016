@@ -1,3 +1,4 @@
+*.m~
 fort.6
 .mypy_cache/
 .pytest_cache/
