@@ -9,7 +9,6 @@ function iono = iri2016(time,altKm,glat,glon,setSamplePlot)
 assert(~verLessThan('matlab', '9.5'), 'Matlab >= R2018b required')
 
 narginchk(4,5)
-validateattributes(time, {'numeric', 'char', 'datetime'}, {'scalartext'})
 validateattributes(altKm, {'numeric'}, {'positive', 'vector'})
 validateattributes(glat, {'numeric'}, {'scalar'})
 validateattributes(glon, {'numeric'}, {'scalar'})
@@ -18,7 +17,9 @@ if nargin<5
 end
 validateattributes(setSamplePlot, {'logical'}, {'scalar'})
 
-iono = py.iri2016.IRI(time, altKm, glat, glon);
+switch class(time)
+    case {'datetime', 'double'}, time = datestr(time, 30);
+end
 
-plotiono(iono)
+iono = py.iri2016.IRI(time, altKm, glat, glon);
 end
