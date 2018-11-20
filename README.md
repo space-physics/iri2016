@@ -62,7 +62,7 @@ python setup.py build_ext --inplace --compiler=mingw32
 Many Python programs--including IRI2016--are readily accessible from Matlab.
 Here's what's you'll need:
 
-1. Python &ge; 3.6.  Check which Python version you have simply by typing from Terminal/Command Prompt (not in Matlab)
+1. Python == 3.6 for Matlab R2018b.  Check which Python version you have simply by typing from Terminal/Command Prompt (not in Matlab)
    ```sh
    python3
    ```

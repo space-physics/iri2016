@@ -1,4 +1,20 @@
-function plotiono(iono)
+function plotiono(iono, key)
+
+alt_km = xarrayind2vector(iono, 'alt_km');
+times = char(iono.attrs{'time'}.isoformat());
+glat = iono.attrs{'glat'};
+glon = iono.attrs{'glon'};
+
+if nargin>1
+    v = xarray2mat(iono{key});
+    semilogx(v, alt_km, 'DisplayName', key)
+    
+    xlabel('Density [m^-3]')
+    ylabel('altitude [km]')
+    title(key)
+    
+    return
+end
 
 NmF2 = xarray2mat(iono{'NmF2'});
 hmF2 = xarray2mat(iono{'hmF2'});
@@ -6,10 +22,7 @@ hmF2 = xarray2mat(iono{'hmF2'});
 disp(['NmF2 ',num2str(NmF2),' m^-3'])
 disp(['hmF2 ',num2str(hmF2), ' km'])
 
-alt_km = xarrayind2vector(iono, 'alt_km');
-times = char(iono.attrs{'time'}.isoformat());
-glat = iono.attrs{'glat'};
-glon = iono.attrs{'glon'};
+
 
 %% Density profiles
 Ne = xarray2mat(iono{'ne'});
@@ -18,6 +31,8 @@ NHp = xarray2mat(iono{'nH+'});
 NHep = xarray2mat(iono{'nHe+'});
 NO2p = xarray2mat(iono{'nO2+'});
 NNOp = xarray2mat(iono{'nNO+'});
+NCI = xarray2mat(iono{'nCI'});
+NNp = xarray2mat(iono{'nN+'});
 
 figure(1), clf(1)
 sgtitle({[times,' deg.  (',num2str(glat),', ', num2str(glon),')']})
@@ -31,6 +46,8 @@ semilogx(ax, NHp, alt_km, 'DisplayName', 'N_{H^+}')
 semilogx(ax, NHep, alt_km, 'DisplayName', 'N_{He^+}')
 semilogx(ax, NO2p, alt_km, 'DisplayName', 'N_{O_2^+}')
 semilogx(ax, NNOp, alt_km, 'DisplayName', 'N_{NO^+}')
+semilogx(ax, NCI, alt_km, 'DisplayName', 'N_{CI}')
+semilogx(ax, NNp, alt_km, 'DisplayName', 'N_{N^+}')
 
 set(ax,'xscale','log')
 title('Number Densities')
@@ -60,5 +77,5 @@ ylabel(ax, 'altitude [km]')
 
 grid(ax, 'on')
 legend(ax, 'show')
-  
+
 end

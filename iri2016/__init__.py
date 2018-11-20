@@ -7,7 +7,8 @@ import numpy as np
 import iri16  # fortran
 
 proot = Path(__file__).parent
-simout = ['ne', 'Tn', 'Ti', 'Te', 'nO+', 'nH+', 'nHe+', 'nO2+', 'nNO+']
+simout = ['ne', 'Tn', 'Ti', 'Te', 'nO+', 'nH+', 'nHe+', 'nO2+', 'nNO+',
+          'nCI', 'nN+']
 
 
 def datetimerange(start: datetime, end: datetime, step: timedelta) -> list:
@@ -131,7 +132,7 @@ def IRI(time, altkm, glat, glon, ap=None, f107=None, ssn=None, var=None):
                                proot/'data/')
 
 # %% collect output
-    dsf = {k: (('time', 'alt_km', 'lat', 'lon'), np.atleast_2d(v[None, :, None, None])) for (k, v) in zip(simout, outf[:9, :])}
+    dsf = {k: (('time', 'alt_km', 'lat', 'lon'), np.atleast_2d(v[None, :, None, None])) for (k, v) in zip(simout, outf[:11, :])}
 
     dsf.update({'NmF2': (('time', 'lat', 'lon'), np.atleast_3d(oarr[0]))})
     dsf.update({'hmF2': (('time', 'lat', 'lon'), np.atleast_3d(oarr[1]))})
