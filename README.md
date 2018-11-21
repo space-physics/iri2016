@@ -10,7 +10,7 @@
 
 ![image](./figures/iri2DExample02.gif)
 
-A Python interface to the International Reference Ionosphere (IRI) 2016 model.
+Python and Matlab interfaces to the International Reference Ionosphere (IRI) 2016 model.
 
 ## Install
 
@@ -35,16 +35,12 @@ pip install iri2016
 
 or:
 ```sh
-python -m pip install -e .
+git clone https://github.com/scivision/iri2016
+cd iri2016
+
+python -m pip install -e .[tests]
 ```
     
-### Windows
-If you get ImportError on Windows for the Fortran module, try from the `iri2016` directory:
-```posh
-del *.pyd
-python setup.py build_ext --inplace --compiler=mingw32
-```
-
 ## Usage
 
 * Height-profile: plot density and temperatures vs [altitude](./AltitudeProfile.py)
@@ -62,12 +58,12 @@ python setup.py build_ext --inplace --compiler=mingw32
 Many Python programs--including IRI2016--are readily accessible from Matlab.
 Here's what's you'll need:
 
-1. Python == 3.6 for Matlab R2018b.  Check which Python version you have simply by typing from Terminal/Command Prompt (not in Matlab)
-   ```sh
-   python3
+1. [Setup Python &harr; Matlab interface](https://www.scivision.co/matlab-python-user-module-import/).
+2. Install IRI2016 in Python as at the top of this Readme.
+3. From Matlab, verify everything is working by from the `iri2016/` directory:
+   ```matlab
+   runtests('tests')
    ```
-   If you need to install Python, consider [Miniconda](https://conda.io/miniconda.html) as it's a small install (normally, use the 64-bit version).
-2. The function [iri2016.m](./iri2016.m) gives some examples of what you can do (run, plot) IRI2016 from Matlab calling Python (and ultimately the original Fortran code).
 
 ![Matlab IRI2016 plot](./figures/matlab.png)
 

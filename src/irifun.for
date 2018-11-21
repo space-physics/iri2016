@@ -8413,18 +8413,19 @@ C therefore requires predictions of the indix for the next six months.
 C Starting from six months before the UPDATE DATE (listed at the top of
 c the file) and onward the indices are therefore based on indices
 c predictions.
-c----------------------------------------------------------------
+c----------------------------------reading------------------------------
 
-           integer      iyst,iyend,iymst,iupd,iupm,iupy,imst,imend
-           real            aig(806),arz(806)
-           character(256) dirdata1,filename
-           integer u
+       integer      iyst,iyend,iymst,iupd,iupm,iupy,imst,imend
+       real            aig(806),arz(806)
+       character(256) dirdata1,filename
+       integer u
 
-           common /igrz/aig,arz,iymst,iymend
-           common /folders/ dirdata1
-           filename = trim(trim(dirdata1) // '/index/ig_rz.dat' )
-           print *,'reading ',filename
-           open(newunit=u,file=filename,FORM='FORMATTED',status='old')
+       common /igrz/aig,arz,iymst,iymend
+       common /folders/ dirdata1
+       filename = trim(trim(dirdata1) // '/index/ig_rz.dat' )
+       !print *,'reading ',filename
+       open(newunit=u,file=filename,FORM='FORMATTED',
+     &      status='old', action='read')
 
 c-web- special for web version
 c            open(unit=12,file=
@@ -8434,19 +8435,19 @@ c     *         FORM='FORMATTED',status='old')
 c Read the update date, the start date and the end date (mm,yyyy), and
 c get number of data points to read.
 
-            read(u,*) iupd,iupm,iupy
-            read(u,*) imst,iyst,imend,iyend
-            iymst=iyst*100+imst
-            iymend=iyend*100+imend
+      read(u,*) iupd,iupm,iupy
+      read(u,*) imst,iyst,imend,iyend
+      iymst=iyst*100+imst
+      iymend=iyend*100+imend
 
 c inum_vals= 12-imst+1+(iyend-iyst-1)*12 +imend + 2
 c 1st year \ full years       \last y\ before & after
 
-            inum_vals= 3-imst+(iyend-iyst)*12 +imend
+      inum_vals= 3-imst+(iyend-iyst)*12 +imend
 
 c read all the IG12 (ionoindx) and Rz12 (indrz) values
-            read(u,*) (aig(i),i=1,inum_vals)
-            read(u,*) (arz(i),i=1,inum_vals)
+      read(u,*) (aig(i),i=1,inum_vals)
+      read(u,*) (arz(i),i=1,inum_vals)
 c            do 1 jj=1,inum_vals
 c                rrr=arz(jj)
 c                ggg=aig(jj)
@@ -8569,7 +8570,7 @@ c               if((yr/4*4.eq.yr).and.(yr/100*100.ne.yr)) idd2=381
       end subroutine tcon
 C
 C
-            subroutine readapf107
+      subroutine readapf107
 C-------------------------------------------------------------------------
 c Reads APF107.DAT file (on UNIT=13) and stores contents in COMMON block:
 C       COMMON/AAP,AF107,N/ with  AAP(23000,9) and AF107(23000,3)
@@ -8634,12 +8635,11 @@ c            irza(i)=ir
 21            n=i-1
 
         CLOSE(13)
-            return
-            end
+      end subroutine readapf107
 C
 C
 
-        SUBROUTINE APF(ISDATE,HOUR,IAP)
+      SUBROUTINE APF(ISDATE,HOUR,IAP)
 c-----------------------------------------------------------------------
 c Finds 3-hourly Ap indices for IRI-STORM model
 c    INPUTS:       ISDATE            Array-index from APF_ONLY
@@ -8656,11 +8656,11 @@ c-----------------------------------------------------------------------
         INTEGER            aap(23000,9),iiap(8),iap(13)
         DIMENSION       af107(23000,3)
         LOGICAL       mess
-        COMMON             /iounit/konsol,mess      /apfa/aap,af107,nf107
+      COMMON     /iounit/konsol,mess      /apfa/aap,af107,nf107
 
         do i=1,8
-              iap(i)=-1
-              enddo
+          iap(i)=-1
+        enddo
 
          IS = ISDATE
 
@@ -8674,36 +8674,35 @@ c-----------------------------------------------------------------------
            iapi=aap(is,i)
            if(iapi.lt.-2) goto 21
            iap(j1+i)=iapi
-           enddo
+        enddo
 
         if(ihour.gt.4) then
            do i=1,j1
               iapi=aap(is-1,8-j1+i)
               if(iapi.lt.-2) goto 21
               iap(i)=iapi
-              enddo
+           enddo
         else
            j2=5-ihour
            do i=1,8
               iapi=aap(is-1,i)
               if(iapi.lt.-2) goto 21
               iap(j2+i)=iapi
-              enddo
+           enddo
            do i=1,j2
               iapi=aap(is-2,8-j2+i)
               if(iapi.lt.-2) goto 21
               iap(i)=iapi
-              enddo
+           enddo
         endif
-        goto 20
+        return
 
 21      if(mess) write(konsol,100)
 100     format(1X,'One of the ap indeces is negative.',
      &     ' STORM model is turned off.')
         IAP(1)=-5
 
-20    RETURN
-      END
+      END SUBROUTINE APF
 C
 C
         SUBROUTINE APFMSIS(ISDATE,HOUR,IAPO)

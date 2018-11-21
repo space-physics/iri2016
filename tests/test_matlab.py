@@ -4,16 +4,15 @@ import subprocess
 import pytest
 
 R = Path(__file__).parent
-Rm = Path(__file__).resolve().parents[1]
 
 
 def test_matlab_api():
     try:
-        subprocess.check_call(['matlab', '-nojvm', '-r "exit"'])
-    except Exception:
-        pytest.skip('Matlab not available')
-
-    subprocess.check_call(['matlab', '-nojvm', '-r "iri2016()"'], cwd=Rm)
+        subprocess.check_call(['matlab', '-nojvm', '-r',
+                               'r=runtests(); exit(any([r.Failed]))'],
+                              cwd=R, timeout=60)
+    except FileNotFoundError as e:
+        pytest.skip(f'Matlab not available  {e}')
 
 
 if __name__ == '__main__':
