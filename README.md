@@ -66,9 +66,15 @@ Here's what's you'll need:
    ```
 4. Use [iri2016.m](./matlab/iri2016.m) function to access IRI2016 quantities.  See [RunIRI2016.m](./matlab/RunIRI2016.m) for simple example use / plots.
 
+CAVEAT: due to old-fashioned Fortran 77 techniques, Matlab needs to be restarted to run more than one IRI2016 scenario.
+This is also true of the Fortran code itself, and Python.
+What we do in Python is call a Python script over and over, inputting distinct parameters.
+This can be done from Matlab like the [BatchIRI2016.m](./matlab/BatchIRI2016.m) script, enhanced to call an easier/faster Python script.
+Let us know.
+
 ![Matlab IRI2016 plot](./figures/matlab.png)
 
-## Notes
+## Direct compilation
 
 These commands are not normally needed unless you want to work with the Fortran code more directly.
 
@@ -98,3 +104,7 @@ f2py -m iri2016 -c iriwebg.for irisub.for irifun.for iritec.for iridreg.for igrf
 ```sh
 f2py -m igrf -c irifun.for igrf.for skip: dfridr
 ```
+
+## Notes
+
+* [2016 presentation](https://doi.org/10.5281/zenodo.1493021)
