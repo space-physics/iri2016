@@ -32,10 +32,10 @@ matrix:
     install: pip3 install -e .[tests]
   - os: windows
     language: sh
-    install: 
-    - cd bin
-    - cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ..
-    script: cmake --build .
+    before_install:
+    - choco install python3
+    - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
+
 
 install: pip install -e .[tests]
 
