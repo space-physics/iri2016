@@ -10,7 +10,7 @@
 
 ![image](./figures/iri2DExample02.gif)
 
-Python and Matlab interfaces to the International Reference Ionosphere (IRI) 2016 model.
+Python and [Matlab](#matlab) interfaces to the International Reference Ionosphere (IRI) 2016 model.
 
 ## Install
 
@@ -64,6 +64,7 @@ Here's what's you'll need:
    ```matlab
    runtests('tests')
    ```
+4. Use [iri2016.m](./matlab/iri2016.m) function to access IRI2016 quantities.  See [RunIRI2016.m](./matlab/RunIRI2016.m) for simple example use / plots.
 
 ![Matlab IRI2016 plot](./figures/matlab.png)
 
