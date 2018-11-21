@@ -78,12 +78,12 @@ def Switches():
     return jf
 
 
-def IRI(time, altkm, glat, glon, ap=None, f107=None, ssn=None, var=None):
+def IRI(time, altkmrange, glat, glon, ap=None, f107=None, ssn=None, var=None):
 
     if isinstance(time, str):
         time = parse(time)
 
-    altkm = np.atleast_1d(altkm)
+    assert len(altkmrange) ==3, 'altitude (km) min, max, step'
 
 #        doy = squeeze(TimeUtilities().CalcDOY(year, month, dom))
 
@@ -127,10 +127,16 @@ def IRI(time, altkm, glat, glon, ap=None, f107=None, ssn=None, var=None):
 #        a, b = iriwebg(jmag, jf, glat, glon, int(time.year), mmdd, iut, time.hour,
 #            height, h_tec_max, ivar, ivbeg, ivend, ivstp, addinp, self.iriDataFolder)
 
-    outf, oarr = iri16.iri_sub(jf, jmag, glat, glon,
-                               time.year, mmdd, dhour, altkm,
-                               proot/'data/')
+    altkm = np.arange(*altkmrange)
+    if altkm.size < 10:
+        raise ValueError('Altitude grid must have enough points to compute quantities of interest')
 
+    outf, oarr = iri16.iri_sub(jf, jmag, glat, glon,
+                               time.year, mmdd, dhour,
+                               altkmrange[0], altkmrange[1], altkmrange[2],
+                               str(proot/'data/'))
+
+    outf = outf[:,:altkm.size]
 # %% collect output
     dsf = {k: (('time', 'alt_km', 'lat', 'lon'), np.atleast_2d(v[None, :, None, None])) for (k, v) in zip(simout, outf[:11, :])}
 
@@ -141,6 +147,8 @@ def IRI(time, altkm, glat, glon, ap=None, f107=None, ssn=None, var=None):
     dsf.update({'NmE': (('time', 'lat', 'lon'), np.atleast_3d(oarr[4]))})
     dsf.update({'hmE': (('time', 'lat', 'lon'), np.atleast_3d(oarr[5]))})
     dsf.update({'B0': (('time', 'lat', 'lon'), np.atleast_3d(oarr[9]))})
+
+
 
     iri = xarray.Dataset(dsf,
                          coords={'time': [time], 'alt_km': altkm, 'lat': [glat], 'lon': [glon]},
@@ -164,20 +172,18 @@ def IRI(time, altkm, glat, glon, ap=None, f107=None, ssn=None, var=None):
 
 
 def timeprofile(tlim: tuple, dt: timedelta,
-                altkm: np.ndarray, glat: float, glon: float) -> xarray.Dataset:
+                altkmrange: list, glat: float, glon: float) -> xarray.Dataset:
     """compute IRI90 altitude profile over time range for fixed lat/lon
     """
 
     T = datetimerange(tlim[0], tlim[1], dt)
-
-    altkm = np.atleast_1d(altkm)
 
     iono: xarray.Dataset = None
 
     f107 = []
     ap = []
     for t in T:
-        iri = IRI(t, altkm, glat, glon)
+        iri = IRI(t, altkmrange, glat, glon)
         if iono is None:
             iono = iri
         else:
@@ -194,20 +200,19 @@ def timeprofile(tlim: tuple, dt: timedelta,
 
 
 def geoprofile(latlim: tuple, dlat: float, glon: float,
-               altkm: np.ndarray, time: datetime) -> xarray.Dataset:
+               altkmrange: list, time: datetime) -> xarray.Dataset:
     """compute IRI90 altitude profiles at time, over lat or lon range
     """
 
     glat = np.arange(*latlim, dlat)
 
-    altkm = np.atleast_1d(altkm)
 
     iono: xarray.Dataset = None
 
     f107 = []
     ap = []
     for l in glat:
-        iri = IRI(time, altkm, l, glon)
+        iri = IRI(time, altkmrange, l, glon)
         if iono is None:
             iono = iri
         else:

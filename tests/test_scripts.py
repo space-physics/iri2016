@@ -15,7 +15,7 @@ def test_time():
 
 def test_alt():
     pytest.importorskip('matplotlib')
-    subprocess.check_call(['IRIaltitudeProfile', '65', '-148', '-q'])
+    subprocess.check_call(['IRIaltitudeProfile', '65', '-148'])
 
 
 if __name__ == '__main__':

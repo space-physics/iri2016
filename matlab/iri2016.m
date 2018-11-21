@@ -1,25 +1,29 @@
-function iono = iri2016(time,altKm,glat,glon,setSamplePlot)
-%% IRI2016 model from Matlab.
-% https://www.scivision.co/matlab-python-user-module-import/
-% geographic WGS84 lat,lon,alt
-%
-% Example:
-% iri2016('2015-12-13T10:00', 100:10:1000, 65.1, -147.5)
-%
-assert(~verLessThan('matlab', '9.5'), 'Matlab >= R2018b required')
+function iono = iri2016(time,glat,glon,altkmrange)
 
-narginchk(4,5)
-validateattributes(altKm, {'numeric'}, {'positive', 'vector'})
-validateattributes(glat, {'numeric'}, {'scalar'})
-validateattributes(glon, {'numeric'}, {'scalar'})
-if nargin<5
-    setSamplePlot = false;
-end
-validateattributes(setSamplePlot, {'logical'}, {'scalar'})
+exe = '../bin/iri2016_driver';
 
-switch class(time)
-    case {'datetime', 'double'}, time = datestr(time, 30);
-end
+t = num2str(datevec(time));
 
-iono = py.iri2016.IRI(time, altKm, glat, glon);
+
+[status,dat] = system([exe, ' ', t,...
+                       ' ',num2str(glat),' ',num2str(glon),...
+                       ' ',num2str(altkmrange(1)),' ',num2str(altkmrange(2)),' ',num2str(altkmrange(3))]);
+if status ~= 0, error(dat), end
+
+arr = sscanf(dat, '%f', [12,Inf]);
+
+
+
+iono.altkm = arr(1,:);
+iono.Ne = arr(2,:);
+iono.Tn = arr(3,:);
+iono.Ti = arr(3,:);
+iono.Te = arr(3,:);
+
 end
+%{
+figure
+semilogx(iono.Ne, iono.altkm)
+figure
+semilogx(iono.O2p, iono.altkm)
+%}
