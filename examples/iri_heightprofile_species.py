@@ -43,7 +43,7 @@ te = sim.a[3, index]
 pn.plot(ti, altbins, label='T$_i$')
 pn.plot(te, altbins, label='T$_e$')
 pn.set_title(sim.title2)
-pn.set_xlabel('Temperature ($^\circ$K)')
+pn.set_xlabel(r'Temperature ($^\circ$K)')
 pn.set_ylabel('Altitude (km)')
 
 

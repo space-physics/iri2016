@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 import pytest
 import subprocess
-from pathlib import Path
-
-root = Path(__file__).parents[1]
 
 
 def test_latitude():

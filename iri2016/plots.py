@@ -103,7 +103,7 @@ def latprofile(iono: xarray.Dataset):
     ax.plot(iono.lat, iono['NmE'].squeeze(), label='N$_m$E')
     ax.set_title(str(iono.time[0].values)[:-13] + f'  latitude {iono.lat[[0, -1]].values}')
     # ax.set_xlim(iono.lat[[0, -1]])
-    ax.set_xlabel('Geog. Lat. ($^\circ$)')
+    ax.set_xlabel(r'Geog. Lat. ($^\circ$)')
     ax.set_ylabel('(m$^{-3}$)')
     ax.set_yscale('log')
 
@@ -113,7 +113,7 @@ def latprofile(iono: xarray.Dataset):
     ax.plot(iono.lat, iono['hmE'].squeeze(), label='h$_m$E')
     ax.set_xlim(iono.lat[[0, -1]])
     ax.set_title(str(iono.time[0].values)[:-13] + f'  latitude  {iono.lat[[0, -1]].values}')
-    ax.set_xlabel('Geog. Lat. ($^\circ$)')
+    ax.set_xlabel(r'Geog. Lat. ($^\circ$)')
     ax.set_ylabel('(km)')
 
     for a in axs:

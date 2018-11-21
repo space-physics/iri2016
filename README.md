@@ -53,9 +53,9 @@ python setup.py build_ext --inplace --compiler=mingw32
   ![image](./figures/iri1DExample02.png)
 * GMT profile: plot densities and height at the peak of F2, F2, and E regions vs universal [time](./TimeProfile.py)
   ![image](./figures/iri1DExample08.png)
-* Height vs GMT: plot Ne, Te, and Ti as a function of height and universal [time](./scripts/iri2DExample01.py)
+* Height vs GMT: plot Ne, Te, and Ti as a function of height and universal [time](./examples/example01.py)
   ![image](./figures/iri2DExample01.png)
-* Latitude vs Longitude: plot of foF2 a function of geographic latitude and [longitude](./scripts/iri2DExample02.py)
+* Latitude vs Longitude: plot of foF2 a function of geographic latitude and [longitude](./examples/example02.py)
   ![image](./figures/iri2DExample02.png)
   
 ### Matlab
