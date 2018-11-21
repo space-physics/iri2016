@@ -12,3 +12,5 @@ iono = iri2016(time, altKm, glat, glon);
 plotiono(iono, 'nCI')
 plotiono(iono, 'nN+')
 plotiono(iono, 'nH+')
+
+plotiono(iono)

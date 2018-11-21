@@ -6,10 +6,14 @@ glat = iono.attrs{'glat'};
 glon = iono.attrs{'glon'};
 
 if nargin>1
+    figure
     v = xarray2mat(iono{key});
     semilogx(v, alt_km, 'DisplayName', key)
     
-    xlabel('Density [m^-3]')
+    switch(key(1))
+        case 'n', xlabel('Density [m^-3]')
+        case 'T', xlabel('Temperature [K]')
+    end
     ylabel('altitude [km]')
     title(key)
     
@@ -34,10 +38,10 @@ NNOp = xarray2mat(iono{'nNO+'});
 NCI = xarray2mat(iono{'nCI'});
 NNp = xarray2mat(iono{'nN+'});
 
-figure(1), clf(1)
-sgtitle({[times,' deg.  (',num2str(glat),', ', num2str(glon),')']})
+hp = figure;
+sgtitle(hp, {[times,' deg.  (',num2str(glat),', ', num2str(glon),')']})
 
-ax = subplot(1,2,1, 'parent', 1);
+ax = subplot(1,2,1, 'parent', hp);
 set(ax, 'nextplot','add')
 
 semilogx(ax, Ne, alt_km, 'DisplayName', 'N_e')
@@ -49,12 +53,12 @@ semilogx(ax, NNOp, alt_km, 'DisplayName', 'N_{NO^+}')
 semilogx(ax, NCI, alt_km, 'DisplayName', 'N_{CI}')
 semilogx(ax, NNp, alt_km, 'DisplayName', 'N_{N^+}')
 
-set(ax,'xscale','log')
-title('Number Densities')
+title(ax, 'Number Densities')
 xlabel(ax, 'Density [m^-3]')
 ylabel(ax, 'altitude [km]')
 xlim(ax, [1e4,1e12])
 
+set(ax,'xscale','log')
 grid(ax, 'on')
 legend(ax, 'show')
 
@@ -64,7 +68,7 @@ Tn = xarray2mat(iono{'Tn'});
 Ti = xarray2mat(iono{'Ti'});
 Te = xarray2mat(iono{'Te'});
 
-ax = subplot(1,2,2, 'parent', 1);
+ax = subplot(1,2,2, 'parent', hp);
 set(ax, 'nextplot','add')
 
 plot(ax, Tn, alt_km, 'DisplayName', 'T_n')
