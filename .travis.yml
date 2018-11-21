@@ -30,7 +30,12 @@ matrix:
     language: sh
     before_install: brew install gcc
     install: pip3 install -e .[tests]
-
+  - os: windows
+    language: sh
+    install: 
+    - cd bin
+    - cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ..
+    script: cmake --build .
 
 install: pip install -e .[tests]
 

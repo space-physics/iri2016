@@ -9,19 +9,22 @@ else()
 endif()
 
 if(${CMAKE_Fortran_COMPILER_ID} STREQUAL GNU)
-  list(APPEND FFLAGS -mtune=native -ffpe-trap=invalid,zero,overflow -fbacktrace)
+  list(APPEND FFLAGS -mtune=native -ffpe-trap=invalid,zero,overflow)
   # -fdefault-real-8 -fno-align-commons)
 elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL Intel)
 
 elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL PGI)
-  list(APPEND FFLAGS -Mallocatable=03)
+
 elseif(${CMAKE_Fortran_COMPILER_ID} STREQUAL Flang)
   list(APPEND FFLAGS -Mallocatable=03)
-  link_libraries(-static-flang-libs)
+  list(APPEND FLIBS -static-flang-libs)
 endif()
 
 
 # ---
 add_executable(testiri2016 irisub.for irifun.for iritec.for iridreg.for igrf.for cira.for iriflip.for test.f90)
-add_test(NAME IRI2016 COMMAND testiri2016 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../iri2016)
+target_link_libraries(testiri2016 PRIVATE ${FLIBS})
+target_compile_options(testiri2016 PRIVATE ${FFLAGS})
+add_test(NAME IRI2016 COMMAND testiri2016 
+         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../iri2016)
 
