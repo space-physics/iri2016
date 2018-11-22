@@ -24,6 +24,7 @@ jf(28:30) = .false.
 jf(33:35) = .false.
 
 ! input
+if (command_argument_count() < 11) error stop 'must include all input parameters'
 
 do i=1,6
   call get_command_argument(i,argv)
