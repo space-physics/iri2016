@@ -83,7 +83,7 @@ def IRI(time, altkmrange, glat, glon, ap=None, f107=None, ssn=None, var=None):
     if isinstance(time, str):
         time = parse(time)
 
-    assert len(altkmrange) ==3, 'altitude (km) min, max, step'
+    assert len(altkmrange) == 3, 'altitude (km) min, max, step'
 
 #        doy = squeeze(TimeUtilities().CalcDOY(year, month, dom))
 
@@ -136,7 +136,7 @@ def IRI(time, altkmrange, glat, glon, ap=None, f107=None, ssn=None, var=None):
                                altkmrange[0], altkmrange[1], altkmrange[2],
                                str(proot/'data/'))
 
-    outf = outf[:,:altkm.size]
+    outf = outf[:, :altkm.size]
 # %% collect output
     dsf = {k: (('time', 'alt_km', 'lat', 'lon'), np.atleast_2d(v[None, :, None, None])) for (k, v) in zip(simout, outf[:11, :])}
 
@@ -147,8 +147,6 @@ def IRI(time, altkmrange, glat, glon, ap=None, f107=None, ssn=None, var=None):
     dsf.update({'NmE': (('time', 'lat', 'lon'), np.atleast_3d(oarr[4]))})
     dsf.update({'hmE': (('time', 'lat', 'lon'), np.atleast_3d(oarr[5]))})
     dsf.update({'B0': (('time', 'lat', 'lon'), np.atleast_3d(oarr[9]))})
-
-
 
     iri = xarray.Dataset(dsf,
                          coords={'time': [time], 'alt_km': altkm, 'lat': [glat], 'lon': [glon]},
@@ -205,7 +203,6 @@ def geoprofile(latlim: tuple, dlat: float, glon: float,
     """
 
     glat = np.arange(*latlim, dlat)
-
 
     iono: xarray.Dataset = None
 

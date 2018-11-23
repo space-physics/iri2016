@@ -3,8 +3,8 @@ implicit none
 
 logical :: jf(50)
 integer, parameter :: jmag = 0
-integer :: iyyyy, mmdd, dhour, Nalt
-real :: glat, glon
+integer :: iyyyy, mmdd, Nalt
+real :: glat, glon, dhour
 integer :: ymdhms(6)
 real:: alt_km_range(3)
 

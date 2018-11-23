@@ -15,7 +15,6 @@ def main():
                    type=float, nargs=3, default=(80, 1000, 10))
     P = p.parse_args()
 
-
     iono = iri.IRI('2012-08-21T12', P.alt_km, *P.latlon)
 
     if not P.quiet:
