@@ -12,6 +12,31 @@
 
 Python and [Matlab](#matlab) interfaces to the International Reference Ionosphere (IRI) 2016 model.
 
+NOTE: November 2018 we are temporarily recommending a workaround where we directly use a command-line interface to IRI2016, as there may be `f2py` bugs interfacing to the massive Fortran 77 IRI2016 codebase, even with the latest IRI2016.
+
+1. compile IRI2016 command-line driver program:
+   ```sh
+   cd bin
+   
+   cmake ../src
+   
+   cmake --build .
+   ```
+   For Windows, the 2nd line is:
+   ```sh
+   cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ..
+   ```
+2. drive the simulation via a seamless command line interface:
+   
+   * Matlab / GNU Octave: [matlab/RunIRI2016.m](./matlab/RunIRI2016.m)
+   * Python: [RunIRI2016.py](./RunIRI2016.py)
+
+
+
+---
+
+Methods below unverified, please use workaround above.
+
 ## Install
 
 Any Fortran compiler will do. 
@@ -88,7 +113,7 @@ These commands are not normally needed unless you want to work with the Fortran 
 
 ```sh
 cd bin
-cmake ../fortran
+cmake ../src
 
 cmake --build .
 

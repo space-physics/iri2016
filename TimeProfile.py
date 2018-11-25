@@ -14,7 +14,6 @@ def main():
                    type=float, nargs=2)
     p.add_argument('-alt_km', help='altitude START STOP STEP (km)',
                    type=float, nargs=3, default=(120, 180, 20))
-    p.add_argument('-q', '--quiet', help='disable plotting', action='store_true')
     P = p.parse_args()
 
     alt_km = np.arange(*P.alt_km)
@@ -22,9 +21,9 @@ def main():
     sim = iri.timeprofile(('2012-08-21', '2012-08-22'), timedelta(hours=0.25),
                           alt_km, *P.latlon)
 
-    if not P.quiet:
-        piri.timeprofile(sim)
-        show()
+
+    piri.timeprofile(sim)
+    show()
 
 
 if __name__ == '__main__':

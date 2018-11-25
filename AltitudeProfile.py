@@ -17,9 +17,8 @@ def main():
 
     iono = iri.IRI('2012-08-21T12', P.alt_km, *P.latlon)
 
-    if not P.quiet:
-        piri.altprofile(iono)
-        show()
+    piri.altprofile(iono)
+    show()
 
 
 if __name__ == '__main__':

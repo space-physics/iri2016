@@ -14,7 +14,6 @@ def main():
     p.add_argument('-alt_km', help='altitude (km)',
                    type=float, default=300)
     p.add_argument('-o', '--outfn', help='write data to file')
-    p.add_argument('-q', '--quiet', help='disable plotting', action='store_true')
     P = p.parse_args()
 
     iono = iri.geoprofile(altkm=P.alt_km,
@@ -23,9 +22,8 @@ def main():
                           glon=P.glon,
                           time='2004-01-01T17')
 
-    if not P.quiet:
-        piri.latprofile(iono)
-        show()
+    piri.latprofile(iono)
+    show()
 
 
 if __name__ == '__main__':
