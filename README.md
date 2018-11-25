@@ -29,7 +29,7 @@ NOTE: November 2018 we are temporarily recommending a workaround where we direct
 2. drive the simulation via a seamless command line interface:
    
    * Matlab / GNU Octave: [matlab/RunIRI2016.m](./matlab/RunIRI2016.m)
-   * Python: [RunIRI2016.py](./RunIRI2016.py)
+   * Python: [AltitudeProfile.py](./AltitudeProfile.py)
 
 
 

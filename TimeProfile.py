@@ -21,7 +21,6 @@ def main():
     sim = iri.timeprofile(('2012-08-21', '2012-08-22'), timedelta(hours=0.25),
                           alt_km, *P.latlon)
 
-
     piri.timeprofile(sim)
     show()
 

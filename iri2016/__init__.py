@@ -14,6 +14,7 @@ if os.name == 'nt':
 SIMOUT = ['ne', 'Tn', 'Ti', 'Te', 'nO+', 'nH+', 'nHe+', 'nO2+', 'nNO+',
           'nCI', 'nN+']
 
+
 def IRI(time, altkmrange, glat: float, glon: float) -> xarray.Dataset:
 
     if isinstance(time, str):
@@ -26,16 +27,15 @@ def IRI(time, altkmrange, glat: float, glon: float) -> xarray.Dataset:
                                    str(time.year), str(time.month), str(time.day),
                                    str(time.hour), str(time.minute), str(time.second),
                                    str(glat), str(glon),
-                                   str(altkmrange[0]), str(altkmrange[1]),str(altkmrange[2])],
-                                   universal_newlines=True, cwd = R)
+                                   str(altkmrange[0]), str(altkmrange[1]), str(altkmrange[2])],
+                                  universal_newlines=True, cwd=R)
 
     arr = np.loadtxt(io.StringIO(ret))
 
-    dsf = {k: (('alt_km'),v) for (k, v) in zip(SIMOUT, arr[:, 1:].T)}
-
+    dsf = {k: (('alt_km'), v) for (k, v) in zip(SIMOUT, arr[:, 1:].T)}
 
     iono = xarray.Dataset(dsf,
-                          coords={'alt_km':arr[:,0]},
-                                  attrs={'time':time, 'glat':glat, 'glon':glon})
+                          coords={'alt_km': arr[:, 0]},
+                          attrs={'time': time, 'glat': glat, 'glon': glon})
 
     return iono
