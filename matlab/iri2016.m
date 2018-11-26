@@ -4,16 +4,16 @@ narginchk(4,4)
 validateattributes(glat, {'numeric'}, {'scalar'})
 validateattributes(glon, {'numeric'}, {'scalar'})
 validateattributes(altkmrange, {'numeric'}, {'positive', 'vector','numel',3})
-
-exe = '../bin/iri2016_driver';
+%% binary IRI2016
+exe = ['..', filesep, 'bin', filesep, 'iri2016_driver'];
+if ispc, exe = [exe,'.exe']; end
 if ~exist(exe,'file'), error('must compile IRI2016 as per README.md'), end
 
 t = num2str(datevec(time));
 
-
-[status,dat] = system([exe, ' ', t,...
-                       ' ',num2str(glat),' ',num2str(glon),...
-                       ' ',num2str(altkmrange(1)),' ',num2str(altkmrange(2)),' ',num2str(altkmrange(3))]);
+cmd = [exe, ' ', t,...
+       ' ',num2str(glat), ' ', num2str(glon), ' ', num2str(altkmrange)]
+[status,dat] = system(cmd);
 if status ~= 0, error(dat), end
 
 arr = sscanf(dat, '%f', [12,Inf]);

@@ -5,7 +5,7 @@ glon = -147.5;
 altkmrange = [100,1000,10];
 
 cwd = fileparts(mfilename('fullpath'));
-addpath([cwd,'/../matlab'])
+addpath([cwd, filesep, '..', filesep, 'matlab'])
 
 iono = iri2016(time, glat, glon,  altkmrange);
 
