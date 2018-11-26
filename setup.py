@@ -5,7 +5,7 @@ from pathlib import Path
 import os
 import subprocess
 
-
+"""
 if os.name == 'nt':
     sfn = Path(__file__).parent / 'setup.cfg'
     stxt = sfn.read_text()
@@ -21,10 +21,10 @@ src = [  # 'iriwebg.for',
 F = Path('src')
 src = [str(F/s) for s in src]
 
-# ext = Extension(name='iri16', sources=src,
-#                f2py_options=['only:', 'iri_sub', ':'],  # ['skip:', 'dfridr', ':'],
-#                extra_f77_compile_args=['-w'])
-
+ext = Extension(name='iri16', sources=src,
+                f2py_options=['only:', 'iri_sub', ':'],  # ['skip:', 'dfridr', ':'],
+                extra_f77_compile_args=['-w'])
+"""
 
 R = Path('iri2016') / 'data'
 iridata = list(map(str,
