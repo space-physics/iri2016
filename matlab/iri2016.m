@@ -12,7 +12,7 @@ if ~exist(exe,'file'), error('must compile IRI2016 as per README.md'), end
 t = num2str(datevec(time));
 
 cmd = [exe, ' ', t,...
-       ' ',num2str(glat), ' ', num2str(glon), ' ', num2str(altkmrange)]
+       ' ',num2str(glat), ' ', num2str(glon), ' ', num2str(altkmrange)];
 [status,dat] = system(cmd);
 if status ~= 0, error(dat), end
 
