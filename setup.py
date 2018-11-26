@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import setuptools  # noqa: F401
 from pathlib import Path
-from numpy.distutils.core import Extension, setup
+# from numpy.distutils.core import Extension, setup
 import os
+import subprocess
 
 
 if os.name == 'nt':
@@ -20,9 +21,9 @@ src = [  # 'iriwebg.for',
 F = Path('src')
 src = [str(F/s) for s in src]
 
-ext = Extension(name='iri16', sources=src,
-                f2py_options=['only:', 'iri_sub', ':'],  # ['skip:', 'dfridr', ':'],
-                extra_f77_compile_args=['-w'])
+# ext = Extension(name='iri16', sources=src,
+#                f2py_options=['only:', 'iri_sub', ':'],  # ['skip:', 'dfridr', ':'],
+#                extra_f77_compile_args=['-w'])
 
 
 R = Path('iri2016') / 'data'
@@ -36,6 +37,24 @@ iridata = list(map(str,
 
 iridata = list(map(str, iridata))  # even for Numpy 1.14 due to numpy.distutils
 
-setup(ext_modules=[ext],
-      data_files=iridata,
-      )
+setuptools.setup(
+    # ext_modules=[ext],
+    data_files=iridata,
+)
+
+# %% workaround
+if os.name == 'nt':
+    ret = subprocess.check_output(['cmake', '-G', 'MinGW Makefiles',
+                                   '-DCMAKE_SH="CMAKE_SH-NOTFOUND', '../src'],
+                                  cwd='bin',
+                                  universal_newlines=True)
+else:
+    ret = subprocess.check_output(['cmake', '../src'], cwd='bin',
+                                  universal_newlines=True)
+
+print(ret)
+
+ret = subprocess.check_output(['cmake', '--build', '.'], cwd='bin',
+                              universal_newlines=True)
+
+print(ret)
