@@ -16,15 +16,7 @@ NOTE: November 2018 we are temporarily recommending a workaround where we direct
 
 1. compile IRI2016 command-line driver program:
    ```sh
-   cd bin
-   
-   cmake ../src
-   
-   cmake --build .
-   ```
-   For Windows, the 2nd line is:
-   ```sh
-   cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ..
+   pip install -e .[tests]
    ```
 2. drive the simulation via a seamless command line interface:
    
