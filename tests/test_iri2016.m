@@ -10,4 +10,4 @@ addpath([cwd,'/../matlab'])
 iono = iri2016(time, glat, glon,  altkmrange);
 
 
-assert(abs(iono.Ne(1) - 2.197662e9) < 1e5, 'Ne error excessive')
+assert(abs(iono.Ne(11) - 3.986688e9) < 1e5, 'Ne error excessive')

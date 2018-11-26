@@ -37,7 +37,7 @@ matrix:
     - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
 
 
-install: pip install -e .[tests]
+install: python setup.py develop
 
 script: pytest -rsv
 
