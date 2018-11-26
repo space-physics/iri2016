@@ -44,17 +44,14 @@ setuptools.setup(
 
 # %% workaround
 if os.name == 'nt':
-    ret = subprocess.check_output(['cmake', '-G', 'MinGW Makefiles',
-                                   '-DCMAKE_SH="CMAKE_SH-NOTFOUND', '../src'],
-                                  cwd='bin',
-                                  universal_newlines=True)
+    subprocess.check_call(['cmake', '-G', 'MinGW Makefiles',
+                           '-DCMAKE_SH="CMAKE_SH-NOTFOUND', '../src'],
+                          cwd='bin',
+                          universal_newlines=True)
 else:
-    ret = subprocess.check_output(['cmake', '../src'], cwd='bin',
-                                  universal_newlines=True)
+    subprocess.check_call(['cmake', '../src'], cwd='bin',
+                          universal_newlines=True)
 
-print(ret)
 
-ret = subprocess.check_output(['cmake', '--build', '.'], cwd='bin',
-                              universal_newlines=True)
-
-print(ret)
+subprocess.check_call(['cmake', '--build', '.'], cwd='bin',
+                      universal_newlines=True)
