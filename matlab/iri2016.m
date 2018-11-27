@@ -5,9 +5,10 @@ validateattributes(glat, {'numeric'}, {'scalar'})
 validateattributes(glon, {'numeric'}, {'scalar'})
 validateattributes(altkmrange, {'numeric'}, {'positive', 'vector','numel',3})
 %% binary IRI2016
-exe = ['..', filesep, 'bin', filesep, 'iri2016_driver'];
+cwd = fileparts(mfilename('fullpath'));
+exe = [cwd,filesep,'..', filesep, 'bin', filesep, 'iri2016_driver'];
 if ispc, exe = [exe,'.exe']; end
-if ~exist(exe,'file'), error('must compile IRI2016 as per README.md'), end
+if ~exist(exe,'file'), error('compile IRI2016 via setup_iri2016.m'), end
 
 t = num2str(datevec(time));
 
@@ -16,34 +17,32 @@ cmd = [exe, ' ', t,...
 [status,dat] = system(cmd);
 if status ~= 0, error(dat), end
 
-arr = sscanf(dat, '%f', [12,Inf]);
+Nalt =  fix((altkmrange(2) - altkmrange(1)) / altkmrange(3)) + 1;
 
-%{
-C               OUTF(1,*)  ELECTRON DENSITY/M-3
-C               OUTF(2,*)  NEUTRAL TEMPERATURE/K
-C               OUTF(3,*)  ION TEMPERATURE/K
-C               OUTF(4,*)  ELECTRON TEMPERATURE/K
-C               OUTF(5,*)  O+ ION DENSITY/% or /M-3 if jf(22)=f 
-C               OUTF(6,*)  H+ ION DENSITY/% or /M-3 if jf(22)=f
-C               OUTF(7,*)  HE+ ION DENSITY/% or /M-3 if jf(22)=f
-C               OUTF(8,*)  O2+ ION DENSITY/% or /M-3 if jf(22)=f
-C               OUTF(9,*)  NO+ ION DENSITY/% or /M-3 if jf(22)=f
-C                 AND, IF JF(6)=.FALSE.:
-C               OUTF(10,*)  CLUSTER IONS DEN/% or /M-3 if jf(22)=f
-C               OUTF(11,*)  N+ ION DENSITY/% or /M-3 if jf(22)=f
-%}
+arr = cell2mat(textscan(dat, '%f %f %f %f %f %f %f %f %f %f %f %f', Nalt, 'ReturnOnError', false));
 
-iono.altkm = arr(1,:);
-iono.Ne = arr(2,:);
-iono.Tn = arr(3,:);
-iono.Ti = arr(4,:);
-iono.Te = arr(5,:);
-iono.nO = arr(6,:);
-iono.nH = arr(7,:);
-iono.nHe = arr(8,:);
-iono.nO2 = arr(9,:);
-iono.nNO = arr(10,:);
-iono.nCI = arr(11,:);
-iono.nN = arr(12,:);
+iono.altkm = arr(:,1);
+iono.Ne = arr(:,2);
+iono.Tn = arr(:,3);
+iono.Ti = arr(:,4);
+iono.Te = arr(:,5);
+iono.nO = arr(:,6);
+iono.nH = arr(:,7);
+iono.nHe = arr(:,8);
+iono.nO2 = arr(:,9);
+iono.nNO = arr(:,10);
+iono.nCI = arr(:,11);
+iono.nN = arr(:,12);
+
+arr = cell2mat(textscan(dat, '%f', 'HeaderLines',Nalt));
+
+arr(arr<=0) = nan;
+
+iono.NmF2=arr(1);
+iono.hmF2=arr(2);
+iono.NmF1=arr(3);
+iono.hmF1=arr(4);
+iono.NmE=arr(5);
+iono.hmE=arr(6);
 
 end

@@ -1,5 +1,4 @@
 from pathlib import Path
-from datetime import datetime, timedelta
 from dateutil.parser import parse
 import xarray
 import numpy as np
@@ -9,21 +8,6 @@ import iri16  # fortran
 proot = Path(__file__).parent
 simout = ['ne', 'Tn', 'Ti', 'Te', 'nO+', 'nH+', 'nHe+', 'nO2+', 'nNO+',
           'nCI', 'nN+']
-
-
-def datetimerange(start: datetime, end: datetime, step: timedelta) -> list:
-    """like range() for datetime!"""
-    if isinstance(start, str):
-        start = parse(start)
-
-    if isinstance(end, str):
-        end = parse(end)
-
-    assert isinstance(start, datetime)
-    assert isinstance(end, datetime)
-    assert isinstance(step, timedelta)
-
-    return [start + i*step for i in range((end-start) // step)]
 
 
 def Switches():
@@ -154,136 +138,4 @@ def IRI(time, altkmrange, glat, glon, ap=None, f107=None, ssn=None, var=None):
                                 'glat': glat, 'glon': glon, 'time': time,
                                 })
 
-# FIRI Ne (in m-3)
-#        iri_ne_firi = self._RmNeg(a[13 - 1, :])[0]
-
-# Ionic density (NO+, O2+, O+, H+, He+, N+, Cluster Ions)
-
-#        iri = {'ne' : neIRI, 'te' : teIRI, 'ti' : tiIRI, 'neFIRI' : iri_ne_firi,
-#            'oplus' : oplusIRI, 'o2plus' : o2plusIRI, 'noplus' : noplusIRI,
-#            'hplus' : hplusIRI, 'heplus' : heplusIRI, 'nplus' : nplusIRI}
-
-#        iriadd = { 'NmF2' : b[1 - 1, :][0], 'hmF2' : b[2 - 1, :][0],
-#                'B0' : b[10 - 1, :][0] }
-
     return iri
-
-
-def timeprofile(tlim: tuple, dt: timedelta,
-                altkmrange: list, glat: float, glon: float) -> xarray.Dataset:
-    """compute IRI90 altitude profile over time range for fixed lat/lon
-    """
-
-    T = datetimerange(tlim[0], tlim[1], dt)
-
-    iono: xarray.Dataset = None
-
-    f107 = []
-    ap = []
-    for t in T:
-        iri = IRI(t, altkmrange, glat, glon)
-        if iono is None:
-            iono = iri
-        else:
-            iono = xarray.merge((iono, iri))
-
-        f107.append(iri.f107)
-        ap.append(iri.ap)
-
-    iono.attrs = iri.attrs
-    iono.attrs['f107'] = f107
-    iono.attrs['ap'] = ap
-
-    return iono
-
-
-def geoprofile(latlim: tuple, dlat: float, glon: float,
-               altkmrange: list, time: datetime) -> xarray.Dataset:
-    """compute IRI90 altitude profiles at time, over lat or lon range
-    """
-
-    glat = np.arange(*latlim, dlat)
-
-    iono: xarray.Dataset = None
-
-    f107 = []
-    ap = []
-    for l in glat:
-        iri = IRI(time, altkmrange, l, glon)
-        if iono is None:
-            iono = iri
-        else:
-            iono = xarray.merge((iono, iri))
-
-        f107.append(iri.f107)
-        ap.append(iri.ap)
-
-    iono.attrs = iri.attrs
-    iono.attrs['f107'] = f107
-    iono.attrs['ap'] = ap
-
-    return iono
-
-#    def _CallIRI(self):
-#
-#        self.a, self.b = iriwebg(self.jmag, self.jf, self.lat, self.lon, self.year, self.mmdd,
-#                            self.iut, self.hour, self.alt, self.htecmax, self.simtype, self.vbeg,
-#                            self.vend, self.vstp, self.addinp, self.iriDataFolder)
-
-    def _Hr2HHMMSS(self):
-
-        self.HH = int(self.hour)
-        self.MM = int((self.hour - float(self.HH)) * 60)
-        self.SS = int((self.hour - float(self.HH)) * 60 - float(self.MM))
-
-    def _GetTitle(self):
-
-        dateStr = f'{self.year:4d}-{self.month:02d}-{self.dom:02d}'
-        self._Hr2HHMMSS()
-        timeStr = 'TIME: {:02d}:{:02d} UT'.format(self.HH, self.MM)
-        latStr = '{:6.2f} {:s}'.format(abs(self.lat), 'N' if self.lat > 0 else 'S')
-        lonStr = '{:6.2f} {:s}'.format(abs(self.lon), 'E' if self.lon > 0 else 'W')
-
-#        Rz12Str = 'Rz12: {:6.2f}'.format(self.b[32, 0])
-        f107Str = f'F107: {self.b[40, 0]:6.2f}'
-#        apStr = 'ap: {:3d}'.format(int(self.b[50, 0]))
-        ApStr = f'Ap: {int(self.b[51, 0]):3d}'
-#        KpStr = 'Kp: {:3d}'.format(int(self.b[82, 0]))
-
-        if self.option == 'vertical':
-            self.title1 = f'{dateStr:s} - {timeStr:s}  -  {latStr:s}, {lonStr:s}'
-        elif self.option == 'lat':
-            self.title1 = '{:s} - {:s}  -  GEOG. LON.: {:s}'.format(dateStr, timeStr, lonStr)
-        elif self.option == 'time':
-            self.title1 = f'{dateStr}   {latStr}, {lonStr}'
-        else:
-            pass
-
-        self.title2 = '{:s}  -  {:s}'.format(f107Str, ApStr)
-        self.title3 = '{:s} - {:s}   -   {:s} - {:s}'.format(dateStr, timeStr, f107Str, ApStr)
-
-    def HeiProfile(self):
-
-        self._CallIRI()
-        a = self.a
-        b = self.b
-
-        self._GetTitle()
-
-        if self.verbose:
-
-            print('  Height\tNe    Ne/NmF2\tTi\tTe\tO+\tH+\tN+    He+    O2+    NO+'
-                  '   Clust.  Rz12   IG12   F107   F107(81)   ap    AP')
-            print('-----------------------------------------------------------------------------------------'
-                  '-------------------------------------------------')
-
-            for i in range(self.numstp):
-
-                varval = self.vbeg + float(i) * self.vstp
-                edens = a[1 - 1, i] * 1e-6
-                edratio = a[1 - 1, i] / b[1 - 1, 1 - 1]
-
-                print('%8.3f %10.3f %8.3f %8.3f %8.3f %6.3f %6.3f %6.3f %6.3f %6.3f'
-                      ' %6.3f %6.3f %6.3f %6.3f %7.3f %7.3f %7.3f %7.3f' %
-                      (varval, edens, edratio, a[2, i], a[3, i], a[4, i], a[5, i], a[10, i], a[6, i],
-                       a[7, i], a[8, i], a[9, i], b[32, i], b[38, i], b[40, i], b[45, i], b[50, i], b[51, i]))

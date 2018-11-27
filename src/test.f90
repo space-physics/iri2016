@@ -1,4 +1,5 @@
 program basictest
+use, intrinsic:: iso_fortran_env, only: stderr=>error_unit
 implicit none
 
 logical, parameter :: jf(50) = .true.
@@ -16,7 +17,7 @@ do i = 2,Nalt
 enddo
 
 
-call IRI_SUB(JF,JMAG,glat,glon,IYYYY,MMDD,DHOUR+25, &
+call IRI_SUB(JF,JMAG,glat,glon,IYYYY,MMDD,DHOUR+25., &
      alt_km_range(1), alt_km_range(2), alt_km_range(3), &
      OUTF,OARR, datadir)
 
@@ -29,8 +30,14 @@ do i = 1,Nalt
 enddo
 
 
-if (outf(1,i-1) == -1) error stop 'output length short'
-if (outf(1,i) /= -1) error stop 'output length long'
+if (outf(1,i-1) < 0) then
+  write(stderr,*) 'output length short'
+  stop 1
+endif
+if (outf(1,i) > 0) then
+  write(stderr,*) 'output length long'
+  stop 1
+endif
 
 end program
 

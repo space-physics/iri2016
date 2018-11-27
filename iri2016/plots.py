@@ -8,18 +8,20 @@ def timeprofile(iono: xarray.Dataset):
 
     if Nplot > 2:
         fig = figure(figsize=(16, 12))
-        axs = fig.subplots(3, 1, sharex=True).ravel()
+        axs = fig.subplots(Nplot, 1, sharex=True).ravel()
     else:
         fig = figure(figsize=(16, 6))
         axs = fig.subplots(1, 2).ravel()
 
-    fig.suptitle(f'{str(iono.time[0].values)[:-13]} to {str(iono.time[-1].values)[:-13]}\n Glat, Glon: {iono.glat}, {iono.glon}')
+    fig.suptitle(f'{str(iono.time[0].values)[:-13]} to '
+                 f'{str(iono.time[-1].values)[:-13]}\n'
+                 f'Glat, Glon: {iono.glat.item()}, {iono.glon.item()}')
 
     ax = axs[0]
 
-    ax.plot(iono.time, iono['NmF2'].squeeze(), label='N$_m$F$_2$')
-    ax.plot(iono.time, iono['NmF1'].squeeze(), label='N$_m$F$_1$')
-    ax.plot(iono.time, iono['NmE'].squeeze(), label='N$_m$E')
+    ax.plot(iono.time, iono['NmF2'], label='N$_m$F$_2$')
+    ax.plot(iono.time, iono['NmF1'], label='N$_m$F$_1$')
+    ax.plot(iono.time, iono['NmE'], label='N$_m$E')
     ax.set_title('Maximum number densities vs. ionospheric layer')
     ax.set_xlabel('Hour (UT)')
     ax.set_ylabel('(m$^{-3}$)')
@@ -27,9 +29,9 @@ def timeprofile(iono: xarray.Dataset):
     ax.legend(loc='best')
 
     ax = axs[1]
-    ax.plot(iono.time, iono['hmF2'].squeeze(), label='h$_m$F$_2$')
-    ax.plot(iono.time, iono['hmF1'].squeeze(), label='h$_m$F$_1$')
-    ax.plot(iono.time, iono['hmE'].squeeze(), label='h$_m$E')
+    ax.plot(iono.time, iono['hmF2'], label='h$_m$F$_2$')
+    ax.plot(iono.time, iono['hmF1'], label='h$_m$F$_1$')
+    ax.plot(iono.time, iono['hmE'], label='h$_m$E')
     ax.set_title('Height of maximum density vs. ionospheric layer')
     ax.set_xlabel('Hour (UT)')
     ax.set_ylabel('(km)')
@@ -39,25 +41,23 @@ def timeprofile(iono: xarray.Dataset):
         ax = axs[2]
 
         for a in iono.alt_km:
-            ax.plot(iono.time, iono['ne'].squeeze(), marker='.', label=f'{a.item()} km')
+            ax.plot(iono.time, iono['ne'].sel(alt_km=a), marker='.', label=f'{a.item()} km')
         ax.set_xlabel('time UTC (hours)')
         ax.set_ylabel('[m$^{-3}$]')
         ax.set_title(f'$N_e$ vs. altitude and time')
         ax.set_yscale('log')
         ax.legend(loc='best')
     # %%
-    if Nplot > 4:
-        ax = axs[4]
-        tec = iono.b[36, :]
-        ax.plot(iono.time, tec, label=r'TEC')
+    if Nplot > 3:
+        ax = axs[3]
+        ax.plot(iono.time, iono['TEC'], label='TEC')
         ax.set_xlabel('Hour (UT)')
         ax.set_ylabel('(m$^{-2}$)')
         # ax.set_yscale('log')
         ax.legend(loc='best')
-
-        ax = axs[5]
-        vy = iono.b[43, :]
-        ax.plot(iono.time, vy, label=r'V$_y$')
+    if Nplot > 4:
+        ax = axs[4]
+        ax.plot(iono.time, iono['EqVertIonDrift'], label=r'V$_y$')
         ax.set_xlabel('Hour (UT)')
         ax.set_ylabel('(m/s)')
         ax.legend(loc='best')
@@ -70,10 +70,11 @@ def altprofile(iono: xarray.Dataset):
     fig = figure(figsize=(16, 6))
     axs = fig.subplots(1, 2)
 
-    fig.suptitle(f'{str(iono.time)[:-13]}\n Glat, Glon: {iono.glat}, {iono.attrs["glon"]}')
+    fig.suptitle(f'{str(iono.time[0].values)[:-13]}\n'
+                 f'Glat, Glon: {iono.glat.item()}, {iono.glon.item()}')
 
     pn = axs[0]
-    pn.plot(iono['ne'].squeeze(), iono.alt_km, label='N$_e$')
+    pn.plot(iono['ne'], iono.alt_km, label='N$_e$')
     # pn.set_title(iri2016Obj.title1)
     pn.set_xlabel('Density (m$^{-3}$)')
     pn.set_ylabel('Altitude (km)')
@@ -82,8 +83,8 @@ def altprofile(iono: xarray.Dataset):
     pn.grid(True)
 
     pn = axs[1]
-    pn.plot(iono['Ti'].squeeze(), iono.alt_km, label='T$_i$')
-    pn.plot(iono['Te'].squeeze(), iono.alt_km, label='T$_e$')
+    pn.plot(iono['Ti'], iono.alt_km, label='T$_i$')
+    pn.plot(iono['Te'], iono.alt_km, label='T$_e$')
     # pn.set_title(iri2016Obj.title2)
     pn.set_xlabel('Temperature (K)')
     pn.set_ylabel('Altitude (km)')
@@ -98,21 +99,23 @@ def latprofile(iono: xarray.Dataset):
 
     ax = axs[0]
 
-    ax.plot(iono.lat, iono['NmF2'].squeeze(), label='N$_m$F$_2$')
-    ax.plot(iono.lat, iono['NmF1'].squeeze(), label='N$_m$F$_1$')
-    ax.plot(iono.lat, iono['NmE'].squeeze(), label='N$_m$E')
-    ax.set_title(str(iono.time[0].values)[:-13] + f'  latitude {iono.lat[[0, -1]].values}')
+    ax.plot(iono['glat'], iono['NmF2'], label='N$_m$F$_2$')
+    ax.plot(iono['glat'], iono['NmF1'], label='N$_m$F$_1$')
+    ax.plot(iono['glat'], iono['NmE'], label='N$_m$E')
+    ax.set_title(str(iono.time[0].values)[:-13] +
+                 f'  latitude {iono["glat"][[0, -1]].values}')
     # ax.set_xlim(iono.lat[[0, -1]])
     ax.set_xlabel(r'Geog. Lat. ($^\circ$)')
     ax.set_ylabel('(m$^{-3}$)')
     ax.set_yscale('log')
 
     ax = axs[1]
-    ax.plot(iono.lat, iono['hmF2'].squeeze(), label='h$_m$F$_2$')
-    ax.plot(iono.lat, iono['hmF1'].squeeze(), label='h$_m$F$_1$')
-    ax.plot(iono.lat, iono['hmE'].squeeze(), label='h$_m$E')
-    ax.set_xlim(iono.lat[[0, -1]])
-    ax.set_title(str(iono.time[0].values)[:-13] + f'  latitude  {iono.lat[[0, -1]].values}')
+    ax.plot(iono['glat'], iono['hmF2'], label='h$_m$F$_2$')
+    ax.plot(iono['glat'], iono['hmF1'], label='h$_m$F$_1$')
+    ax.plot(iono['glat'], iono['hmE'], label='h$_m$E')
+    ax.set_xlim(iono['glat'][[0, -1]])
+    ax.set_title(str(iono.time[0].values)[:-13] +
+                 f'  latitude  {iono["glat"][[0, -1]].values}')
     ax.set_xlabel(r'Geog. Lat. ($^\circ$)')
     ax.set_ylabel('(km)')
 

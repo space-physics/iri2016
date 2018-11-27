@@ -1,4 +1,5 @@
 program basictest
+use, intrinsic:: iso_fortran_env, only: stderr=>error_unit, stdout=>output_unit
 implicit none
 
 logical :: jf(50)
@@ -8,7 +9,10 @@ real :: glat, glon, dhour
 integer :: ymdhms(6)
 real:: alt_km_range(3)
 
-character(*), parameter :: datadir='../iri2016/data'
+#ifndef BIN_DIR
+#define BIN_DIR '.'
+#endif
+character(*), parameter :: datadir = BIN_DIR // '/../iri2016/data'
 
 
 real :: oarr(100), outf(20,1000)
@@ -23,8 +27,11 @@ jf(26) = .false.
 jf(28:30) = .false.
 jf(33:35) = .false.
 
-! input
-if (command_argument_count() < 11) error stop 'must include all input parameters'
+! --- command line input
+if (command_argument_count() < 11) then
+  write(stderr,*) 'must include all input parameters'
+  stop 1
+endif
 
 do i=1,6
   call get_command_argument(i,argv)
@@ -42,6 +49,7 @@ do i = 1,3
   read(argv,*) alt_km_range(i)
 enddo
 
+! --- parse
 Nalt = int((alt_km_range(2) - alt_km_range(1)) / alt_km_range(3)) + 1
 allocate(altkm(Nalt))
 
@@ -56,7 +64,7 @@ mmdd = ymdhms(2) * 100 + ymdhms(3)
 dhour = ymdhms(4) + ymdhms(5) / 60. + ymdhms(6) / 3600.
 
 
-call IRI_SUB(JF,JMAG,glat,glon,IYYYY,MMDD,DHOUR+25, &
+call IRI_SUB(JF,JMAG,glat,glon,IYYYY,MMDD,DHOUR+25., &
      alt_km_range(1), alt_km_range(2), alt_km_range(3), &
      OUTF,OARR, datadir)
 
@@ -65,9 +73,12 @@ call IRI_SUB(JF,JMAG,glat,glon,IYYYY,MMDD,DHOUR+25, &
 
 !print *,'Altitude    Ne    O2+'
 do i = 1,Nalt
-  print '(F10.3, 11ES15.7)',altkm(i), outf(:11,i)
+  write(stdout, '(F10.3, 11ES16.8)') altkm(i), outf(:11,i)
 enddo
 
+print *,new_line(' ')
+
+write(stdout, '(100ES16.8)') oarr
 
 end program
 

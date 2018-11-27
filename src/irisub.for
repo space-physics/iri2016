@@ -366,7 +366,8 @@ C*****************************************************************
 
 ! --- explicit interfacing to help Python and general use 
 !     by Michael Hirsch, SciVision, Inc.
-      real, intent(out) :: OARR(100), OUTF(20,1000)
+      real, intent(out) :: OUTF(20,1000)
+      real, intent(inout) :: OARR(100)
       real, intent(in) :: alati, along
       
       character(*), intent(in) :: datadir
