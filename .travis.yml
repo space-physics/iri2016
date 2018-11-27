@@ -35,15 +35,13 @@ matrix:
     before_install:
     - choco install python3
     - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
-  - os: windows
-    language: sh
-    before_install: choco install octave.portable
-    install:
-    - cd matlab
-    - octave-cli -q setup_iri2016.m
-    script:
-    - cd ../tests
-    - octave-cli -q test_iri2016.m
+#  - os: windows
+#    language: sh
+#    before_install: choco install octave.portable
+#    install:
+#    - octave-cli matlab/setup_iri2016.m
+#    script:
+#    - octave-cli tests/test_iri2016.m
 
 
 install: pip install -e .[tests]

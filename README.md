@@ -12,8 +12,6 @@
 
 Python and [Matlab](#matlab) interfaces to the International Reference Ionosphere (IRI) 2016 model.
 
-NOTE: November 2018 we are temporarily recommending a workaround where we directly use a command-line interface to IRI2016, as there may be `f2py` bugs interfacing to the massive Fortran 77 IRI2016 codebase, even with the latest IRI2016.
-
 ## Python
 
 1. Install IRI2016 command-line driver program
@@ -38,15 +36,16 @@ NOTE: November 2018 we are temporarily recommending a workaround where we direct
 Any Fortran compiler will do. 
 IRI2016 has been tested with compilers including:
 
-* Gfortran 5, 6, 7, 8
+* Gfortran 4.8, 5, 6, 7, 8
 * Intel `ifort`
 * PGI `pgf90`
+* Flang `flang`
 
-Install Gfortran by:
+If you don't already have a Fortran compiler, install Gfortran by:
 
--   Linux: `apt install gfortran`
--   Mac: `brew install gcc`
--   [Windows](https://www.scivision.co/windows-gcc-gfortran-cmake-make-install/)
+* Linux: `apt install gfortran`
+* Mac: `brew install gcc`
+* [Windows](https://www.scivision.co/windows-gcc-gfortran-cmake-make-install/)
 
     
 ## Usage
