@@ -15,9 +15,10 @@ def test_altitude_profile():
 
     iri = iri2016.IRI(time, altkmrange, glat, glon)
 
-    assert iri['ne'][10] == approx(3.98669824e9, rel=1e-4)
-    assert iri.NmF2 == approx(7.71626844e+10)
-    assert iri.hmF2 == approx(312.837677)
+# .item() necessary for stability across OS, pytest versions, etc.
+    assert iri['ne'][10].item() == approx(3.98669824e9, rel=1e-4)
+    assert iri.NmF2.item() == approx(7.71626844e+10)
+    assert iri.hmF2.item() == approx(312.837677)
 
 
 if __name__ == '__main__':
