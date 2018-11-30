@@ -29,7 +29,7 @@ jf(33:35) = .false.
 
 ! --- command line input
 if (command_argument_count() < 11) then
-  write(stderr,*) 'must include all input parameters'
+  write(stderr,*) 'need input parameters: year month day hour minute second min_alt_km max_alt_km step_alt_km'
   stop 1
 endif
 

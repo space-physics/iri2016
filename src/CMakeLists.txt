@@ -10,8 +10,7 @@ target_compile_options(iri2016 PRIVATE ${FFLAGS} -w)
 add_executable(iri2016_driver iri2016_driver.F90)
 target_link_libraries(iri2016_driver PRIVATE iri2016 ${FLIBS})
 target_compile_options(iri2016_driver PRIVATE ${FFLAGS})
-set_target_properties(iri2016_driver PROPERTIES 
-                      COMPILE_DEFINITIONS BIN_DIR='${CMAKE_CURRENT_BINARY_DIR}')
+target_compile_definitions(iri2016_driver PRIVATE BIN_DIR='${CMAKE_CURRENT_BINARY_DIR}')
 
 add_executable(testiri2016 test.f90)
 target_link_libraries(testiri2016 PRIVATE iri2016 ${FLIBS})
