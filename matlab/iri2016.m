@@ -1,6 +1,5 @@
 function iono = iri2016(time, glat, glon, altkmrange)
 
-narginchk(4,4)
 validateattributes(glat, {'numeric'}, {'scalar'})
 validateattributes(glon, {'numeric'}, {'scalar'})
 validateattributes(altkmrange, {'numeric'}, {'positive', 'vector','numel',3})
