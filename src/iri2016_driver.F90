@@ -5,7 +5,7 @@ implicit none
 logical :: jf(50)
 integer, parameter :: jmag = 0
 integer :: iyyyy, mmdd, Nalt
-real :: glat, glon, dhour
+real :: glat, glon, dhour, tec,tect,tecb,astp,hend,hbeg
 integer :: ymdhms(6)
 real:: alt_km_range(3)
 
@@ -56,7 +56,7 @@ allocate(altkm(Nalt))
 
 altkm(1) = alt_km_range(1)
 do i = 2,Nalt
-  altkm(i) = altkm(i-1) + alt_km_range(3) 
+  altkm(i) = altkm(i-1) + alt_km_range(3)
 enddo
 
 iyyyy = ymdhms(1)
@@ -67,6 +67,18 @@ dhour = ymdhms(4) + ymdhms(5) / 60. + ymdhms(6) / 3600.
 call IRI_SUB(JF,JMAG,glat,glon,IYYYY,MMDD,DHOUR+25., &
      alt_km_range(1), alt_km_range(2), alt_km_range(3), &
      OUTF,OARR, datadir)
+
+tec = -111.
+tect= -111.
+tecb= -111.
+hbeg=alt_km_range(1)
+hend=alt_km_range(2)
+astp=hend-hbeg
+call iri_tec (hbeg,hend,2,tec,tect,tecb)
+
+oarr(37)=tec
+oarr(38)=tect
+
 
 !print '(A,ES10.3,A,F5.1,A)','NmF2 ',oarr(1),' [m^-3]     hmF2 ',oarr(2),' [km] '
 !print '(A,F10.3,A,I3,A,F10.3)','F10.7 ',oarr(41), ' Ap ',int(oarr(51)),' B0 ',oarr(10)
@@ -81,4 +93,3 @@ print *,new_line(' ')
 write(stdout, '(100ES16.8)') oarr
 
 end program
-
