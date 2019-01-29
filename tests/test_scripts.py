@@ -10,12 +10,12 @@ def test_latitude():
 
 def test_time():
     pytest.importorskip('matplotlib')
-    subprocess.check_call(['IRI16timeProfile', '65', '-148'])
+    subprocess.check_call(['IRI16timeProfile', '2012-01-01', '2012-01-02', '1.0', '65', '-148'])
 
 
 def test_alt():
     pytest.importorskip('matplotlib')
-    subprocess.check_call(['IRI16altitudeProfile', '65', '-148'])
+    subprocess.check_call(['IRI16altitudeProfile', '2012-01-01', '65', '-148'])
 
 
 if __name__ == '__main__':
