@@ -76,9 +76,8 @@ do i = 1,Nalt
   write(stdout, '(F10.3, 11ES16.8)') altkm(i), outf(:11,i)
 enddo
 
-print *,new_line(' ')
 
-write(stdout, '(100ES16.8)') oarr
+write(stdout, '(/,100ES16.8)') oarr
 
 end program
 

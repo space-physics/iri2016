@@ -6,6 +6,8 @@ import os
 import subprocess
 
 """
+Because of bad bugs in IRI2016 itself, present even in plain Fortran usage, we can't safely use F2py, bad data can result.
+
 if os.name == 'nt':
     sfn = Path(__file__).parent / 'setup.cfg'
     stxt = sfn.read_text()
@@ -42,16 +44,16 @@ setuptools.setup(
     data_files=iridata,
 )
 
+R = Path(__file__).parent
+BINDIR = R / 'build'
+SRCDIR = R / 'src'
+
 # %% workaround
 if os.name == 'nt':
     subprocess.check_call(['cmake', '-G', 'MinGW Makefiles',
-                           '-DCMAKE_SH="CMAKE_SH-NOTFOUND', '../src'],
-                          cwd='bin',
-                          universal_newlines=True)
+                           '-DCMAKE_SH="CMAKE_SH-NOTFOUND', '-S', str(SRCDIR), '-B', str(BINDIR)])
 else:
-    subprocess.check_call(['cmake', '../src'], cwd='bin',
-                          universal_newlines=True)
+    subprocess.check_call(['cmake', '-S', str(SRCDIR), '-B', str(BINDIR)])
 
 
-subprocess.check_call(['cmake', '--build', '.'], cwd='bin',
-                      universal_newlines=True)
+subprocess.check_call(['cmake', '--build', str(BINDIR), '-j'])

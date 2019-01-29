@@ -5,7 +5,7 @@ validateattributes(glon, {'numeric'}, {'scalar'})
 validateattributes(altkmrange, {'numeric'}, {'positive', 'vector','numel',3})
 %% binary IRI2016
 cwd = fileparts(mfilename('fullpath'));
-exe = [cwd,filesep,'..', filesep, 'bin', filesep, 'iri2016_driver'];
+exe = [cwd,filesep,'..', filesep, 'build', filesep, 'iri2016_driver'];
 if ispc, exe = [exe,'.exe']; end
 if ~exist(exe,'file'), error('compile IRI2016 via setup_iri2016.m'), end
 

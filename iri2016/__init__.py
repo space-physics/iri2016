@@ -8,7 +8,7 @@ import io
 import numpy as np
 from typing import List, Sequence
 
-R = Path(__file__).resolve().parents[1] / 'bin'
+BINDIR = Path(__file__).resolve().parents[1] / 'build'
 EXE = './iri2016_driver'
 SHELL = False
 if os.name == 'nt':
@@ -51,7 +51,7 @@ def IRI(time: datetime, altkmrange: Sequence[float],
            str(altkmrange[0]), str(altkmrange[1]), str(altkmrange[2])]
 
     ret = subprocess.check_output(cmd,
-                                  universal_newlines=True, cwd=str(R),
+                                  universal_newlines=True, cwd=str(BINDIR),  # str for Windows
                                   shell=SHELL)
 # %% get altitude profile data
     Nalt = int((altkmrange[1]-altkmrange[0]) // altkmrange[2]) + 1
