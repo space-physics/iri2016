@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import setuptools  # noqa: F401
+from pkg_resources import parse_version
 from pathlib import Path
 # from numpy.distutils.core import Extension, setup
 import os
@@ -48,7 +49,14 @@ R = Path(__file__).parent
 BINDIR = R / 'build'
 SRCDIR = R / 'src'
 
-# %% workaround
+cmakever = subprocess.check_output(['cmake', '--version'], universal_newlines=True)
+cmakever = parse_version(cmakever.split()[2])
+if cmakever < parse_version('3.13'):
+    raise RuntimeError(
+        'CMake >= 3.13 needed to build IRI2016.'
+        'Please see https://cmake.org/download or https://github.com/scivision/cmake-utils/blob/master/cmake_setup.sh')
+
+# %% workaround, CMake >= 3.13
 if os.name == 'nt':
     subprocess.check_call(['cmake', '-G', 'MinGW Makefiles',
                            '-DCMAKE_SH="CMAKE_SH-NOTFOUND', '-S', str(SRCDIR), '-B', str(BINDIR)])

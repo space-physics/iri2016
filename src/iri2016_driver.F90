@@ -8,6 +8,7 @@ integer :: iyyyy, mmdd, Nalt
 real :: glat, glon, dhour
 integer :: ymdhms(6)
 real:: alt_km_range(3)
+real::  TECtotal, TECtop, TECbot
 
 #ifndef BIN_DIR
 #define BIN_DIR '.'
@@ -67,6 +68,12 @@ dhour = ymdhms(4) + ymdhms(5) / 60. + ymdhms(6) / 3600.
 call IRI_SUB(JF,JMAG,glat,glon,IYYYY,MMDD,DHOUR+25., &
      alt_km_range(1), alt_km_range(2), alt_km_range(3), &
      OUTF,OARR, datadir)
+ 
+! --- for TEC
+call iri_tec(alt_km_range(1), alt_km_range(2), 2,&
+             TECtotal, TECtop, TECbot)
+oarr(37) = TECtotal  ! tec-units (10^16 m^-2)
+oarr(38) = TECtop ! % of total
 
 !print '(A,ES10.3,A,F5.1,A)','NmF2 ',oarr(1),' [m^-3]     hmF2 ',oarr(2),' [km] '
 !print '(A,F10.3,A,I3,A,F10.3)','F10.7 ',oarr(41), ' Ap ',int(oarr(51)),' B0 ',oarr(10)

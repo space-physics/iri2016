@@ -2,9 +2,8 @@ import xarray
 from matplotlib.pyplot import figure
 
 
-def timeprofile(iono: xarray.Dataset):
+def timeprofile(iono: xarray.Dataset, Nplot: int = 4):
     # %% Plots
-    Nplot = 3
 
     if Nplot > 2:
         fig = figure(figsize=(16, 12))

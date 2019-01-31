@@ -43,5 +43,6 @@ iono.NmF1=arr(3);
 iono.hmF1=arr(4);
 iono.NmE=arr(5);
 iono.hmE=arr(6);
+iono.TECtotal=arr(37);
 
 end
