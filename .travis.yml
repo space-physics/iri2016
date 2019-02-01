@@ -30,7 +30,9 @@ matrix:
 #    - coveralls
   - os: osx
     language: sh
-    before_install: brew install gcc cmake
+    before_install: 
+    - brew install gcc 
+    - brew upgrade cmake
     install: pip3 install -e .[tests]
 #  - os: windows
 #    language: sh
