@@ -11,9 +11,9 @@
 ![image](./figures/iri2DExample02.gif)
 
 Python and [Matlab](#matlab) interfaces to the International Reference Ionosphere (IRI) 2016 model.
-In any case, CMake &ge; 3.13 is required, which is available from https://cmake.org/download.
-For Linux an easy fast CMake install script is 
-[provided](https://github.com/scivision/cmake-utils/blob/master/cmake_setup.sh).
+A Fortran compiler and CMake or 
+[Meson](https://github.com/mesonbuild/meson/) 
+is required to build the IRI2016 code.
 
 ## Python
 
@@ -88,11 +88,13 @@ These commands are not normally needed unless you want to work with the Fortran 
 ### Fortran compile
 
 ```sh
-cmake -S src -B build
+cd build
 
-cmake --build build -j
+meson ../src
 
-ctest -V
+ninja
+
+meson test
 ```
 
 ## Notes
