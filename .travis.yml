@@ -8,7 +8,8 @@ git:
   depth: 3
   quiet: true
 
-#python:
+python:
+- 3.8-dev
 #- 3.7
 #- 3.6
 
@@ -16,24 +17,25 @@ addons:
   apt:
     packages:
     - gfortran
+    - octave
 
 matrix:
   include:
-#  - os: linux
-#    python: 3.7
-#    install: pip install -e .[tests,cov]
-#    script: 
-#    - flake8
-#    - mypy . --ignore-missing-imports
-#    after_success:
-#    - pytest --cov
-#    - coveralls
-  - os: osx
-    language: sh
-    before_install: 
-    - brew install gcc 
-    - brew upgrade cmake
-    install: pip3 install -e .[tests]
+  - os: linux
+    python: 3.7
+    install: pip install -e .[tests,cov]
+    script: 
+    - flake8
+    - mypy . --ignore-missing-imports
+    after_success:
+    - pytest --cov
+    - coveralls
+#  - os: osx
+#    language: sh
+#    before_install: 
+#    - brew install gcc 
+#    - brew upgrade cmake
+#    install: pip3 install -e .[tests]
 #  - os: windows
 #    language: sh
 #    before_install:
@@ -50,6 +52,7 @@ matrix:
 
 install: pip install -e .[tests]
 
-script: pytest -rsv
-
+script: 
+- pytest -rsv
+- octave-cli tests/test_iri2016.m
 
