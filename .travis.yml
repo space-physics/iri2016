@@ -31,6 +31,10 @@ matrix:
         packages:
         - gfortran
         - octave
+    before_install:
+    - wget https://raw.githubusercontent.com/scivision/cmake-utils/master/cmake_setup.sh
+    - bash cmake_setup.sh
+    - export PATH=$HOME/.local/cmake-3.13.4-Linux-x86_64/bin/:$PATH
     install: octave-cli matlab/setup_iri2016.m
     script: octave-cli tests/test_iri2016.m
 #  - os: osx
