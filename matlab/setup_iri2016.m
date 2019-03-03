@@ -1,26 +1,14 @@
-%% setup IRI2016 using Fortran compiler
-
-system('cmake --version')
 
 cwd = fileparts(mfilename('fullpath'));
 
 srcdir =   [cwd, filesep,'..',filesep,'src'];
 builddir = [cwd, filesep,'..',filesep,'build'];
 
-tail = [' -S ', srcdir, ' -B ', builddir];
+assert(exist(srcdir,'dir')==7, ['source directory ',srcdir,' does not exist'])
+assert(exist(builddir,'dir')==7, ['build directory ',builddir,' does not exist'])
 
-if ispc
-  ccmd = ['cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ', tail];
-else
-  ccmd = ['cmake ',tail];
+try
+  setup_meson(srcdir, builddir)
+catch
+  setup_cmake(srcdir, builddir)
 end
-
-[status, ret] = system(ccmd);
-if status~=0, error(ret), end
-disp(ret)
-
-[status, ret] = system(['cmake --build ',builddir,' -j']);
-if status~=0, error(ret), end
-disp(ret)
-
-disp('Fortran compilation complete')
