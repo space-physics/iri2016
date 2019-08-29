@@ -11,8 +11,8 @@
 ![image](./figures/iri2DExample02.gif)
 
 Python and [Matlab](#matlab) interfaces to the International Reference Ionosphere (IRI) 2016 model.
-A Fortran compiler and CMake or 
-[Meson](https://github.com/mesonbuild/meson/) 
+A Fortran compiler and CMake or
+[Meson](https://github.com/mesonbuild/meson/)
 is required to build the IRI2016 code.
 
 ## Python
@@ -36,21 +36,21 @@ is required to build the IRI2016 code.
 
 ## Compiler
 
-Any Fortran compiler will do. 
+Any Fortran compiler will do.
 IRI2016 has been tested with compilers including:
 
-* Gfortran 4.8, 5, 6, 7, 8
+* Gfortran
 * Intel `ifort`
-* PGI `pgf90`
+* PGI `pgfortran`
 * Flang `flang`
 
 If you don't already have a Fortran compiler, install Gfortran by:
 
 * Linux: `apt install gfortran`
 * Mac: `brew install gcc`
-* [Windows](https://www.scivision.co/windows-gcc-gfortran-cmake-make-install/)
+* [Windows](https://www.scivision.dev/windows-gcc-gfortran-cmake-make-install/)
 
-    
+
 ## Usage
 
 * Height-profile: plot density and temperatures vs [altitude](./AltitudeProfile.py)
@@ -63,7 +63,7 @@ If you don't already have a Fortran compiler, install Gfortran by:
   ![image](./figures/iri2DExample01.png)
 * Latitude vs Longitude: plot of foF2 a function of geographic latitude and [longitude](./examples/example02.py)
   ![image](./figures/iri2DExample02.png)
-  
+
 ### Matlab / GNU Octave
 IRI2016 is readily accessible from Matlab and GNU Octave.
 
@@ -77,7 +77,7 @@ IRI2016 is readily accessible from Matlab and GNU Octave.
 
 ## Data files
 
-`iri2016/iri2016/data/index/{apf107,ig_rz}.dat` are 
+`iri2016/iri2016/data/index/{apf107,ig_rz}.dat` are
 [regularly updated](http://irimodel.org/indices/).
 Currently we don't auto-update those.
 

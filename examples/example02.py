@@ -2,4 +2,4 @@
 from iri2016 import IRI2016Profile
 
 
-sim = IRI2016Profile(option='vertical')
+sim = IRI2016Profile(option="vertical")

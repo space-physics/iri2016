@@ -2,12 +2,12 @@ from pathlib import Path
 from dateutil.parser import parse
 import xarray
 import numpy as np
+
 #
 import iri16  # fortran
 
 proot = Path(__file__).parent
-simout = ['ne', 'Tn', 'Ti', 'Te', 'nO+', 'nH+', 'nHe+', 'nO2+', 'nNO+',
-          'nCI', 'nN+']
+simout = ["ne", "Tn", "Ti", "Te", "nO+", "nH+", "nHe+", "nO2+", "nNO+", "nCI", "nN+"]
 
 
 def Switches():
@@ -67,40 +67,40 @@ def IRI(time, altkmrange, glat, glon, ap=None, f107=None, ssn=None, var=None):
     if isinstance(time, str):
         time = parse(time)
 
-    assert len(altkmrange) == 3, 'altitude (km) min, max, step'
+    assert len(altkmrange) == 3, "altitude (km) min, max, step"
 
-#        doy = squeeze(TimeUtilities().CalcDOY(year, month, dom))
+    #        doy = squeeze(TimeUtilities().CalcDOY(year, month, dom))
 
     # IRI options
     jf = Switches()
 
     # additional "input parameters" (necessary to scale the empirical model results
     # to measurements)
-#    addinp = -np.ones(12)
+    #    addinp = -np.ones(12)
 
     # ------------------------------------------------------------------------------
     #
-#    if time.year < 1958:
-#
-#        addinp[10 - 1] = ssn  # RZ12  (This switches 'jf[17 - 1]' to '0' and
-#                            # uses correlation function to estimate IG12)
-#
-#        jf[25 - 1] = 1        #   25    F107D from APF107.DAT  F107D user input (oarr(41))         1
-#        jf[27 - 1] = 1        #   27    IG12 from file         IG12 - user                         1
-#        jf[32 - 1] = 1        #   32    F10.7_81 from file     PF10.7_81 - user input (oarr(46))   1
-#
-#    else:  # case for solar and geomagnetic indices from files
-#
-#        jf[17 - 1] = 1        #   17    Rz12 from file         Rz12 - user input                   1
-#        jf[26 - 1] = 1        #   26    foF2 storm model       no storm updating                   1
-#        jf[35 - 1] = 1        #   35    foE storm model        no foE storm updating               0
-#     #
-#     #------------------------------------------------------------------------------
+    #    if time.year < 1958:
+    #
+    #        addinp[10 - 1] = ssn  # RZ12  (This switches 'jf[17 - 1]' to '0' and
+    #                            # uses correlation function to estimate IG12)
+    #
+    #        jf[25 - 1] = 1        #   25    F107D from APF107.DAT  F107D user input (oarr(41))         1
+    #        jf[27 - 1] = 1        #   27    IG12 from file         IG12 - user                         1
+    #        jf[32 - 1] = 1        #   32    F10.7_81 from file     PF10.7_81 - user input (oarr(46))   1
+    #
+    #    else:  # case for solar and geomagnetic indices from files
+    #
+    #        jf[17 - 1] = 1        #   17    Rz12 from file         Rz12 - user input                   1
+    #        jf[26 - 1] = 1        #   26    foF2 storm model       no storm updating                   1
+    #        jf[35 - 1] = 1        #   35    foE storm model        no foE storm updating               0
+    #     #
+    #     #------------------------------------------------------------------------------
 
-    mmdd = 100*time.month + time.day               # month and dom (MMDD)
+    mmdd = 100 * time.month + time.day  # month and dom (MMDD)
     # hour + 25 denotes UTC time
-    dhour = (time.hour + 25) + time.minute/60.
-# %% more inputs
+    dhour = (time.hour + 25) + time.minute / 60.0
+    # %% more inputs
     jmag = 0  # 0: geographic; 1: geomagnetic
     # iut = 0             #  0: for LT;     1: for UT
     # height = 300.       #  in km
@@ -108,34 +108,46 @@ def IRI(time, altkmrange, glat, glon, ap=None, f107=None, ssn=None, var=None):
     # ivar = var          #  1: altitude; 2: latitude; 3: longitude; ...
 
     # Ionosphere (IRI)
-#        a, b = iriwebg(jmag, jf, glat, glon, int(time.year), mmdd, iut, time.hour,
-#            height, h_tec_max, ivar, ivbeg, ivend, ivstp, addinp, self.iriDataFolder)
+    #        a, b = iriwebg(jmag, jf, glat, glon, int(time.year), mmdd, iut, time.hour,
+    #            height, h_tec_max, ivar, ivbeg, ivend, ivstp, addinp, self.iriDataFolder)
 
     altkm = np.arange(*altkmrange)
     if altkm.size < 10:
-        raise ValueError('Altitude grid must have enough points to compute quantities of interest')
+        raise ValueError("Altitude grid must have enough points to compute quantities of interest")
 
-    outf, oarr = iri16.iri_sub(jf, jmag, glat, glon,
-                               time.year, mmdd, dhour,
-                               altkmrange[0], altkmrange[1], altkmrange[2],
-                               str(proot/'data/'))
+    outf, oarr = iri16.iri_sub(
+        jf,
+        jmag,
+        glat,
+        glon,
+        time.year,
+        mmdd,
+        dhour,
+        altkmrange[0],
+        altkmrange[1],
+        altkmrange[2],
+        str(proot / "data/"),
+    )
 
-    outf = outf[:, :altkm.size]
-# %% collect output
-    dsf = {k: (('time', 'alt_km', 'lat', 'lon'), np.atleast_2d(v[None, :, None, None])) for (k, v) in zip(simout, outf[:11, :])}
+    outf = outf[:, : altkm.size]
+    # %% collect output
+    dsf = {
+        k: (("time", "alt_km", "lat", "lon"), np.atleast_2d(v[None, :, None, None]))
+        for (k, v) in zip(simout, outf[:11, :])
+    }
 
-    dsf.update({'NmF2': (('time', 'lat', 'lon'), np.atleast_3d(oarr[0]))})
-    dsf.update({'hmF2': (('time', 'lat', 'lon'), np.atleast_3d(oarr[1]))})
-    dsf.update({'NmF1': (('time', 'lat', 'lon'), np.atleast_3d(oarr[2]))})
-    dsf.update({'hmF1': (('time', 'lat', 'lon'), np.atleast_3d(oarr[3]))})
-    dsf.update({'NmE': (('time', 'lat', 'lon'), np.atleast_3d(oarr[4]))})
-    dsf.update({'hmE': (('time', 'lat', 'lon'), np.atleast_3d(oarr[5]))})
-    dsf.update({'B0': (('time', 'lat', 'lon'), np.atleast_3d(oarr[9]))})
+    dsf.update({"NmF2": (("time", "lat", "lon"), np.atleast_3d(oarr[0]))})
+    dsf.update({"hmF2": (("time", "lat", "lon"), np.atleast_3d(oarr[1]))})
+    dsf.update({"NmF1": (("time", "lat", "lon"), np.atleast_3d(oarr[2]))})
+    dsf.update({"hmF1": (("time", "lat", "lon"), np.atleast_3d(oarr[3]))})
+    dsf.update({"NmE": (("time", "lat", "lon"), np.atleast_3d(oarr[4]))})
+    dsf.update({"hmE": (("time", "lat", "lon"), np.atleast_3d(oarr[5]))})
+    dsf.update({"B0": (("time", "lat", "lon"), np.atleast_3d(oarr[9]))})
 
-    iri = xarray.Dataset(dsf,
-                         coords={'time': [time], 'alt_km': altkm, 'lat': [glat], 'lon': [glon]},
-                         attrs={'f107': oarr[40], 'ap': oarr[50],
-                                'glat': glat, 'glon': glon, 'time': time,
-                                })
+    iri = xarray.Dataset(
+        dsf,
+        coords={"time": [time], "alt_km": altkm, "lat": [glat], "lon": [glon]},
+        attrs={"f107": oarr[40], "ap": oarr[50], "glat": glat, "glon": glon, "time": time},
+    )
 
     return iri

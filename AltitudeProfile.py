@@ -9,11 +9,15 @@ import iri2016.plots as piri
 def main():
 
     p = ArgumentParser()
-    p.add_argument('time', help='time of simulation')
-    p.add_argument('latlon', help='geodetic latitude, longitude (degrees)',
-                   type=float, nargs=2)
-    p.add_argument('-alt_km', help='altitude START STOP STEP (km)',
-                   type=float, nargs=3, default=(80, 1000, 10))
+    p.add_argument("time", help="time of simulation")
+    p.add_argument("latlon", help="geodetic latitude, longitude (degrees)", type=float, nargs=2)
+    p.add_argument(
+        "-alt_km",
+        help="altitude START STOP STEP (km)",
+        type=float,
+        nargs=3,
+        default=(80, 1000, 10),
+    )
     P = p.parse_args()
 
     iono = iri.IRI(P.time, P.alt_km, *P.latlon)
@@ -22,5 +26,5 @@ def main():
     show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
