@@ -1,6 +1,6 @@
 function iri2016()
 % quick demo calling IRI2016 model from Matlab.
-% https://www.scivision.co/matlab-python-user-module-import/
+% https://www.scivision.dev/matlab-python-user-module-import/
 
 assert(~verLessThan('matlab', '8.4'), 'Matlab >= R2014b required')
 
@@ -38,7 +38,7 @@ xlabel('Density [m^-3]')
 ylabel('altitude [km]')
 
 grid('on')
-  
+
 end
 
 function V = xarray2mat(V)

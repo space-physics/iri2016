@@ -2,7 +2,7 @@ function data = iri_2016(time,altKm,glat,glon,setSamplePlot)
 %IRI_2016 Matlab-Python wrapper of IRI2016 by MHirsch
 %   time,glat,glon are one value each, while altKm can be a 1D array.
 
-% https://www.scivision.co/matlab-python-user-module-import/
+% https://www.scivision.dev/matlab-python-user-module-import/
 assert(~verLessThan('matlab', '9.5'), 'Matlab >= R2018b required')
 
 if nargin<5
@@ -44,7 +44,7 @@ data.attribute.time = datenum(char(iono.attrs{'time'}.isoformat()),isoDateFormat
 
 if setSamplePlot
     plot_iono(data);
-end 
+end
 
 end
 
@@ -84,7 +84,7 @@ end
 
 
 function M = pyarray2mat(V)
-M = double(py.array.array('d',py.numpy.nditer(py.numpy.asfortranarray(V)))); 
+M = double(py.array.array('d',py.numpy.nditer(py.numpy.asfortranarray(V))));
 end
 
 function I = xarrayind2vector(V,key)

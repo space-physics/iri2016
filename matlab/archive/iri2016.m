@@ -1,6 +1,6 @@
 function iono = iri2016(time,altKm,glat,glon,setSamplePlot)
 %% IRI2016 model from Matlab.
-% https://www.scivision.co/matlab-python-user-module-import/
+% https://www.scivision.dev/matlab-python-user-module-import/
 % geographic WGS84 lat,lon,alt
 %
 % Example:
