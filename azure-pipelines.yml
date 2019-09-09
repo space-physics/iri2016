@@ -22,36 +22,6 @@ stages:
     - script: mypy .
       displayName: Type Check
 
-- stage: PackageTests
-  jobs:
-
-  - job: UbuntuInstall
-    pool:
-      vmImage: ubuntu-latest
-
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '3.6'
-        addToPath: true
-    - script: |
-        python -m pip install meson
-        curl -Ls https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-linux.zip -o ninja-linux.zip
-        sudo unzip ninja-linux.zip -d /usr/local/bin/
-      displayName: 'setup Meson'
-    - script: |
-        sudo apt install -yq --no-install-recommends gfortran
-        pip install python-dateutil numpy xarray
-        python setup.py install
-      displayName: 'Install Prereqs'
-    - script: |
-        cd $HOME
-        pip install pytest
-        python -m pytest $(Build.SourcesDirectory)/tests -r a -v
-      displayName: 'Build Python'
-    - script: pytest -r a -v
-      displayName: 'PyTest'
-
 - stage: IntegrationTests
   jobs:
 
