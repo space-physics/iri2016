@@ -6,18 +6,19 @@ import shutil
 
 R = Path(__file__).parent
 
+OCTAVE = shutil.which("octave-cli")
+MATLAB = shutil.which("matlab")
 
-@pytest.mark.skipif(not shutil.which("matlab"), reason="matlab not found")
+
+@pytest.mark.skipif(not MATLAB, reason="matlab not found")
 def test_matlab_api():
-    subprocess.check_call(
-        ["matlab", "-nojvm", "-r", "r=runtests(); exit(any([r.Failed]))"], cwd=R, timeout=60
-    )
+    subprocess.check_call([MATLAB, "-batch", "test_iri2016"], cwd=R, timeout=60)
 
 
-@pytest.mark.skipif(not shutil.which("octave"), reason="octave not found")
+@pytest.mark.skipif(not OCTAVE, reason="octave not found")
 def test_octave_api():
-    subprocess.check_call(["octave", "-q", '--eval="exit(test_iri2016)"'], cwd=R, timeout=60)
+    subprocess.check_call([OCTAVE, "test_iri2016.m"], cwd=R, timeout=60)
 
 
 if __name__ == "__main__":
-    pytest.main(["-xrsv", __file__])
+    pytest.main(["-v", __file__])

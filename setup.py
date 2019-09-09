@@ -57,10 +57,7 @@ SRCDIR = R / "src"
 
 def cmake_setup():
     if os.name == "nt":
-        subprocess.check_call(
-            ["cmake", "-G", "MinGW Makefiles", '-DCMAKE_SH="CMAKE_SH-NOTFOUND', str(SRCDIR)],
-            cwd=BINDIR,
-        )
+        subprocess.check_call(["cmake", "-G", "MinGW Makefiles", '-DCMAKE_SH="CMAKE_SH-NOTFOUND', str(SRCDIR)], cwd=BINDIR)
     else:
         subprocess.check_call(["cmake", str(SRCDIR)], cwd=BINDIR)
 

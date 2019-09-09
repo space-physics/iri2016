@@ -13,9 +13,7 @@ time = "2003-11-21T12"
 altlim = [90.0, 200.0]
 altstp = 2.0
 
-sim = IRI2016Profile(
-    altlim=altlim, altstp=altstp, lat=lat, lon=lon, time=time, option="vertical", verbose=False
-)
+sim = IRI2016Profile(altlim=altlim, altstp=altstp, lat=lat, lon=lon, time=time, option="vertical", verbose=False)
 
 altbins = np.arange(altlim[0], altlim[1] + altstp, altstp)
 

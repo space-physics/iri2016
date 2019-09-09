@@ -57,9 +57,7 @@ def IRI(time: datetime, altkmrange: Sequence[float], glat: float, glon: float) -
         str(altkmrange[2]),
     ]
 
-    ret = subprocess.check_output(
-        cmd, universal_newlines=True, cwd=str(BINDIR), shell=SHELL  # str for Windows
-    )
+    ret = subprocess.check_output(cmd, universal_newlines=True, cwd=str(BINDIR), shell=SHELL)  # str for Windows
     # %% get altitude profile data
     Nalt = int((altkmrange[1] - altkmrange[0]) // altkmrange[2]) + 1
 
@@ -74,9 +72,7 @@ def IRI(time: datetime, altkmrange: Sequence[float], glat: float, glon: float) -
     assert arr.ndim == 1 and arr.size == 100, "bad text data output format"
     # %% assemble output
     iono = xarray.Dataset(
-        dsf,
-        coords={"time": [time], "alt_km": altkm, "glat": glat, "glon": glon},
-        attrs={"f107": arr[40], "ap": arr[51]},
+        dsf, coords={"time": [time], "alt_km": altkm, "glat": glat, "glon": glon}, attrs={"f107": arr[40], "ap": arr[51]}
     )
 
     for i, p in enumerate(["NmF2", "hmF2", "NmF1", "hmF1", "NmE", "hmE"]):
@@ -88,9 +84,7 @@ def IRI(time: datetime, altkmrange: Sequence[float], glat: float, glon: float) -
     return iono
 
 
-def timeprofile(
-    tlim: tuple, dt: timedelta, altkmrange: list, glat: float, glon: float
-) -> xarray.Dataset:
+def timeprofile(tlim: tuple, dt: timedelta, altkmrange: list, glat: float, glon: float) -> xarray.Dataset:
     """compute IRI altitude profile over time range for fixed lat/lon
     """
 
@@ -117,9 +111,7 @@ def timeprofile(
     return iono
 
 
-def geoprofile(
-    latrange: Sequence[float], glon: float, altkm: float, time: datetime
-) -> xarray.Dataset:
+def geoprofile(latrange: Sequence[float], glon: float, altkm: float, time: datetime) -> xarray.Dataset:
     """compute IRI altitude profiles at time, over lat or lon range
     """
 

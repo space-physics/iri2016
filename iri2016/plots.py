@@ -71,9 +71,7 @@ def altprofile(iono: xarray.Dataset):
     fig = figure(figsize=(16, 6))
     axs = fig.subplots(1, 2)
 
-    fig.suptitle(
-        f"{str(iono.time[0].values)[:-13]}\n" f"Glat, Glon: {iono.glat.item()}, {iono.glon.item()}"
-    )
+    fig.suptitle(f"{str(iono.time[0].values)[:-13]}\n" f"Glat, Glon: {iono.glat.item()}, {iono.glon.item()}")
 
     pn = axs[0]
     pn.plot(iono["ne"], iono.alt_km, label="N$_e$")
