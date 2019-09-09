@@ -15,6 +15,7 @@ BINDIR = R / "build"
 EXE = shutil.which("iri2016_driver", path=str(BINDIR))
 if not EXE:
     EXE = build()
+EXE = shutil.which("iri2016_driver", path=str(BINDIR))
 
 SIMOUT = ["ne", "Tn", "Ti", "Te", "nO+", "nH+", "nHe+", "nO2+", "nNO+", "nCI", "nN+"]
 
