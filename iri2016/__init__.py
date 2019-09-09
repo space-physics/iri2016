@@ -2,18 +2,19 @@ import subprocess
 from dateutil.parser import parse
 from datetime import datetime, timedelta
 from pathlib import Path
-import os
 import xarray
 import io
+import shutil
 import numpy as np
 from typing import List, Sequence
 
-BINDIR = Path(__file__).resolve().parents[1] / "build"
-EXE = "./iri2016_driver"
-SHELL = False
-if os.name == "nt":
-    EXE = EXE[2:] + ".exe"
-    SHELL = True
+from .build import build
+
+R = Path(__file__).resolve().parents[1]
+BINDIR = R / "build"
+EXE = shutil.which("iri2016_driver", path=str(BINDIR))
+if not EXE:
+    EXE = build()
 
 SIMOUT = ["ne", "Tn", "Ti", "Te", "nO+", "nH+", "nHe+", "nO2+", "nNO+", "nCI", "nN+"]
 
@@ -41,7 +42,6 @@ def IRI(time: datetime, altkmrange: Sequence[float], glat: float, glon: float) -
     assert len(altkmrange) == 3, "altitude (km) min, max, step"
     assert isinstance(glat, float) and isinstance(glon, float), "glat, glon is scalar"
 
-    # NOTE: Windows needs shell=True and str(pathlib.Path)
     cmd = [
         str(EXE),
         str(time.year),
@@ -57,7 +57,10 @@ def IRI(time: datetime, altkmrange: Sequence[float], glat: float, glon: float) -
         str(altkmrange[2]),
     ]
 
-    ret = subprocess.check_output(cmd, universal_newlines=True, cwd=str(BINDIR), shell=SHELL)  # str for Windows
+    if not EXE:
+        raise ImportError("could not compile or find iri2016_driver")
+
+    ret = subprocess.check_output(cmd, universal_newlines=True, cwd=str(BINDIR))  # str for Windows
     # %% get altitude profile data
     Nalt = int((altkmrange[1] - altkmrange[0]) // altkmrange[2]) + 1
 

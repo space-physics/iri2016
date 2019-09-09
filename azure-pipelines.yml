@@ -15,7 +15,7 @@ stages:
       inputs:
         versionSpec: '3.7'
         addToPath: true
-    - script: pip install -e .[tests,lint]
+    - script: pip install -e .[lint]
       displayName: 'Dev install'
     - script: flake8
       displayName: PEP8
@@ -34,6 +34,11 @@ stages:
       inputs:
         versionSpec: '3.6'
         addToPath: true
+    - script: |
+        python -m pip install meson
+        curl -Ls https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-linux.zip -o ninja-linux.zip
+        sudo unzip ninja-linux.zip -d /usr/local/bin/
+      displayName: 'setup Meson'
     - script: |
         sudo apt install -yq --no-install-recommends gfortran
         pip install python-dateutil numpy xarray
@@ -59,6 +64,11 @@ stages:
       inputs:
         versionSpec: '3.6'
         addToPath: true
+    - script: |
+        python -m pip install meson
+        curl -Ls https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-linux.zip -o ninja-linux.zip
+        sudo unzip ninja-linux.zip -d /usr/local/bin/
+      displayName: 'setup Meson'
     - script: sudo apt install -yq --no-install-recommends gfortran
       displayName: 'Install Prereqs'
     - script: pip install -e .[tests]
@@ -75,7 +85,9 @@ stages:
       inputs:
         versionSpec: '3.6'
         addToPath: true
-    - script: brew install gcc
+    - script: |
+        brew install gcc ninja
+        pip install meson
       displayName: 'Install Prereqs'
     - script: pip install -e .[tests]
       displayName: 'Build Python'
@@ -91,7 +103,9 @@ stages:
       inputs:
         versionSpec: '3.6'
         addToPath: true
-    - script: cinst -y mingw
+    - script: |
+        cinst -y mingw ninja
+        pip install meson
       displayName: 'Install Prereqs'
     - script: pip install -e .[tests]
       displayName: 'Build Python'
@@ -110,6 +124,11 @@ stages:
       inputs:
         versionSpec: '3.7'
         addToPath: true
+    - script: |
+        python -m pip install meson
+        curl -Ls https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-linux.zip -o ninja-linux.zip
+        sudo unzip ninja-linux.zip -d /usr/local/bin/
+      displayName: 'setup Meson'
     - script: sudo apt install -yq --no-install-recommends gfortran
       displayName: 'Install Prereqs'
     - script: pip install -e .[tests]

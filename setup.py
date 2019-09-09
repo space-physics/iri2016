@@ -2,10 +2,6 @@
 import setuptools  # noqa: F401
 from pathlib import Path
 
-# from numpy.distutils.core import Extension, setup
-import os
-import subprocess
-
 """
 Because of bad bugs in IRI2016 itself, present even in plain Fortran usage, we can't safely use F2py, bad data can result.
 
@@ -49,27 +45,3 @@ setuptools.setup(
     # ext_modules=[ext],
     data_files=iridata
 )
-
-R = Path(__file__).resolve().parent
-BINDIR = R / "build"
-SRCDIR = R / "src"
-
-
-def cmake_setup():
-    if os.name == "nt":
-        subprocess.check_call(["cmake", "-G", "MinGW Makefiles", '-DCMAKE_SH="CMAKE_SH-NOTFOUND', str(SRCDIR)], cwd=BINDIR)
-    else:
-        subprocess.check_call(["cmake", str(SRCDIR)], cwd=BINDIR)
-
-    subprocess.check_call(["cmake", "--build", str(BINDIR), "-j"])
-
-
-def meson_setup():
-    subprocess.check_call(["meson", str(SRCDIR)], cwd=BINDIR)
-    subprocess.check_call(["ninja"], cwd=BINDIR)
-
-
-try:
-    meson_setup()
-except Exception:
-    cmake_setup()

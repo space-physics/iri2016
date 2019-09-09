@@ -1,5 +1,5 @@
 [![image](https://zenodo.org/badge/DOI/10.5281/zenodo.240895.svg)](https://doi.org/10.5281/zenodo.240895)
-
+[![Build Status](https://dev.azure.com/mhirsch0512/iri2016/_apis/build/status/space-physics.IRI2016?branchName=master)](https://dev.azure.com/mhirsch0512/iri2016/_build/latest?definitionId=17&branchName=master)
 
 [![PyPi version](https://img.shields.io/pypi/pyversions/iri2016.svg)](https://pypi.python.org/pypi/iri2016)
 [![PyPi Download stats](http://pepy.tech/badge/iri2016)](http://pepy.tech/project/iri2016)
@@ -87,13 +87,9 @@ These commands are not normally needed unless you want to work with the Fortran 
 ### Fortran compile
 
 ```sh
-cd build
+meson build
 
-meson ../src
-
-ninja
-
-meson test
+meson test -C build
 ```
 
 ## Notes
