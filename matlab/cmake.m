@@ -1,5 +1,4 @@
-function setup_cmake(srcdir, builddir)
-%% setup using CMake+Fortran compiler
+function cmake(srcdir, builddir)
 
 validateattributes(srcdir,{'char'},{'vector'})
 validateattributes(builddir,{'char'},{'vector'})
@@ -16,13 +15,8 @@ else
   ccmd = ['cmake ',tail];
 end
 
-[status, ret] = system(ccmd);
-if status~=0, error(ret), end
-disp(ret)
+runcmd(ccmd)
 
-[status, ret] = system(['cmake --build ',builddir,' -j']);
-if status~=0, error(ret), end
-disp(ret)
+runcmd(['cmake --build ',builddir,' --parallel'])
 
-disp('Fortran compilation complete')
 end

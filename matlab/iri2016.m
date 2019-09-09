@@ -7,7 +7,7 @@ validateattributes(altkmrange, {'numeric'}, {'positive', 'vector','numel',3})
 cwd = fileparts(mfilename('fullpath'));
 exe = [cwd,filesep,'..', filesep, 'build', filesep, 'iri2016_driver'];
 if ispc, exe = [exe,'.exe']; end
-if ~exist(exe,'file'), error('compile IRI2016 via setup_iri2016.m'), end
+if ~exist(exe,'file'), build(), end
 
 t = num2str(datevec(time));
 
