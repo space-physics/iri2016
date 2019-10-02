@@ -17,20 +17,25 @@ is required to build the IRI2016 code.
 
 ## Python
 
+Python >= 3.6 is required.
+
 1. Install IRI2016 command-line driver program
    ```sh
-   pip install -e .[tests]
+   pip install --upgrade setuptools
+
+   git clone https://github.com/space-physics/iri2016
+
+   pip install -e iri2016[tests]
    ```
-2. run selftest to ensure install was completed:
+2. (optional) run selftest to ensure install was completed:
    ```sh
-   pytest
+   pytest iri2016
    ```
 3. try example script e.g. [AltitudeProfile.py](./AltitudeProfile.py)
 
 ## Matlab
 
-1. compile Fortran code via [matlab/setup_iri2016.m](./matlab/setup_iri2016.m)
-2. drive the simulation via a seamless command line interface, example: [matlab/RunIRI2016.m](./matlab/RunIRI2016.m)
+Drive the simulation via a seamless command line interface, example: [matlab/RunIRI2016.m](./matlab/RunIRI2016.m)
 
 
 
