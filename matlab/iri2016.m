@@ -9,10 +9,12 @@ exe = [cwd,filesep,'..', filesep, 'build', filesep, 'iri2016_driver'];
 if ispc, exe = [exe,'.exe']; end
 if ~exist(exe,'file'), build(), end
 
+datadir = [cwd, filesep, '..', filesep, 'iri2016', filesep, 'data'];
+
 t = num2str(datevec(time));
 
 cmd = [exe, ' ', t,...
-       ' ',num2str(glat), ' ', num2str(glon), ' ', num2str(altkmrange)];
+       ' ',num2str(glat), ' ', num2str(glon), ' ', num2str(altkmrange), ' ', datadir];
 [status,dat] = system(cmd);
 if status ~= 0, error(dat), end
 

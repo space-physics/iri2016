@@ -1,4 +1,3 @@
-program basictest
 use, intrinsic:: iso_fortran_env, only: stderr=>error_unit, stdout=>output_unit
 implicit none
 
@@ -10,15 +9,12 @@ integer :: ymdhms(6)
 real:: alt_km_range(3)
 real::  TECtotal, TECtop, TECbot
 
-#ifndef BIN_DIR
-#define BIN_DIR '.'
-#endif
-character(*), parameter :: datadir = BIN_DIR // '/../iri2016/data'
+character(:), allocatable :: datadir
 
 
 real :: oarr(100), outf(20,1000)
 real, allocatable :: altkm(:)
-character(80) :: argv
+character(1024) :: argv
 integer :: i
 
 jf = .true.
@@ -29,8 +25,8 @@ jf(28:30) = .false.
 jf(33:35) = .false.
 
 ! --- command line input
-if (command_argument_count() < 11) then
-  write(stderr,*) 'need input parameters: year month day hour minute second glat glon min_alt_km max_alt_km step_alt_km'
+if (command_argument_count() < 12) then
+  write(stderr,*) 'need input parameters: year month day hour minute second glat glon min_alt_km max_alt_km step_alt_km datadir'
   stop 1
 endif
 
@@ -50,6 +46,9 @@ do i = 1,3
   read(argv,*) alt_km_range(i)
 enddo
 
+call get_command_argument(12, argv)
+datadir = trim(argv)
+
 ! --- parse
 Nalt = int((alt_km_range(2) - alt_km_range(1)) / alt_km_range(3)) + 1
 allocate(altkm(Nalt))
@@ -57,7 +56,7 @@ allocate(altkm(Nalt))
 
 altkm(1) = alt_km_range(1)
 do i = 2,Nalt
-  altkm(i) = altkm(i-1) + alt_km_range(3) 
+  altkm(i) = altkm(i-1) + alt_km_range(3)
 enddo
 
 iyyyy = ymdhms(1)
@@ -68,7 +67,7 @@ dhour = ymdhms(4) + ymdhms(5) / 60. + ymdhms(6) / 3600.
 call IRI_SUB(JF,JMAG,glat,glon,IYYYY,MMDD,DHOUR+25., &
      alt_km_range(1), alt_km_range(2), alt_km_range(3), &
      OUTF,OARR, datadir)
- 
+
 ! --- for TEC
 call iri_tec(alt_km_range(1), alt_km_range(2), 2,&
              TECtotal, TECtop, TECbot)
@@ -87,4 +86,3 @@ enddo
 write(stdout, '(/,100ES16.8)') oarr
 
 end program
-
