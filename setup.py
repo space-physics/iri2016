@@ -5,14 +5,6 @@ from pathlib import Path
 """
 Because of bad bugs in IRI2016 itself, present even in plain Fortran usage, we can't safely use F2py, bad data can result.
 
-if os.name == 'nt':
-    sfn = Path(__file__).parent / 'setup.cfg'
-    stxt = sfn.read_text()
-    if '[build_ext]' not in stxt:
-        with sfn.open('a') as f:
-            f.write("[build_ext]\ncompiler = mingw32")
-
-
 src = [  # 'iriwebg.for',
     'irisub.for', 'irifun.for',
     'iritec.for', 'iridreg.for', 'igrf.for', 'cira.for', 'iriflip.for']
