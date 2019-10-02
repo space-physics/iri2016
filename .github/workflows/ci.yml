@@ -41,8 +41,6 @@ jobs:
     - uses: actions/setup-python@v1
       with:
         python-version: '3.x'
-    - run: echo "[build]`ncompiler=mingw32" | Out-File -Encoding ASCII ~/pydistutils.cfg
-      shell: powershell
     - run: cinst -y ninja
     - run: pip install -e .[tests]
     - run: pytest -r a -v

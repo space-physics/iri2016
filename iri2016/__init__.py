@@ -10,12 +10,17 @@ from typing import List, Sequence
 
 from .build import build
 
-R = Path(__file__).resolve().parents[1]
-BINDIR = R / "build"
-EXE = shutil.which("iri2016_driver", path=str(BINDIR))
+src_path = Path(__file__).resolve().parents[1]
+exe_path = src_path / "build"
+EXE = shutil.which("iri2016_driver", path=str(exe_path))
 if not EXE:
-    EXE = build()
-EXE = shutil.which("iri2016_driver", path=str(BINDIR))
+    try:
+        build("meson", src_path, exe_path)
+    except Exception:
+        build("cmake", src_path, exe_path)
+EXE = shutil.which("iri2016_driver", path=str(exe_path))
+if not EXE:
+    raise ImportError("IRI2016 executable not available.")
 
 SIMOUT = ["ne", "Tn", "Ti", "Te", "nO+", "nH+", "nHe+", "nO2+", "nNO+", "nCI", "nN+"]
 
@@ -58,10 +63,7 @@ def IRI(time: datetime, altkmrange: Sequence[float], glat: float, glon: float) -
         str(altkmrange[2]),
     ]
 
-    if not EXE:
-        raise ImportError("could not compile or find iri2016_driver")
-
-    ret = subprocess.check_output(cmd, universal_newlines=True, cwd=str(BINDIR))  # str for Windows
+    ret = subprocess.check_output(cmd, universal_newlines=True, cwd=str(exe_path))  # str for Windows
     # %% get altitude profile data
     Nalt = int((altkmrange[1] - altkmrange[0]) // altkmrange[2]) + 1
 
