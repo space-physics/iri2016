@@ -1,12 +1,12 @@
 import subprocess
 from dateutil.parser import parse
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 import xarray
 import io
 import shutil
 import numpy as np
-from typing import List, Sequence
+import typing
 
 from .build import build
 
@@ -26,25 +26,10 @@ if not EXE:
 
 SIMOUT = ["ne", "Tn", "Ti", "Te", "nO+", "nH+", "nHe+", "nO2+", "nNO+", "nCI", "nN+"]
 
-__all__ = ["IRI", "timeprofile", "geoprofile"]
+__all__ = ["IRI"]
 
 
-def datetimerange(start: datetime, end: datetime, step: timedelta) -> List[datetime]:
-    """like range() for datetime"""
-    if isinstance(start, str):
-        start = parse(start)
-
-    if isinstance(end, str):
-        end = parse(end)
-
-    assert isinstance(start, datetime)
-    assert isinstance(end, datetime)
-    assert isinstance(step, timedelta)
-
-    return [start + i * step for i in range((end - start) // step)]
-
-
-def IRI(time: datetime, altkmrange: Sequence[float], glat: float, glon: float) -> xarray.Dataset:
+def IRI(time: datetime, altkmrange: typing.Sequence[float], glat: float, glon: float) -> xarray.Dataset:
 
     if isinstance(time, str):
         time = parse(time)
@@ -91,59 +76,5 @@ def IRI(time: datetime, altkmrange: Sequence[float], glat: float, glon: float) -
 
     iono["TEC"] = (("time"), [arr[36]])
     iono["EqVertIonDrift"] = (("time"), [arr[43]])
-
-    return iono
-
-
-def timeprofile(tlim: tuple, dt: timedelta, altkmrange: list, glat: float, glon: float) -> xarray.Dataset:
-    """compute IRI altitude profile over time range for fixed lat/lon
-    """
-
-    T = datetimerange(tlim[0], tlim[1], dt)
-
-    iono: xarray.Dataset = None
-
-    f107 = []
-    ap = []
-    for t in T:
-        iri = IRI(t, altkmrange, glat, glon)
-        if iono is None:
-            iono = iri
-        else:
-            iono = xarray.concat((iono, iri), dim="time")
-
-        f107.append(iri.f107)
-        ap.append(iri.ap)
-
-    iono.attrs = iri.attrs
-    iono.attrs["f107"] = f107
-    iono.attrs["ap"] = ap
-
-    return iono
-
-
-def geoprofile(latrange: Sequence[float], glon: float, altkm: float, time: datetime) -> xarray.Dataset:
-    """compute IRI altitude profiles at time, over lat or lon range
-    """
-
-    glat = np.arange(*latrange)
-
-    iono: xarray.Dataset = None
-
-    f107 = []
-    ap = []
-    for l in glat:
-        iri = IRI(time, altkmrange=[altkm] * 3, glat=l, glon=glon)
-        if iono is None:
-            iono = iri
-        else:
-            iono = xarray.concat((iono, iri), dim="glat")
-
-        f107.append(iri.f107)
-        ap.append(iri.ap)
-
-    iono.attrs = iri.attrs
-    iono.attrs["f107"] = f107
-    iono.attrs["ap"] = ap
 
     return iono

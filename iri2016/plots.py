@@ -2,15 +2,10 @@ import xarray
 from matplotlib.pyplot import figure
 
 
-def timeprofile(iono: xarray.Dataset, Nplot: int = 4):
-    # %% Plots
+def timeprofile(iono: xarray.Dataset):
 
-    if Nplot > 2:
-        fig = figure(figsize=(16, 12))
-        axs = fig.subplots(Nplot, 1, sharex=True).ravel()
-    else:
-        fig = figure(figsize=(16, 6))
-        axs = fig.subplots(1, 2).ravel()
+    fig = figure(figsize=(16, 12))
+    axs = fig.subplots(4, 1, sharex=True).ravel()
 
     fig.suptitle(
         f"{str(iono.time[0].values)[:-13]} to "
@@ -24,7 +19,6 @@ def timeprofile(iono: xarray.Dataset, Nplot: int = 4):
     ax.plot(iono.time, iono["NmF1"], label="N$_m$F$_1$")
     ax.plot(iono.time, iono["NmE"], label="N$_m$E")
     ax.set_title("Maximum number densities vs. ionospheric layer")
-    ax.set_xlabel("Hour (UT)")
     ax.set_ylabel("(m$^{-3}$)")
     ax.set_yscale("log")
     ax.legend(loc="best")
@@ -34,37 +28,31 @@ def timeprofile(iono: xarray.Dataset, Nplot: int = 4):
     ax.plot(iono.time, iono["hmF1"], label="h$_m$F$_1$")
     ax.plot(iono.time, iono["hmE"], label="h$_m$E")
     ax.set_title("Height of maximum density vs. ionospheric layer")
-    ax.set_xlabel("Hour (UT)")
     ax.set_ylabel("(km)")
     ax.legend(loc="best")
-    # %%
-    if Nplot > 2:
-        ax = axs[2]
-
-        for a in iono.alt_km:
-            ax.plot(iono.time, iono["ne"].sel(alt_km=a), marker=".", label=f"{a.item()} km")
-        ax.set_xlabel("time UTC (hours)")
-        ax.set_ylabel("[m$^{-3}$]")
-        ax.set_title(f"$N_e$ vs. altitude and time")
-        ax.set_yscale("log")
-        ax.legend(loc="best")
-    # %%
-    if Nplot > 3:
-        ax = axs[3]
-        ax.plot(iono.time, iono["TEC"], label="TEC")
-        ax.set_xlabel("Hour (UT)")
-        ax.set_ylabel("(m$^{-2}$)")
-        # ax.set_yscale('log')
-        ax.legend(loc="best")
-    if Nplot > 4:
-        ax = axs[4]
-        ax.plot(iono.time, iono["EqVertIonDrift"], label=r"V$_y$")
-        ax.set_xlabel("Hour (UT)")
-        ax.set_ylabel("(m/s)")
-        ax.legend(loc="best")
+    # %% Tec(time)
+    ax = axs[2]
+    ax.plot(iono.time, iono["TEC"], label="TEC")
+    ax.set_ylabel("(m$^{-2}$)")
+    # ax.set_yscale('log')
+    ax.legend(loc="best")
+    # %% ion_drift(time)
+    ax = axs[3]
+    ax.plot(iono.time, iono["EqVertIonDrift"], label=r"V$_y$")
+    ax.set_xlabel("time (UTC)")
+    ax.set_ylabel("(m/s)")
+    ax.legend(loc="best")
 
     for a in axs.ravel():
         a.grid(True)
+
+    # %%  Ne(time)
+    fg = figure()
+    ax = fg.gca()
+    hi = ax.pcolormesh(iono.time, iono.alt_km, iono["ne"].values.T)
+    fg.colorbar(hi, ax=ax).set_label("[m$^{-3}$]")
+    ax.set_ylabel('altitude [km]')
+    ax.set_title(f"$N_e$ vs. altitude and time")
 
 
 def altprofile(iono: xarray.Dataset):

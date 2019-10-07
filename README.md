@@ -58,15 +58,30 @@ If you don't already have a Fortran compiler, install Gfortran by:
 
 ## Usage
 
-* Height-profile: plot density and temperatures vs [altitude](./AltitudeProfile.py)
+* Altitude Profile: plot density and temperatures vs altitude
+
+  ```sh
+  python AltitudeProfile.py 2003-11-21T12 -11.95 -76.77
+  ```
+
   ![image](./figures/iri1DExample01.png)
-* Latitudinal profile: plot densities and height at the peak of F2, F2, and E regions vs [geographic latitude](./LatitudeProfile.py)
+* Latitude profile: plot densities and height at the peak of F2, F2, and E regions vs geographic latitude
+
+  ```sh
+  python LatitudeProfile.py 2004-11-21T17 -76.77
+  ```
+
   ![image](./figures/iri1DExample02.png)
-* GMT profile: plot densities and height at the peak of F2, F2, and E regions vs universal [time](./TimeProfile.py)
+* Time profile: plot densities and height at the peak of F2, F2, and E regions vs UTC
+
+  ```sh
+  python TimeProfile.py 2014-11-21 2014-11-22 1 -11.95 -76.77
+  ```
+
   ![image](./figures/iri1DExample08.png)
-* Height vs GMT: plot Ne, Te, and Ti as a function of height and universal [time](./examples/example01.py)
+
   ![image](./figures/iri2DExample01.png)
-* Latitude vs Longitude: plot of foF2 a function of geographic latitude and [longitude](./examples/example02.py)
+* Latitude vs Longitude: plot of foF2 a function of geographic latitude and longitude
   ![image](./figures/iri2DExample02.png)
 
 ### Matlab / GNU Octave

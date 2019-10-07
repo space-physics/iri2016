@@ -1,1 +1,2 @@
-from .base import IRI, timeprofile, geoprofile
+from .base import IRI
+from .profile import timeprofile, geoprofile

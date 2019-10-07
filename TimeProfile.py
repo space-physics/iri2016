@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-""" Time Profile: IRI2016 """
 from datetime import timedelta
 from argparse import ArgumentParser
 import iri2016 as iri
