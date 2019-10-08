@@ -5,9 +5,16 @@ validateattributes(glon, {'numeric'}, {'scalar'})
 validateattributes(altkmrange, {'numeric'}, {'positive', 'vector','numel',3})
 %% binary IRI2016
 cwd = fileparts(mfilename('fullpath'));
-exe = [cwd,filesep,'..', filesep, 'build', filesep, 'iri2016_driver'];
-if ispc, exe = [exe,'.exe']; end
-if ~exist(exe,'file'), build(), end
+srcdir =   [cwd, filesep,'..'];
+builddir = [srcdir,filesep,'build'];
+exe = [builddir, filesep, 'iri2016_driver'];
+if ispc
+  exe = [exe,'.exe'];
+end
+if ~is_file(exe)
+  build('meson', srcdir, builddir)
+end
+assert(is_file(exe), ['could not build or find iri2016 executable: ', exe])
 
 datadir = [cwd, filesep, '..', filesep, 'iri2016', filesep, 'data'];
 

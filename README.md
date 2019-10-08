@@ -15,7 +15,7 @@ A Fortran compiler and CMake or
 [Meson](https://github.com/mesonbuild/meson/)
 is required to build the IRI2016 code.
 
-## Python
+## Install
 
 **Prerequisites**
 
@@ -25,11 +25,22 @@ is required to build the IRI2016 code.
   * MacOS/Homebrew: `brew install ninja`
   * Windows Chocolatey: `cinst -y ninja`
   * [direct download](https://github.com/ninja-build/ninja/releases) and extract, put directory in PATH environment variable.
-* Fortran compiler--just about any will do, here's how to get Gfortran:
+* Fortran compiler--just about any modern Fortran compiler will do. Here's how to get Gfortran:
   * Linux: `apt install gfortran`
   * Mac: `brew install gcc`
   * [Windows](https://www.scivision.dev/windows-gcc-gfortran-cmake-make-install/)
 
+and then:
+
+```sh
+cd iri2016
+
+meson build
+
+meson test -C build
+```
+
+### Python
 
 1. Install IRI2016 command-line driver program
    ```sh
@@ -45,21 +56,6 @@ is required to build the IRI2016 code.
    ```
 3. try example script e.g. [AltitudeProfile.py](./AltitudeProfile.py)
 
-## Matlab
-
-Drive the simulation via a seamless command line interface, example: [matlab/RunIRI2016.m](./matlab/RunIRI2016.m)
-
-
-
-## Compiler
-
-Any Fortran compiler will do.
-IRI2016 has been tested with compilers including:
-
-* Gfortran
-* Intel `ifort`
-* PGI `pgfortran`
-* Flang `flang`
 
 ## Usage
 
@@ -91,12 +87,14 @@ IRI2016 has been tested with compilers including:
 
 ### Matlab / GNU Octave
 IRI2016 is readily accessible from Matlab and GNU Octave.
+From within Matlab/Octave, verify everything is working by from the `iri2016/tests` directory:
 
-1. From Matlab, verify everything is working by from the `iri2016/` directory:
-   ```matlab
-   runtests('tests')
-   ```
-2. Use [iri2016.m](./matlab/iri2016.m) function to access IRI2016 quantities.  See [RunIRI2016.m](./matlab/RunIRI2016.m) for simple example use / plots.
+```matlab
+test_iri2016
+```
+
+* [iri2016.m](./matlab/iri2016.m) function accesses IRI2016 quantities.
+* [RunIRI2016.m](./matlab/RunIRI2016.m) is a simple example use with plots.
 
 ![Matlab IRI2016 plot](./figures/matlab.png)
 
@@ -106,17 +104,6 @@ IRI2016 is readily accessible from Matlab and GNU Octave.
 [regularly updated](http://irimodel.org/indices/).
 Currently we don't auto-update those.
 
-## Direct compilation
-
-These commands are not normally needed unless you want to work with the Fortran code more directly.
-
-### Fortran compile
-
-```sh
-meson build
-
-meson test -C build
-```
 
 ## Notes
 

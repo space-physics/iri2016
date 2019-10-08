@@ -1,13 +1,8 @@
+function build(build_sys, srcdir, builddir)
 
-cwd = fileparts(mfilename('fullpath'));
-
-srcdir =   [cwd, filesep,'..'];
-builddir = [cwd, filesep,'..',filesep,'build'];
-
-assert(exist(srcdir,'dir')==7, ['source directory ',srcdir,' does not exist'])
-
-try
-  meson(srcdir, builddir)
-catch
-  cmake(srcdir, builddir)
+switch build_sys
+  case 'meson', meson(srcdir, builddir)
+  case 'cmake', cmake(srcdir, builddir)
+  otherwise, error(['unknown build system ', build_sys])
 end
+end % function
