@@ -33,6 +33,8 @@ is required to build the IRI2016 code.
 and then:
 
 ```sh
+git clone https://github.com/space-physics/iri2016
+
 cd iri2016
 
 meson build
@@ -42,17 +44,17 @@ meson test -C build
 
 ### Python
 
+From the iri2016 directory:
+
 1. Install IRI2016 command-line driver program
    ```sh
    pip install --upgrade setuptools
 
-   git clone https://github.com/space-physics/iri2016
-
-   pip install -e iri2016[tests]
+   pip install -e .[tests]
    ```
 2. (optional) run selftest to ensure install was completed:
    ```sh
-   pytest iri2016
+   pytest
    ```
 3. try example script e.g. [AltitudeProfile.py](./AltitudeProfile.py)
 
