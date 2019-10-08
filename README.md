@@ -17,7 +17,19 @@ is required to build the IRI2016 code.
 
 ## Python
 
-Python >= 3.6 is required.
+**Prerequisites**
+
+* Python >= 3.6
+* Ninja-build obtained by:
+  * Linux: `apt install ninja-build`
+  * MacOS/Homebrew: `brew install ninja`
+  * Windows Chocolatey: `cinst -y ninja`
+  * [direct download](https://github.com/ninja-build/ninja/releases) and extract, put directory in PATH environment variable.
+* Fortran compiler--just about any will do, here's how to get Gfortran:
+  * Linux: `apt install gfortran`
+  * Mac: `brew install gcc`
+  * [Windows](https://www.scivision.dev/windows-gcc-gfortran-cmake-make-install/)
+
 
 1. Install IRI2016 command-line driver program
    ```sh
@@ -48,13 +60,6 @@ IRI2016 has been tested with compilers including:
 * Intel `ifort`
 * PGI `pgfortran`
 * Flang `flang`
-
-If you don't already have a Fortran compiler, install Gfortran by:
-
-* Linux: `apt install gfortran`
-* Mac: `brew install gcc`
-* [Windows](https://www.scivision.dev/windows-gcc-gfortran-cmake-make-install/)
-
 
 ## Usage
 

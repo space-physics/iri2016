@@ -2,14 +2,7 @@ project('iri2016', 'fortran',
   default_options : ['default_library=static', 'buildtype=release'])
 
 fc = meson.get_compiler('fortran')
-
-if fc.get_id() == 'intel'
-  oldargs = '-nowarn'
-elif fc.get_id() == 'intel-cl'
-  oldargs = '/nowarn'
-else
-  oldargs = '-w'
-endif
+oldargs = fc.first_supported_argument(['/nowarn', '-nowarn', '-w'])
 
 subdir('iri2016/src')
 

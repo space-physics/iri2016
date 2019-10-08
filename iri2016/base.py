@@ -16,10 +16,7 @@ src_path = R.parent
 exe_path = src_path / "build"
 EXE = shutil.which("iri2016_driver", path=str(exe_path))
 if not EXE:
-    try:
-        build("meson", src_path, exe_path)
-    except Exception:
-        build("cmake", src_path, exe_path)
+    build("meson", src_path, exe_path)
 EXE = shutil.which("iri2016_driver", path=str(exe_path))
 if not EXE:
     raise ImportError("IRI2016 executable not available.")
