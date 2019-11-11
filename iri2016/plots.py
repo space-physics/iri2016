@@ -51,7 +51,7 @@ def timeprofile(iono: xarray.Dataset):
     ax = fg.gca()
     hi = ax.pcolormesh(iono.time, iono.alt_km, iono["ne"].values.T)
     fg.colorbar(hi, ax=ax).set_label("[m$^{-3}$]")
-    ax.set_ylabel('altitude [km]')
+    ax.set_ylabel("altitude [km]")
     ax.set_title(f"$N_e$ vs. altitude and time")
 
 

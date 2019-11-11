@@ -1,3 +1,2 @@
-include src/CMakeLists.txt src/meson.build
-include LICENSE
-recursive-include tests *.py
+include iri2016/CMakeLists.txt iri2016/src/CMakeLists.txt iri2016/meson.build iri2016/src/meson.build
+recursive-include iri2016/src *.for *.f90

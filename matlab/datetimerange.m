@@ -1,5 +1,5 @@
 function times = datetimerange(t0, t1, ts)
-
+narginchk(3,3)
 validateattributes(ts, {'numeric'}, {'scalar', 'positive'})
 % ts: seconds
 

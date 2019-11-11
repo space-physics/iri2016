@@ -5,9 +5,9 @@ validateattributes(glon, {'numeric'}, {'scalar'})
 validateattributes(altkmrange, {'numeric'}, {'positive', 'vector','numel',3})
 %% binary IRI2016
 cwd = fileparts(mfilename('fullpath'));
-srcdir =   [cwd, filesep,'..'];
-builddir = [srcdir,filesep,'build'];
-exe = [builddir, filesep, 'iri2016_driver'];
+srcdir =   [cwd, '/../iri2016'];
+builddir = [srcdir, '/build'];
+exe = [builddir, '/iri2016_driver'];
 if ispc
   exe = [exe,'.exe'];
 end

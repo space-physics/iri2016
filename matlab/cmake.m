@@ -1,5 +1,5 @@
 function cmake(srcdir, builddir)
-
+narginchk(2,2)
 validateattributes(srcdir,{'char'},{'vector'})
 validateattributes(builddir,{'char'},{'vector'})
 

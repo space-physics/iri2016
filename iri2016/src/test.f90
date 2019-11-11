@@ -6,7 +6,7 @@ logical, parameter :: jf(50) = .true.
 integer, parameter :: jmag = 1, iyyyy=1980, mmdd=0321, dhour=12, Nalt = 21
 real, parameter :: glat=0., glon=0.
 real,parameter :: alt_km_range(3) = [100., 500., 20.]
-character(*), parameter :: datadir='../data'
+character(*), parameter :: datadir='data'
 
 real :: oarr(100), outf(20,1000), altkm(Nalt)
 integer :: i

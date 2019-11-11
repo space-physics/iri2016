@@ -12,14 +12,21 @@ from .build import build
 
 R = Path(__file__).resolve().parent
 datadir = R / "data"
-src_path = R.parent
-exe_path = src_path / "build"
-EXE = shutil.which("iri2016_driver", path=str(exe_path))
-if not EXE:
-    build("meson", src_path, exe_path)
-EXE = shutil.which("iri2016_driver", path=str(exe_path))
-if not EXE:
-    raise ImportError("IRI2016 executable not available.")
+SDIR = R
+BDIR = SDIR / "build"
+exe_name = "iri2016_driver"
+
+EXE = shutil.which(exe_name, path=str(BDIR))
+if EXE is None:
+    if shutil.which("meson"):
+        build("meson", SDIR, BDIR)
+    elif shutil.which("cmake"):
+        build("cmake", SDIR, BDIR)
+    else:
+        raise RuntimeError("Need Meson or CMake to build")
+    EXE = shutil.which(exe_name, path=str(BDIR))
+    if EXE is None:
+        raise ModuleNotFoundError(f"could not build {exe_name}, binary not found in {BDIR}")
 
 SIMOUT = ["ne", "Tn", "Ti", "Te", "nO+", "nH+", "nHe+", "nO2+", "nNO+", "nCI", "nN+"]
 
@@ -50,7 +57,7 @@ def IRI(time: datetime, altkmrange: typing.Sequence[float], glat: float, glon: f
         str(datadir),
     ]
 
-    ret = subprocess.check_output(cmd, universal_newlines=True, cwd=str(exe_path))  # str for Windows
+    ret = subprocess.check_output(cmd, universal_newlines=True, cwd=str(BDIR))  # str for Windows
     # %% get altitude profile data
     Nalt = int((altkmrange[1] - altkmrange[0]) // altkmrange[2]) + 1
 

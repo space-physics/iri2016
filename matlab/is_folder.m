@@ -5,6 +5,7 @@
 function ret = is_folder(path)
 % overloading doesn't work in Octave since it is a core *library* function
 % there doesn't appear to be a solution besides renaming this function.
+narginchk(1,1)
 
 if exist('isfolder', 'builtin') == 5 || exist('isfolder', 'file') == 2
   ret = isfolder(path);

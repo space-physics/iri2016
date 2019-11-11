@@ -5,7 +5,7 @@
 function ret = is_file(path)
 % overloading doesn't work in Octave since it is a core *library* function
 % there doesn't appear to be a solution besides renaming this function.
-
+narginchk(1,1)
 if exist('isfile', 'builtin') == 5 || exist('isfile', 'file') == 2
   ret = isfile(path);
 else

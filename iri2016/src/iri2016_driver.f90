@@ -79,10 +79,10 @@ oarr(38) = TECtop ! % of total
 
 !print *,'Altitude    Ne    O2+'
 do i = 1,Nalt
-  write(stdout, '(F10.3, 11ES16.8)') altkm(i), outf(:11,i)
+  print '(F10.3, 11ES16.8)', altkm(i), outf(:11,i)
 enddo
 
 
-write(stdout, '(/,100ES16.8)') oarr
+print '(/,100ES16.8)', oarr
 
 end program
