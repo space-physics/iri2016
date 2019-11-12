@@ -20,7 +20,7 @@ jobs:
     - name: Install Prereqs
       run: |
         sudo apt update -yq
-        sudo apt install -yq --no-install-recommends ninja-build gfortran
+        sudo apt install -yq --no-install-recommends gfortran
     - run: pip install .[tests,lint]
     - run: flake8
     - run: mypy .
@@ -37,7 +37,7 @@ jobs:
     - uses: actions/setup-python@v1
       with:
         python-version: '3.x'
-    - run: brew install gcc ninja
+    - run: brew install gcc
     - run: pip install .[tests]
     - run: pytest
       working-directory: tests
@@ -52,7 +52,6 @@ jobs:
     - uses: actions/setup-python@v1
       with:
         python-version: '3.x'
-    - run: cinst -y ninja
     - run: pip install .[tests]
     - run: pytest
       working-directory: tests

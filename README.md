@@ -11,20 +11,13 @@
 ![image](./figures/iri2DExample02.gif)
 
 Python and [Matlab](#matlab) interfaces to the International Reference Ionosphere (IRI) 2016 model.
-A Fortran compiler and CMake or
-[Meson](https://github.com/mesonbuild/meson/)
-is required to build the IRI2016 code.
+A Fortran compiler is required to build the IRI2016 code.
 
 ## Install
 
 **Prerequisites**
 
 * Python >= 3.6
-* Ninja-build obtained by:
-  * Linux: `apt install ninja-build`
-  * MacOS/Homebrew: `brew install ninja`
-  * Windows Chocolatey: `cinst -y ninja`
-  * [direct download](https://github.com/ninja-build/ninja/releases) and extract, put directory in PATH environment variable.
 * Fortran compiler--just about any modern Fortran compiler will do. Here's how to get Gfortran:
   * Linux: `apt install gfortran`
   * Mac: `brew install gcc`
@@ -43,6 +36,10 @@ git clone https://github.com/space-physics/iri2016
 
 pip install -e iri2016
 ```
+
+This Python wrapper of IRI2016 uses our build-on-run technique.
+The first time you use IRI2016, you will see messages from the Meson build system and your C compiler.
+
 
 ## Usage
 
@@ -73,8 +70,9 @@ pip install -e iri2016
   ![image](./figures/iri2DExample02.png)
 
 ### Matlab / GNU Octave
+
 IRI2016 is readily accessible from Matlab and GNU Octave.
-From within Matlab/Octave, verify everything is working by from the `iri2016/tests` directory:
+From within Matlab / Octave, verify everything is working by from the `iri2016/tests` directory:
 
 ```matlab
 test_iri2016
