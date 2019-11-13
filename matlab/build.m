@@ -1,5 +1,18 @@
-function build(build_sys, srcdir, builddir)
-narginchk(3,3)
+function build(srcdir, builddir, build_sys)
+narginchk(2,3)
+
+assert(is_folder(srcdir), ['source directory not found: ', srcdir])
+
+if nargin < 3
+  if system('meson --version') == 0 && system('ninja --version') == 0
+    build_sys = 'meson';
+  elseif system('cmake --version') == 0
+    build_sys = 'cmake';
+  else
+    error('could not find Meson + Ninja or CMake')
+  end
+end
+
 switch build_sys
   case 'meson', meson(srcdir, builddir)
   case 'cmake', cmake(srcdir, builddir)

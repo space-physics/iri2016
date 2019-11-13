@@ -11,3 +11,9 @@ iono = iri2016(time, glat, glon,  altkmrange);
 
 
 assert(abs(iono.Ne(11) - 3.986688e9) < 1e5, 'Ne error excessive')
+
+if isoctave
+  disp('OK: IRI2016 GNU Octave')
+else
+  disp('OK: IRI2016 Matlab')
+end

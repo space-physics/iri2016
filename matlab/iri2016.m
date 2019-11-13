@@ -12,7 +12,7 @@ if ispc
   exe = [exe,'.exe'];
 end
 if ~is_file(exe)
-  build('meson', srcdir, builddir)
+  build(srcdir, builddir)
 end
 assert(is_file(exe), ['could not build or find iri2016 executable: ', exe])
 

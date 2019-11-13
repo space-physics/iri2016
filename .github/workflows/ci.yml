@@ -20,7 +20,7 @@ jobs:
     - name: Install Prereqs
       run: |
         sudo apt update -yq
-        sudo apt install -yq --no-install-recommends gfortran
+        sudo apt install -yq --no-install-recommends gfortran octave
     - run: pip install .[tests,lint]
     - run: flake8
     - run: mypy .

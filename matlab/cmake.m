@@ -1,11 +1,8 @@
 function cmake(srcdir, builddir)
+% assumes CMake >= 3.13
 narginchk(2,2)
 validateattributes(srcdir,{'char'},{'vector'})
 validateattributes(builddir,{'char'},{'vector'})
-
-[status, ret] = system('cmake --version');
-if status~=0, error(ret), end
-disp(ret)
 
 tail = [' -S ', srcdir, ' -B ', builddir];
 
