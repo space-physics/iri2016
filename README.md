@@ -34,12 +34,28 @@ if you want the latest development version:
 ```sh
 git clone https://github.com/space-physics/iri2016
 
-pip install -e iri2016
+cd iri2016
+
+python3 setup.py develop --user
 ```
 
 This Python wrapper of IRI2016 uses our build-on-run technique.
 The first time you use IRI2016, you will see messages from the Meson build system and your C compiler.
 
+
+### Troubleshooting
+
+if error
+
+```
+ImportError: libf77blas.so.3: cannot open shared object file: No such file or directory
+```
+
+try installing Atlas math library used by Numpy
+
+```sh
+apt install libatlas-base-dev
+```
 
 ## Usage
 
