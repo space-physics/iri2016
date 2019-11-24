@@ -5,7 +5,7 @@ from matplotlib.pyplot import figure
 def timeprofile(iono: xarray.Dataset):
 
     fig = figure(figsize=(16, 12))
-    axs = fig.subplots(4, 1, sharex=True).ravel()
+    axs = fig.subplots(3, 1, sharex=True).ravel()
 
     fig.suptitle(
         f"{str(iono.time[0].values)[:-13]} to "
@@ -14,7 +14,6 @@ def timeprofile(iono: xarray.Dataset):
     )
 
     ax = axs[0]
-
     ax.plot(iono.time, iono["NmF2"], label="N$_m$F$_2$")
     ax.plot(iono.time, iono["NmF1"], label="N$_m$F$_1$")
     ax.plot(iono.time, iono["NmE"], label="N$_m$E")
@@ -22,29 +21,48 @@ def timeprofile(iono: xarray.Dataset):
     ax.set_ylabel("(m$^{-3}$)")
     ax.set_yscale("log")
     ax.legend(loc="best")
-
     ax = axs[1]
     ax.plot(iono.time, iono["hmF2"], label="h$_m$F$_2$")
     ax.plot(iono.time, iono["hmF1"], label="h$_m$F$_1$")
     ax.plot(iono.time, iono["hmE"], label="h$_m$E")
     ax.set_title("Height of maximum density vs. ionospheric layer")
     ax.set_ylabel("(km)")
+    ax.set_ylim((90, None))
     ax.legend(loc="best")
-    # %% Tec(time)
     ax = axs[2]
-    ax.plot(iono.time, iono["TEC"], label="TEC")
-    ax.set_ylabel("(m$^{-2}$)")
-    # ax.set_yscale('log')
-    ax.legend(loc="best")
-    # %% ion_drift(time)
-    ax = axs[3]
-    ax.plot(iono.time, iono["EqVertIonDrift"], label=r"V$_y$")
-    ax.set_xlabel("time (UTC)")
-    ax.set_ylabel("(m/s)")
-    ax.legend(loc="best")
+    ax.plot(iono.time, iono["foF2"], label="foF2")
+    ax.set_title("F2 layer plasma frequency")
+    ax.set_ylabel("(MHz)")
 
     for a in axs.ravel():
         a.grid(True)
+
+    # %%
+    fig = figure(figsize=(16, 12))
+    axs = fig.subplots(1, 1, sharex=True)
+
+    fig.suptitle(
+        f"{str(iono.time[0].values)[:-13]} to "
+        f"{str(iono.time[-1].values)[:-13]}\n"
+        f"Glat, Glon: {iono.glat.item()}, {iono.glon.item()}"
+    )
+    # %% Tec(time)
+    ax = axs
+    ax.plot(iono.time, iono["TEC"], label="TEC")
+    ax.set_ylabel("(m$^{-2}$)")
+    ax.set_title("Total Electron Content (TEC)")
+    # ax.set_yscale('log')
+    ax.legend(loc="best")
+    ax.grid(True)
+    # %% ion_drift(time)
+    # ax = axs[1]
+    # ax.plot(iono.time, iono["EqVertIonDrift"], label=r"V$_y$")
+    # ax.set_xlabel("time (UTC)")
+    # ax.set_ylabel("(m/s)")
+    # ax.legend(loc="best")
+
+    # for a in axs.ravel():
+    #    a.grid(True)
 
     # %%  Ne(time)
     fg = figure()

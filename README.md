@@ -79,7 +79,9 @@ apt install libatlas-base-dev
   python TimeProfile.py 2014-11-21 2014-11-22 1 -11.95 -76.77
   ```
 
-  ![image](./figures/iri1DExample08.png)
+  ![image](./figures/plasma.png)
+
+  ![image](./figures/tec.png)
 
   ![image](./figures/iri2DExample01.png)
 * Latitude vs Longitude: plot of foF2 a function of geographic latitude and longitude

@@ -20,7 +20,7 @@ integer :: i
 jf = .true.
 jf(4:6) = .false.
 jf(22:23) = .false.
-jf(26) = .false.
+jf(26) = .true.  ! jf(26) == jf(8) == .true. for foF2
 jf(28:30) = .false.
 jf(33:35) = .false.
 
