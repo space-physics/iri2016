@@ -4,6 +4,7 @@ on:
   push:
     paths:
     - "**.py"
+    - ".github/workflows/ci.yml"
   pull_request:
 
 jobs:
@@ -22,8 +23,8 @@ jobs:
 
     - run: pytest
       env:
-        CC: gcc
-        FC: gfortran
+        CC: gcc-9
+        FC: gfortran-9
 
   macos:
     runs-on: macos-latest
