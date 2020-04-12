@@ -5,27 +5,22 @@ on:
     paths:
     - "**.py"
   pull_request:
-    paths:
-    - "**.py"
 
 jobs:
 
   linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - uses: actions/setup-python@v1
       with:
         python-version: '3.x'
-    - name: Install Prereqs
-      run: |
-        sudo apt update -yq
-        sudo apt install -yq --no-install-recommends gfortran octave
+
     - run: pip install .[tests,lint]
     - run: flake8
     - run: mypy .
+
     - run: pytest
-      working-directory: tests
       env:
         CC: gcc
         FC: gfortran
@@ -33,14 +28,14 @@ jobs:
   macos:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - uses: actions/setup-python@v1
       with:
         python-version: '3.x'
-    - run: brew install gcc
+
     - run: pip install .[tests]
+
     - run: pytest
-      working-directory: tests
       env:
         CC: gcc-9
         FC: gfortran-9
@@ -48,13 +43,14 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - uses: actions/setup-python@v1
       with:
         python-version: '3.x'
+
     - run: pip install .[tests]
+
     - run: pytest
-      working-directory: tests
       env:
         CC: gcc
         FC: gfortran

@@ -1,18 +1,10 @@
 function cmake(srcdir, builddir)
-% assumes CMake >= 3.13
+% build program using CMake and default generator
+% to specify generator with CMake >= 3.15 set environment variable CMAKE_GENERATOR
+
 narginchk(2,2)
-validateattributes(srcdir,{'char'},{'vector'})
-validateattributes(builddir,{'char'},{'vector'})
 
-tail = [' -S ', srcdir, ' -B ', builddir];
-
-if ispc
-  ccmd = ['cmake -G "MinGW Makefiles" -DCMAKE_SH="CMAKE_SH-NOTFOUND" ', tail];
-else
-  ccmd = ['cmake ',tail];
-end
-
-runcmd(ccmd)
+runcmd(['cmake -S', srcdir, ' -B', builddir])
 
 runcmd(['cmake --build ',builddir,' --parallel'])
 

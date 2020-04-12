@@ -1,7 +1,5 @@
 function meson(srcdir, builddir)
 narginchk(2,2)
-validateattributes(srcdir,{'char'},{'vector'})
-validateattributes(builddir,{'char'},{'vector'})
 
 cmd = ['meson setup ',builddir,' ',srcdir];
 if is_file([builddir, '/build.ninja'])

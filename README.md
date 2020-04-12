@@ -1,12 +1,10 @@
+# IRI2016 ionosphere model from Python and Matlab
+
 [![image](https://zenodo.org/badge/DOI/10.5281/zenodo.240895.svg)](https://doi.org/10.5281/zenodo.240895)
-
-[![Actions Status](https://github.com/space-physics/iri2016/workflows/ci/badge.svg)](https://github.com/space-physics/iri2016/actions)
-
+![Actions Status](https://github.com/space-physics/iri2016/workflows/ci/badge.svg)
 [![PyPi version](https://img.shields.io/pypi/pyversions/iri2016.svg)](https://pypi.python.org/pypi/iri2016)
 [![PyPi Download stats](http://pepy.tech/badge/iri2016)](http://pepy.tech/project/iri2016)
 
-
-# IRI2016 ionosphere model from Python and Matlab
 
 ![image](./figures/iri2DExample02.gif)
 
@@ -18,10 +16,10 @@ A Fortran compiler is required to build the IRI2016 code.
 **Prerequisites**
 
 * Python >= 3.6
-* Fortran compiler--just about any modern Fortran compiler will do. Here's how to get Gfortran:
+* Fortran compiler--any modern Fortran compiler will do. Here's how to get Gfortran:
   * Linux: `apt install gfortran`
   * Mac: `brew install gcc`
-  * [Windows](https://www.scivision.dev/windows-gcc-gfortran-cmake-make-install/)
+  * Windows: consider [MSYS2](https://www.scivision.dev/install-msys2-windows/)
 
 and then install latest release:
 

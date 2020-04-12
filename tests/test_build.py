@@ -2,12 +2,16 @@
 import pytest
 import iri2016.build as build
 from pathlib import Path
+import shutil
 
 R = Path(__file__).parent.resolve()
 
 
 @pytest.mark.parametrize("build_sys", ["cmake", "meson"])
 def test_build(build_sys, tmp_path):
+    if not shutil.which(build_sys):
+        pytest.skip(f"{build_sys} not available.")
+
     if build_sys == "cmake" and not build.check_cmake_version("3.13"):
         pytest.skip("Too old CMake")
 

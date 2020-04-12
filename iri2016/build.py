@@ -7,7 +7,6 @@ https://www.scivision.dev
 import shutil
 from pathlib import Path
 import subprocess
-import os
 import typing
 import sys
 import pkg_resources
@@ -44,9 +43,7 @@ def cmake_setup(src_dir: Path, bin_dir: Path):
     if cfgfn.is_file():
         cfgfn.unlink()
 
-    wopts = ["-G", "MinGW Makefiles", '-DCMAKE_SH="CMAKE_SH-NOTFOUND'] if os.name == "nt" else []
-
-    subprocess.run([cmake_exe, "-S", str(src_dir), "-B", str(bin_dir)] + wopts)
+    subprocess.run([cmake_exe, "-S", str(src_dir), "-B", str(bin_dir)])
 
     subprocess.run([cmake_exe, "--build", str(bin_dir), "--parallel"])
 
@@ -91,6 +88,8 @@ def get_libpath(bin_dir: Path, stem: str) -> Path:
         dllfn = bin_dir / ("lib" + stem + ".so")
     elif sys.platform == "darwin":
         dllfn = bin_dir / ("lib" + stem + ".dylib")
+    else:
+        raise ValueError(f"Unknown platform {sys.platform}")
 
     if not dllfn.is_file():
         dllfn = None
