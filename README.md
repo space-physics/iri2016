@@ -40,20 +40,21 @@ python3 setup.py develop --user
 This Python wrapper of IRI2016 uses our build-on-run technique.
 The first time you use IRI2016, you will see messages from the Meson build system and your C compiler.
 
+### Manual build
 
-### Troubleshooting
-
-if error
-
-```
-ImportError: libf77blas.so.3: cannot open shared object file: No such file or directory
-```
-
-try installing Atlas math library used by Numpy
+This should not be necessary, but is included for troubleshooting purposes.
+This assumess you have a local copy of IRI2016 like:
 
 ```sh
-apt install libatlas-base-dev
+git clone https://github.com/space-physics/iri2016
+
+cd iri2016
+
+cmake -S iri2016 -B iri2016/build
+
+cmake --build iri2016/build
 ```
+
 
 ## Usage
 
@@ -109,3 +110,17 @@ Currently we don't auto-update those.
 ## Notes
 
 * [2016 presentation](https://doi.org/10.5281/zenodo.1493021)
+
+### Troubleshooting
+
+if error
+
+```
+ImportError: libf77blas.so.3: cannot open shared object file: No such file or directory
+```
+
+try installing Atlas math library used by Numpy
+
+```sh
+apt install libatlas-base-dev
+```
