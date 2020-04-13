@@ -15,7 +15,7 @@ def test_build(build_sys, tmp_path):
     if build_sys == "cmake" and not build.check_cmake_version("3.13"):
         pytest.skip("Too old CMake")
 
-    build.build(build_sys, R.parent, tmp_path)
+    build.build(R.parent, tmp_path, build_sys)
 
 
 def test_bad(tmp_path):

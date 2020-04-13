@@ -18,7 +18,7 @@ SRCDIR = R
 BINDIR = SRCDIR / "build"
 
 
-def build(build_sys: str, src_dir: Path = SRCDIR, bin_dir: Path = BINDIR):
+def build(src_dir: Path = SRCDIR, bin_dir: Path = BINDIR, build_sys: str = "cmake"):
     """
     attempts build with Meson or CMake
     """
@@ -99,7 +99,7 @@ def get_libpath(bin_dir: Path, stem: str) -> Path:
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    p.add_argument("buildsys", choices=["meson", "cmake"])
+    p.add_argument("buildsys", choices=["cmake", "meson"])
     P = p.parse_args()
 
-    build(P.buildsys)
+    build(SRCDIR, BINDIR, P.buildsys)

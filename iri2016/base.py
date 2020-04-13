@@ -18,12 +18,8 @@ exe_name = "iri2016_driver"
 
 EXE = shutil.which(exe_name, path=str(BDIR))
 if EXE is None:
-    if shutil.which("meson"):
-        build("meson", SDIR, BDIR)
-    elif shutil.which("cmake"):
-        build("cmake", SDIR, BDIR)
-    else:
-        raise RuntimeError("Need Meson or CMake to build")
+    build(SDIR, BDIR)
+
     EXE = shutil.which(exe_name, path=str(BDIR))
     if EXE is None:
         raise ModuleNotFoundError(f"could not build {exe_name}, binary not found in {BDIR}")
