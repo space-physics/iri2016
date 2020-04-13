@@ -1,16 +1,23 @@
 project('iri2016', 'fortran',
-  default_options : ['default_library=static', 'buildtype=release'])
+  default_options : ['default_library=static', 'buildtype=release', 'warning_level=0', 'fortran_std=legacy'])
 
 fc = meson.get_compiler('fortran')
-oldargs = fc.first_supported_argument(['/nowarn', '-nowarn', '-w'])
+
+if fc.get_id() == 'gcc'
+  add_project_arguments('-static', language: 'fortran')
+elif fc.get_id() == 'intel'
+  add_project_arguments('-static-intel', language: 'fortran')
+endif
 
 subdir('src')
 
-driver = executable('iri2016_driver', 'src/iri2016_driver.f90',
-  link_with: iri2016)
+driver = executable('iri2016_driver',
+  sources: 'src/iri2016_driver.f90',
+  link_with : iri_lib)
 
-testexe = executable('testiri2016', 'src/test.f90',
-  link_with: iri2016)
+testexe = executable('test_iri2016',
+  sources: 'src/test.f90',
+  link_with: iri_lib)
 
 test('IRI2016', testexe,
   timeout: 15,
