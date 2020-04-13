@@ -1,4 +1,6 @@
 name: ci
+env:
+  CMAKE_GENERATOR: Ninja
 
 on:
   push:
@@ -17,7 +19,11 @@ jobs:
       with:
         python-version: '3.x'
 
-    - run: pip install .[tests,lint]
+    - name: prereqs
+      run: |
+        pip install .[tests,lint]
+        pip install ninja
+
     - run: flake8
     - run: mypy .
 
@@ -34,7 +40,10 @@ jobs:
       with:
         python-version: '3.x'
 
-    - run: pip install .[tests]
+    - name: prereqs
+      run: |
+        pip install .[tests]
+        brew install ninja
 
     - run: pytest
       env:
@@ -49,7 +58,10 @@ jobs:
       with:
         python-version: '3.x'
 
-    - run: pip install .[tests]
+    - name: prereqs
+      run: |
+        pip install .[tests]
+        cinst -y ninja
 
     - run: pytest
       env:
