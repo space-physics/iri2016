@@ -88,6 +88,10 @@ cmake --build iri2016/build
 * Latitude vs Longitude: plot of foF2 a function of geographic latitude and longitude
   ![image](./figures/iri2DExample02.png)
 
+### setting JF flags
+
+[iri2016.for](./iri2016/src/iri2016sub.for) has a few dozen logical flags stored in variable JF. To reconfigure those flags, edit [iri2016_driver.f90](./iri2016/src/iri2016_driver.f90) and recompile iri2016_driver.exe.
+
 ### Matlab / GNU Octave
 
 IRI2016 is readily accessible from Matlab and GNU Octave.
