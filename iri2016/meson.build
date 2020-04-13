@@ -3,12 +3,6 @@ project('iri2016', 'fortran',
 
 fc = meson.get_compiler('fortran')
 
-if fc.get_id() == 'gcc'
-  add_project_arguments('-static', language: 'fortran')
-elif fc.get_id() == 'intel'
-  add_project_arguments('-static-intel', language: 'fortran')
-endif
-
 subdir('src')
 
 driver = executable('iri2016_driver',

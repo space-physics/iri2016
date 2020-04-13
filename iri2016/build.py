@@ -25,8 +25,6 @@ def build(src_dir: Path = SRCDIR, bin_dir: Path = BINDIR, build_sys: str = "cmak
     if build_sys == "meson":
         meson_setup(src_dir, bin_dir)
     elif build_sys == "cmake":
-        if not check_cmake_version("3.13"):
-            raise ValueError("Need at least CMake 3.13")
         cmake_setup(src_dir, bin_dir)
     else:
         raise ValueError("Unknown build system {}".format(build_sys))
@@ -36,9 +34,9 @@ def cmake_setup(src_dir: Path, bin_dir: Path):
     """
     attempt to build using CMake >= 3
     """
-    cmake_exe = shutil.which("cmake")
-    if not cmake_exe:
-        raise FileNotFoundError("CMake not available")
+
+    cmake_exe = check_cmake_version("3.13")
+
     cfgfn = bin_dir / "CMakeCache.txt"
     if cfgfn.is_file():
         cfgfn.unlink()
@@ -68,17 +66,20 @@ def meson_setup(src_dir: Path, bin_dir: Path):
     subprocess.run([meson_exe, "test", "-C", str(bin_dir)])
 
 
-def check_cmake_version(min_version: str) -> bool:
+def check_cmake_version(min_version: str) -> str:
     cmake = shutil.which("cmake")
     if not cmake:
-        return False
+        raise FileNotFoundError("CMake not found")
 
     cmake_version = subprocess.check_output([cmake, "--version"], universal_newlines=True).split()[2]
 
     pmin = pkg_resources.parse_version(min_version)
     pcmake = pkg_resources.parse_version(cmake_version)
 
-    return pcmake >= pmin
+    if pcmake < pmin:
+        raise ValueError(f"CMake {cmake_version} < {min_version}")
+
+    return cmake
 
 
 def get_libpath(bin_dir: Path, stem: str) -> Path:
