@@ -90,7 +90,7 @@ cmake --build iri2016/build
 
 ### setting JF flags
 
-[iri2016.for](./iri2016/src/irisub.for) has a few dozen logical flags stored in variable JF. To reconfigure those flags, edit [iri2016_driver.f90](./iri2016/src/iri2016_driver.f90) and recompile iri2016_driver.exe.
+[irisub.for](./iri2016/src/irisub.for) has a few dozen logical flags stored in variable JF. To reconfigure those flags, edit [iri2016_driver.f90](./iri2016/src/iri2016_driver.f90) and recompile iri2016_driver.exe.
 
 ### Matlab / GNU Octave
 

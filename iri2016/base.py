@@ -76,6 +76,6 @@ def IRI(time: datetime, altkmrange: typing.Sequence[float], glat: float, glon: f
 
     iono["TEC"] = (("time"), [arr[36]])
     iono["EqVertIonDrift"] = (("time"), [arr[43]])
-    iono["foF2"] = (("time"), [arr[88]])
+    iono["foF2"] = (("time"), [arr[99]])
 
     return iono

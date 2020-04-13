@@ -1,35 +1,37 @@
-C IRIFLIP.for 
+C IRIFLIP.for
 C
 C 2012.00 10/05/11 IRI-2012: bottomside B0 B1 model (SHAMDB0D, SHAB1D),
 C 2012.00 10/05/11    bottomside Ni model (iriflip.for), auroral foE
 C 2012.00 10/05/11    storm model (storme_ap), Te with PF10.7 (elteik),
-C 2012.00 10/05/11    oval kp model (auroral_boundary), IGRF-11(igrf.for), 
+C 2012.00 10/05/11    oval kp model (auroral_boundary), IGRF-11(igrf.for),
 C 2012.00 10/05/11    NRLMSIS00 (cira.for), CGM coordinates, F10.7 daily
 C 2012.00 10/05/11    81-day 365-day indices (apf107.dat), ap->kp (ckp),
 C 2012.00 10/05/11    array size change jf(50) outf(20,1000), oarr(100).
 C 2012.01 12/12/11 Deleted ALT_RATES (not used)
-C 2012.01 01/04/12 Deleted FINDAP,READAP,CONV_DATE,GET_DATA,RATCHK (not used)
-C 2012.01 01/04/12 Deleted BRACE,ACTUAL_DAY,EPHEM SOLDEC,TFILE,RUN_ERROR (not used)
-C 2012.01 01/04/12 COP2D: 99 FOMRAT ',' missing; commented out all WRITEs
-C 2014.01 07/17/14 COP4S: NPLUS=0; PR(13)=0.0 ------------------------- A Shabanloui
+C 2012.02 01/04/12 Deleted FINDAP,READAP,CONV_DATE,GET_DATA,RATCHK (not used)
+C 2012.02 01/04/12 Deleted BRACE,ACTUAL_DAY,EPHEM SOLDEC,TFILE,RUN_ERROR (not used)
+C 2012.02 01/04/12 COP2D: 99 FOMRAT ',' missing; commented out all WRITEs
+C 2012.03 07/17/14 COP4S: NPLUS=0; PR(13)=0.0 ------------------------- A Shabanloui
+C 2012.04 04/16/18 Versioning now based on year of major releases
 C 2016.01 09/08/16 Main: NEWTON replaced by iteration procedure ------- B Gustavsson
+C 2016.02 05/07/18 Added array PRV11 to DATA statement ---------------- K. Knight
 C****************************************************************************************
 C subroutines for IDC model
 C
 C includes: main subroutine CHEMION and the following subroutines and functions
 C           KEMPPRN.FOR: CN2D, CNO, CN4S, CN2PLS, CNOP, CO2P, COP4S, COP2D, COP2P,
 C                        CNPLS, CN2A, CN2P, CNOPV
-C           RATES.FOR:   RATS 
-C           PESIMP.FOR:  SECIPRD, FLXCAL, FACFLX, SIGEXS, TXSION, OXRAT, T_XS_N2, 
+C           RATES.FOR:   RATS
+C           PESIMP.FOR:  SECIPRD, FLXCAL, FACFLX, SIGEXS, TXSION, OXRAT, T_XS_N2,
 C                        T_XS_OX, OXSIGS
-C           RSPRIM.FOR:  PRIMPR, SCOLUM, PARAMS, PROBS, PROBN2, YLDISS, PROBO2, 
-C                        SCHUMN, FACEUV, FACSR,  
-C  
-C turn on printout of intermediate quantities with JPRINT=1 also in PARAMS, PROBS, 
+C           RSPRIM.FOR:  PRIMPR, SCOLUM, PARAMS, PROBS, PROBN2, YLDISS, PROBO2,
+C                        SCHUMN, FACEUV, FACSR,
+C
+C turn on printout of intermediate quantities with JPRINT=1 also in PARAMS, PROBS,
 C PROBN2, YLDISS, and PROBO2 with ISW=1.
-C 
-C Richards, P. G., D. Bilitza, and D. Voglozin (2010), Ion density calculator (IDC): 
-C    A new efficient model of ionospheric ion densities, Radio Sci., 45, RS5007, 
+C
+C Richards, P. G., D. Bilitza, and D. Voglozin (2010), Ion density calculator (IDC):
+C    A new efficient model of ionospheric ion densities, Radio Sci., 45, RS5007,
 C    doi:10.1029/2009RS004332.
 C
 C Fortran code written by Phil Richards, George Mason University, Fairfax, VA, USA
@@ -39,12 +41,12 @@ C
 C
 C:::::::::::::::::::::::::::: CHEMION :::::::::::::::::::::::::::
 C..... This routine was written by Phil Richards April 2010. This version was
-C..... modified in April 2011. 
+C..... modified in April 2011.
 C..... It takes the specified input electron density and returns O+, O2+, NO+,
 C..... N2+, N+, NO, and N(2D) densities. These densities generally agree well
 C..... with Atmosphere Explorer and FLIP model densities.
 C..... In this version all the densities except O+ are calculated from chemical
-C.....  equilibrium. The densities are normalized so that the total ion density 
+C.....  equilibrium. The densities are normalized so that the total ion density
 C..... matches the input electron density.
 C..... This version has two modes. If the variable USER_OPLUS is positive it is used
 C..... to specify the O+ density. If USER_OPLUS is negative, O+ is calculated from
@@ -54,8 +56,8 @@ C..... exactly, USER_OPLUS.
 C..... N+ generally agrees well with AE-C data and the FLIP model during the day
 C..... up to ~500 km, but is inaccurate at night due to diffusion.
 C..... The NO densities can either be user specified or calculated by the model.
-C..... NO will be very good except below about 130 km where it will be 
-C..... underestimated due to neglect of diffusion. There is an artificial 
+C..... NO will be very good except below about 130 km where it will be
+C..... underestimated due to neglect of diffusion. There is an artificial
 C..... floor on the NO density to prevent it from getting too low below 130 km.
 C..... H+ and He+ are only good during the daytime below ~450 km.
 C..... The EUVAC model is used for solar EUV irradiances
@@ -89,9 +91,9 @@ C..... The EUVAC model is used for solar EUV irradiances
       REAL NE,N2P,N2D,OP2D,OP2P
       !.. Total (photon & photoel) production rates O+(4S),O+(2P),O+(2D),O2+
       REAL TPROD1,PDISOP,TPROD2,TPROD3,TPROD5
-      !.. Total Production rates from all sources for NO+, O2+, 
+      !.. Total Production rates from all sources for NO+, O2+,
       REAL TPNOP,O2PPROD
-      !.. Production rates hv(e*)+N2->N+, hv+N->N+, Lyman-a -> NO+ 
+      !.. Production rates hv(e*)+N2->N+, hv+N->N+, Lyman-a -> NO+
       REAL DISNP,PHOTN,PLYNOP
       REAL PSEC                     !.. generic PE production
       REAL RTS(99)                  !.. Reaction rates array
@@ -99,7 +101,7 @@ C..... The EUVAC model is used for solar EUV irradiances
       REAL H,DEX,FEX(2)             !.. used in Newton solver
       REAL SUMIONS                  !.. Sum of the major ions
       REAL PNO,LNO,PDNOSR           !.. Production and loss of NO
-      REAL N2A                      !.. N2(A) density    
+      REAL N2A                      !.. N2(A) density
       REAL DISN2D,UVDISN,PN2D,LN2D  !.. Production and loss of N(2D)
       REAL N2APRD                   !.. PE production rate of N2(A)
       REAL PN4S,LN4S,DISN4S         !.. Production and loss of N(4S)
@@ -120,7 +122,7 @@ C..... The EUVAC model is used for solar EUV irradiances
 
       CALL RATS(0,TE,TI,TN,RTS)  !.. Get the reaction rates
 
-      !.. PRIMPR calculates solar EUV production rates. 
+      !.. PRIMPR calculates solar EUV production rates.
       CALL PRIMPR(1,ALT,OXN,N2N,O2N,HEN,SZAD*0.01745,TN,F107,F107A,N4S)
 
       !.. Calculate secondary Production from photoelectrons
@@ -129,11 +131,11 @@ C..... The EUVAC model is used for solar EUV irradiances
 
       UVDISN=OTHPR1(1)                   !.. EUV dissociation rate of N2
       DISNP= EUVION(3,4)+EUVION(3,5)+EUVION(3,6)
-     >   +0.1*(PEPION(3,1)+PEPION(3,2)+PEPION(3,3))  !.. Rydberg diss       
-     >   +PEPION(3,4)+PEPION(3,5)+PEPION(3,6)       
+     >   +0.1*(PEPION(3,1)+PEPION(3,2)+PEPION(3,3))  !.. Rydberg diss
+     >   +PEPION(3,4)+PEPION(3,5)+PEPION(3,6)
       DISN2D=2.0*PEPION(3,1)+OTHPR2(3)
       DISN4S=2.0*PEPION(3,1)+OTHPR2(3)
-      PRHEP=OTHPR1(2)                          !.. He+ photoionization 
+      PRHEP=OTHPR1(2)                          !.. He+ photoionization
 
       !.. initialize variables to avoid using left over values
       HEPLUS=0.0
@@ -150,7 +152,7 @@ C..... The EUVAC model is used for solar EUV irradiances
 
       K=K+1        !.. If K=1 print headers in files
 
-      !.. These species don't need to be iterated because they are at 
+      !.. These species don't need to be iterated because they are at
       !.. the top of the food chain
       !.. O+(2P) Calculate and print densities, production, loss
       PSEC=PEPION(1,3)           !.. Photoelectron production
@@ -164,14 +166,14 @@ C..... The EUVAC model is used for solar EUV irradiances
       CALL COP2D(JPRINT,8,K,ALT,RTS,OXN,O2N,N2N,NE,OP2D,TPROD2,OP2P
      >    ,HEPLUS,N4S,NNO,PSEC)
 
-      !.. O+(4S) Calculate and print densities, production, loss. 
+      !.. O+(4S) Calculate and print densities, production, loss.
       TPROD1=EUVION(1,1)
       PDISOP=EUVION(2,4)+EUVION(2,5)+PEPION(2,4)+PEPION(2,5)
       CALL COP4S(JPRINT,4,K,ALT,RTS,OXN,O2N,N2N,NE,COXPLUS,TPROD1,OP2D
      >    ,OP2P,PEPION(1,1),PDISOP,N2PLUS,N2D,NNO,1.0,HEPLUS)
 
       !.. Make sure chemical O+ is not greater than Ne
-      IF(COXPLUS.GT.NE) COXPLUS=NE 
+      IF(COXPLUS.GT.NE) COXPLUS=NE
 
       !.. Choose either user specified or chemical O+
       IF(USER_OPLUS.GT.0)  THEN
@@ -179,7 +181,7 @@ C..... The EUVAC model is used for solar EUV irradiances
         OXPLUS=(USER_OPLUS+COXPLUS)/2
       ELSE
         !.. Alternative chemical equilibrium O+ calculation
-        OXPLUS=COXPLUS  
+        OXPLUS=COXPLUS
       ENDIF
 
       !.. N2(A) is used in calculating NO density
@@ -188,17 +190,17 @@ C..... The EUVAC model is used for solar EUV irradiances
 
       !.. Iterate through chemistry to improve results
       DO ITERS=1,5
-        !.. N2+ Calculate and print densities, production, loss. 
+        !.. N2+ Calculate and print densities, production, loss.
         CALL CN2PLS(JPRINT,9,K,ALT,RTS,OXN,O2N,N2N,NE,N2PLUS,EUVION(3,1)
      >   ,EUVION(3,2),EUVION(3,3),PEPION(3,1),PEPION(3,2),PEPION(3,3)
      >   ,OP2D,OP2P,HEPLUS,NPLUS,NNO,N4S)
 
-        !.. N(2D) Calculate and print densities, production, loss. 
+        !.. N(2D) Calculate and print densities, production, loss.
         CALL CN2D(JPRINT,16,K,ALT,RTS,OXN,O2N,N2N,NOPLUS,NE,PN2D,LN2D
      >    ,N2PLUS,DISN2D,UVDISN,NPLUS,N2P,N2D,OXPLUS,NNO,N2A)
         N2D=PN2D/LN2D
 
-        !.. N+ Calculate and print densities, production, loss. 
+        !.. N+ Calculate and print densities, production, loss.
         PHOTN=OTHPR2(3)  !.. N+ photo production
         CALL CNPLS(JPRINT,10,K,ALT,RTS,OXN,O2N,N2N,NE,DISNP,NPLUS,
      >    OXPLUS,N2D,OP2P,HEPLUS,PHOTN,O2PLUS,N4S,OP2D,N2PLUS,NNO)
@@ -208,16 +210,16 @@ C..... The EUVAC model is used for solar EUV irradiances
      >    ,N2D,N4S,N2P,NNO,O2PLUS,OXPLUS,OTHPR2(2),OTHPR2(1),N2A,NPLUS)
         NNO=PNO/LNO     !.. NO chemical equilibrium density
 
-        !.. Set a floor on NO density, which is needed below ~150 km at night 
+        !.. Set a floor on NO density, which is needed below ~150 km at night
         IF(NNO.LT.1.0E8*EXP((100-ALT)/20)) NNO=1.0E8*EXP((100-ALT)/20)
         IF(USER_NO.GT.1.0) NNO=USER_NO  !.. substitute user specified value
         IF(NNO.GT.1.5E8) NNO=1.5E8      !.. Don't let NO get too big
 
-        !.. NO+ Calculate and print densities, production, loss. 
+        !.. NO+ Calculate and print densities, production, loss.
         CALL CNOP(JPRINT,11,K,ALT,RTS,OXN,O2N,N2N,NE,TPNOP,NOPLUS,OXPLUS
      >    ,N2PLUS,O2PLUS,N4S,NNO,NPLUS,N2P,PLYNOP,1.0,N2D,OP2D)
 
-        !.. O2+ Calculate and print densities, production, loss. 
+        !.. O2+ Calculate and print densities, production, loss.
         !.. EUV + PE production
         TPROD5=EUVION(2,1)+EUVION(2,2)+EUVION(2,3)+PEPION(2,1)+
      >       PEPION(2,2)+PEPION(2,3)
@@ -226,7 +228,7 @@ C..... The EUVAC model is used for solar EUV irradiances
 
         SUMIONS=OXPLUS+NOPLUS+O2PLUS+NPLUS+N2PLUS
 
-        !.. Chemical equilibrium densities are normalized to the input NE 
+        !.. Chemical equilibrium densities are normalized to the input NE
         !.. and return.
         IF(ITERS.EQ.5.OR.ABS(SUMSAVE-SUMIONS)/SUMIONS.LT.0.01) THEN
           OXPLUS=OXPLUS*NE/SUMIONS
@@ -236,7 +238,7 @@ C..... The EUVAC model is used for solar EUV irradiances
           NPLUS=NPLUS*NE/SUMIONS
           RETURN
         ENDIF
-        SUMSAVE=SUMIONS  
+        SUMSAVE=SUMIONS
       ENDDO
 
       RETURN
@@ -348,7 +350,7 @@ C::::::::::::::::::::::::::::::: N(4S):::::::::::::::::::::::::::::::::::::::
  7    FORMAT(F6.1,1P,22E8.1)
       END
 C::::::::::::::::::::::::::::::: CN2PLS :::::::::::::::::::::::::::::::
-C..... Simplified chemistry of N2+.  PUN2P* = production of N2+ by euv 
+C..... Simplified chemistry of N2+.  PUN2P* = production of N2+ by euv
 C..... in the (X,A,B states). PEN2P* same for p.e.s (X,A,B states)
       SUBROUTINE CN2PLS(JPR,I,JPT,Z,RTS,ON,O2N,N2N,NE,N2PLS,PUN2PX,
      >  PUN2PA,PUN2PB,PEN2PX,PEN2PA,PEN2PB,OP2D,OP2P,HEPLUS,NPLUS,
@@ -405,7 +407,7 @@ C:::::::::::::::::::::::::::::: NO+ ::::::::::::::::::::::::::::::::::
       PR(10)=N2PLS*NNO*RTS(80)      !..Fox
       PR(11)=NPLUS*NNO*RTS(81)      !..Fox
       PR(12)=RTS(83)*NNO*OP2D       !..Fox
-      PR(13)=OP2D*RTS(90)*N2N        !.. -> NO+ + N, Li et al. [1997] 
+      PR(13)=OP2D*RTS(90)*N2N        !.. -> NO+ + N, Li et al. [1997]
       LR(1)=NE*RTS(5)
       P1=PR(1)+PR(2)+PR(3)+PR(4)+PR(5)+PR(6)+PR(7)+PR(8)
      >    +PR(9)+PR(10)+PR(11)+PR(12)+PR(13)
@@ -500,7 +502,7 @@ C::::::::::::::::::::::::::::::::::: O+(2D) :::::::::::::::::::::::::::::::::::
       LR(5)=RTS(43)*O2N
       LR(6)=RTS(83)*NNO      !..Fox
       LR(7)=RTS(84)*N4S      !..Fox
-      LR(8)=RTS(90)*N2N      !.. -> NO+ + N, Li et al. [1997] 
+      LR(8)=RTS(90)*N2N      !.. -> NO+ + N, Li et al. [1997]
       OP2D=(PR(1)+PR(2)+PR(3)+PR(4)+PR(5))/
      >   (LR(1)+LR(2)+LR(3)+LR(4)+LR(5)+LR(6)+LR(7)+LR(8))
       IF(JPT.EQ.1.AND.JPR.GT.0) WRITE(I,99)
@@ -633,7 +635,7 @@ C..... 21-AUG-1992. Added N2+ recombination source
 C:::::::::::::::::::::::::::::: NO+(v) ::::::::::::::::::::::::::::::::::
 C...... This routine calculates the vibrational distribution of no+
 C...... Uses AFRL report by Winick et al. AFGL-TR-87-0334, Environmental
-C...... Research papers, NO. 991, "An infrared spectral radiance code 
+C...... Research papers, NO. 991, "An infrared spectral radiance code
 C...... for the auroral thermosphere (AARC)
 C...... Written by P. Richards in February 2004
       SUBROUTINE CNOPV(JPR,I,JPT,Z,RTS,ON,O2N,N2N,NE,P1,NOP,OPLS
@@ -643,11 +645,11 @@ C...... Written by P. Richards in February 2004
       PARAMETER (INV=20)            !.. NO+(v) array dimensions
       REAL Z,RTS(99),   !.. Altitude, rate coefficients
      >  ON,O2N,N2N,NE,              !.. O, N2, O2, electron densities
-     >  P1,                         !.. total source output for finding [e] 
+     >  P1,                         !.. total source output for finding [e]
      >  NOP,OPLS,N2PLS,O2P,         !.. NO+, )+,N2+,O2+ densities
      >  N4S,NNO,NPLUS,N2P,          !.. N(4S), NO, N+, N(2P) densities
      >  PLYNOP,VCON,                !.. Lyman-a source, N2(v) rate factor
-     >  N2D,OP2D,                   !.. N(2D), O+(2D) densities                
+     >  N2D,OP2D,                   !.. N(2D), O+(2D) densities
      >  NOPV(INV),NOPTOT,           !.. NO+(v) densities and total NO+ density
      >  LR(22),PR(22),              !.. storage for NO+ sources and sinks
      >  EINSCO1(INV),EINSCO2(INV),  !.. Einstein coeffs for delv=1,2
@@ -670,6 +672,7 @@ C...... Written by P. Richards in February 2004
       DATA PRV8/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
       DATA PRV9/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
       DATA PRV10/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
+      DATA PRV11/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
       DATA PRV12/0,.05,.07,.09,.11,.13,.14,.17,.07,.01,.02,.06,.08,7*0/
 
       DATA K_N2_Q/7.0E-12/  !.. Quenching rate coeff. by N2
@@ -678,8 +681,8 @@ C...... Written by P. Richards in February 2004
       DATA EINSCO2/0.0,0.0,.697,1.93,3.61,5.74,8.24,11.1,14.2,17.7,
      >     21.3,25.1,29.0,33.2,37.4,5*40.0/ !.. Einstein coeff delv=1
       !.. rate factors for NO+(v)+e -> N + O. Sheehan and St-Maurice 2004
-      DATA LRV/1.0,19*0.3333/    
-      
+      DATA LRV/1.0,19*0.3333/
+
       !... Evaluate total production and loss rates
       PR(1)=VCON*RTS(3)*N2N*OPLS        !.. N2 + O+
       PR(2)=N2PLS*ON*RTS(10)            !.. N2+ + O
@@ -694,7 +697,7 @@ C...... Written by P. Richards in February 2004
       PR(10)=N2PLS*NNO*RTS(80)          !.. Fox: N2+ + NO
       PR(11)=NPLUS*NNO*RTS(81)          !.. Fox: N+ + NO
       PR(12)=RTS(83)*NNO*OP2D           !.. Fox: O+(2D) + NO
-      PR(13)=OP2D*RTS(90)*N2N           !.. -> NO+ + N, Li et al. [1997] 
+      PR(13)=OP2D*RTS(90)*N2N           !.. -> NO+ + N, Li et al. [1997]
       LR(1)=NE*RTS(5)                   !.. NO+ + e
 
       !..Total source term used in main program to calculate [e]
@@ -707,10 +710,10 @@ C...... Written by P. Richards in February 2004
       ENDDO
       NOPTOT=0.0
 
-      !.. loop down evaluating the vibrational populations. Must start 
+      !.. loop down evaluating the vibrational populations. Must start
       !.. less than INV-1 because need cascade from v+2
       DO IV=INV-4,1,-1
-        !... chemical production for v=IV = total source * fraction 
+        !... chemical production for v=IV = total source * fraction
         PNOPV=PR(1)*PRV1(IV)+PR(2)*PRV2(IV)+PR(3)*PRV3(IV)+
      >    PR(4)*PRV4(IV)+PR(5)*PRV5(IV)+PR(6)*PRV6(IV)+
      >    PR(7)*PRV7(IV)+PR(8)*PRV8(IV)+PR(9)*PRV9(IV)+
@@ -732,7 +735,7 @@ C...... Written by P. Richards in February 2004
 
           !... diagnostic print. Set alt range to invoke
           IF(JPR.GT.0.AND.Z.GE.0.AND.Z.LT.10)
-     >     WRITE(6,'(F10.1,I7,1P,22E10.2)') 
+     >     WRITE(6,'(F10.1,I7,1P,22E10.2)')
      >     Z,IV,PNOPV,P1,PCASC,P_N2_Q,LNOPV,LRAD,L_N2_Q,
      >     NOPV(IV),NOP,NOPTOT
       ENDDO
@@ -750,7 +753,7 @@ C...... Written by P. Richards in February 2004
       END
 C
 C
-C.................................... RATES.FOR ................. 
+C.................................... RATES.FOR .................
 C.... This is the reaction rate subroutine for the FLIP model. It takes
 C.... temperatures as input and puts the rates in array RTS. It includes
 C.... reaction rates, efficiencies for various products, and Einstein
@@ -773,23 +776,23 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
       !.. O+ + H -> O + H+    Anicich et al. [1993]
       RTS(2)=6.4E-10
 
-      !.. O+ + N2 --> NO+ + N,   Hierl et al.[1997] 
-      !.. The Hierl et al. [1997] lab rate is contaminated by N2(v) 
-      !.. for T > 1300K. Therefore, the Hierl et al. rate is not really 
-      !.. appropriate  in the ionosphere. The IDC model uses the Hierl et  
-      !.. al. rate because it does not solve for N2(v). The FLIP model 
+      !.. O+ + N2 --> NO+ + N,   Hierl et al.[1997]
+      !.. The Hierl et al. [1997] lab rate is contaminated by N2(v)
+      !.. for T > 1300K. Therefore, the Hierl et al. rate is not really
+      !.. appropriate  in the ionosphere. The IDC model uses the Hierl et
+      !.. al. rate because it does not solve for N2(v). The FLIP model
       !.. solves for N2(v) and uses the St. Maurice and Torr rate (JGR,1978,p969)
-      IF(TI.LE.1000) RTS(3)=1.2E-12*(300/TI)**0.45     !.. Hierl et al.[1997] 
-      IF(TI.GT.1000) RTS(3)=7.0E-13*(TI/1000)**2.12    !.. Hierl et al.[1997] 
+      IF(TI.LE.1000) RTS(3)=1.2E-12*(300/TI)**0.45     !.. Hierl et al.[1997]
+      IF(TI.GT.1000) RTS(3)=7.0E-13*(TI/1000)**2.12    !.. Hierl et al.[1997]
 
-      !.. O+ + O2 -> O2+ + O,   Lindinger et al. [1974] 
-      !.. Hierl et al. lists different rates. Hierl et al. [1997] not 
-      !.. used above 1600 because rates are contaminated by O2(v) for 
-      !.. T > 1000K. We don't know the vibrational state in the 
-      !.. thermosphere. This fit was done by PGR May 2009. It is similar 
+      !.. O+ + O2 -> O2+ + O,   Lindinger et al. [1974]
+      !.. Hierl et al. lists different rates. Hierl et al. [1997] not
+      !.. used above 1600 because rates are contaminated by O2(v) for
+      !.. T > 1000K. We don't know the vibrational state in the
+      !.. thermosphere. This fit was done by PGR May 2009. It is similar
       !.. to Fox and Sung but does not increase sharply above 1000K.
       IF(TI.LE.1600) RTS(4)=1.6E-11*(300/TI)**0.52
-      IF(TI.GT.1600) RTS(4)=6.7E-12*(TI/1600)**0.6 
+      IF(TI.GT.1600) RTS(4)=6.7E-12*(TI/1600)**0.6
 
       !.. NO+ + e -> N + O    Walls and Dunn [1974)
       !.. Vejby-Christensen et al [1998] gives 4.0E-7*(300/TE)**0.5
@@ -808,7 +811,7 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
       RTS(8)=3.86E-10*(TE/300.)**0.81
 
       !..   NO + N(4S) -> N2 + O      Lee et al. [1978]
-      RTS(9)=3.4E-11 
+      RTS(9)=3.4E-11
 
       !.. N2+ + O -> NO+ + N   Scott et al.[1999]
       IF(TI.LE.1500) RTS(10)= 1.33E-10*(300/TI)**0.44
@@ -822,7 +825,7 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
       RTS(12)=6.03E-8*(300/TE)**0.5
 
       !.. O+(2P) + e ->  O+(2D) + e   McLaughlin and Bell (1998)
-      !.. RTS(13)+RTS(14) agrees with Walker et al (1975) and 
+      !.. RTS(13)+RTS(14) agrees with Walker et al (1975) and
       !.. Chang et al (1993)
       RTS(13)=1.84E-7*(300/TE)**0.5
 
@@ -849,28 +852,28 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
      >  +0.357E-4*TE-(0.333+0.183E-4*TE)*EXP(-1.37E4/TE)
      >  -(0.456+0.174E-4*TE)*EXP(-2.97E4/TE))
 
-      !.. N2 + O+(2D) -> N2+ + O   
+      !.. N2 + O+(2D) -> N2+ + O
       !..RTS(19)=8.0E-10                   !.. Johnson and Biondi
       RTS(19)=1.50E-10*(300/Ti)**(-0.55)   !.. Li et al by PGR
-      
-      !.. N2 + O+(2P) -> N2+ + 0    Fox 
+
+      !.. N2 + O+(2P) -> N2+ + 0    Fox
       !.. RTS(20)=6.2E-10*EXP(-340/TI)   !.. Li et al from Fox wrong
       RTS(20)=2.0E-10*(300/Ti)**(-0.55)    !.. Li et al by PGR
 
       !.. O2+ + N(4S) -> NO+ + 0   Scott et al.[1999]
       RTS(21)=1.0E-10
 
-      !.. N+ + O2 -> O+ + NO 
+      !.. N+ + O2 -> O+ + NO
       !.. Torr and Torr gives 6.0E-10 for total N+ + O2 reaction rate
       !.. Dotan et al [1997] from Fox and Sung gives
       !IF(TI.LE.1000) TOT_NP_O2_RATE=2.02E-10*(300/TI)**(-0.45)
       !IF(TI.GT.1000) TOT_NP_O2_RATE=3.49E-10
       !.. does not seem to be correct. Probably vibrationally excited O2
       !.. Branching ratios for N+ + O2 from O'Keefe et al J. Chem. Phys. 1986
-      !.. NO+ +O(3P) = .09, NO+ + O(1D) = .36, O2+ + N(4S) = 0.35, 
+      !.. NO+ +O(3P) = .09, NO+ + O(1D) = .36, O2+ + N(4S) = 0.35,
       !.. O2+ + N(2D) = 0.15, O+(4S) + NO = .05
       TOT_NP_O2_RATE=6.0E-10                !.. Total N+ + O2 rate
-      RTS(22)=0.05*TOT_NP_O2_RATE      
+      RTS(22)=0.05*TOT_NP_O2_RATE
 
       !.. O2+ + NO -> NO+ + O2 Midey and Viggiano [1999]
       RTS(23)=4.5E-10 * 1.0000
@@ -879,15 +882,15 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
       IF(TI.LE.300) RTS(24)=7.0E-13*(300/TI)**0.66
       IF(TI.GT.300) RTS(24)=7.0E-13*(TI/300)**0.87
 
-      !.. N+ + O2 -> O2+ + N(4S) 
-      RTS(25)=0.35*TOT_NP_O2_RATE 
+      !.. N+ + O2 -> O2+ + N(4S)
+      RTS(25)=0.35*TOT_NP_O2_RATE
 
-      !.. O+(2P) + O -> O+(4S) + O 
-      !..RTS(26)=5.2E-10  !.. Fox appears to be wrong  
-      !.. (Chang et al., JGR 1993) c.f. 5.2E-11  (Rusch)    
+      !.. O+(2P) + O -> O+(4S) + O
+      !..RTS(26)=5.2E-10  !.. Fox appears to be wrong
+      !.. (Chang et al., JGR 1993) c.f. 5.2E-11  (Rusch)
       RTS(26)=4.0E-10
 
-      !.. N2(A3sig) + O -> NO + N(2D) 
+      !.. N2(A3sig) + O -> NO + N(2D)
       RTS(27)=2.0E-11       !..see Campbell et al. 2006
       RTS(27)=0.000000      !.. Torr and Torr value
 
@@ -899,7 +902,7 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
 
       !.. O2 + N+ -> O(3P) + NO+
       !.. Branching ratio from O'Keefe et al J. Chem. Phys. 1968
-      RTS(30)=0.09*TOT_NP_O2_RATE 
+      RTS(30)=0.09*TOT_NP_O2_RATE
 
       !.. O + N+ -> O+ + N   Constantinides et al.[1979].Bates[1989]
       RTS(31)=2.2E-12
@@ -921,21 +924,21 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
       RTS(36)=2.5E-11*EXP(TN/298)**0.55    !..  see Campbell et al. 2006
       RTS(36)=2.0E-11                      ! .. Torr et al.
 
-      !.. N(2P) + O -> products (N(2D,4S) and NO+) and O(3P,1D) 
+      !.. N(2P) + O -> products (N(2D,4S) and NO+) and O(3P,1D)
       !.. from Piper et al 1993, J. Chem. Phys. vol 98 page 8560.
       RTS(37)=1.7E-11
 
-      !.. N(2P) + O2 -> NO + O 
+      !.. N(2P) + O2 -> NO + O
       RTS(38)=3.9E-12*EXP(-60/TN)
 
       !.. N(2P) quenching rates(O2+,NO) from Zipf et al jgr 1980 p687
       RTS(39)=2.2E-11
       RTS(40)=1.8E-10
 
-      !.. N(2D) + NO -> N2 + O 
+      !.. N(2D) + NO -> N2 + O
       RTS(41)=6.7E-11
 
-      !.. efficiency N2+ + O -> N2 + O+(4S)   
+      !.. efficiency N2+ + O -> N2 + O+(4S)
       IF(TI.LE.1500) RTS(42)= 7.0E-12*(300/TI)**0.21
       IF(TI.GT.1500) RTS(42)= 4.83E-12*(1500/TI)**(-0.41)
       RTS(42)=RTS(42)/RTS(10)    !.. converts to efficiency
@@ -949,13 +952,13 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
       !.. He+ + N2 -> He + N+
       RTS(45)=7.8E-10
 
-      !.. O(1S)+ e -> O(1D) + e  
+      !.. O(1S)+ e -> O(1D) + e
       RTS(46)=8.5E-9
 
-      !.. O(1S)+ e -> O(3P) + e  
+      !.. O(1S)+ e -> O(3P) + e
       RTS(47)=1.56E-10*(TE/300)**0.94
 
-      !.. O(1S) + O2 -> O2 + O 
+      !.. O(1S) + O2 -> O2 + O
       RTS(48)=4.4E-12*EXP(-815.0/TN)
 
       !.. NO+ + e -> N(4S) + O
@@ -973,7 +976,7 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
       !.. Efficiency for   N2+ + e -> N(4S) + N(2D)
       RTS(53)=0.46
 
-      !.. O(1D) -> O + 6300 + 6364 
+      !.. O(1D) -> O + 6300 + 6364
       RTS(54)=0.00934
 
       !.. O(1S) -> O(1D) + 5577
@@ -989,7 +992,7 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
       RTS(58)=5.0E-3
 
       !.. N+ + O2 -> NO+ + O(1S) Langford et al., PSS, 33,1225,1985
-      RTS(59)=1.0E-3*TOT_NP_O2_RATE 
+      RTS(59)=1.0E-3*TOT_NP_O2_RATE
 
       !.. Efficiency for   N2(A3sig) + O -> O(1S) + N2
       RTS(60)=0.37
@@ -1008,11 +1011,11 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
 
       !.. N+ + O2 -> O2+ + N(2D)
       !.. Branching ratio from O'Keefe et al J. Chem. Phys. 1968
-      RTS(65)=0.15*TOT_NP_O2_RATE 
+      RTS(65)=0.15*TOT_NP_O2_RATE
 
       !.. N+ + O2 -> NO+ + O(1D)
       !.. Branching ratio from O'Keefe et al J. Chem. Phys. 1968
-      RTS(66)=0.36*TOT_NP_O2_RATE 
+      RTS(66)=0.36*TOT_NP_O2_RATE
 
       !.. hv(Scum-Runge) + O2 -> O(1S) + O   branching ratio
       RTS(67)=0.001
@@ -1023,8 +1026,8 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
       !.. O(1D) + O -> O + O   Abreu et al. PSS, p1143, 1986
       RTS(69)=6.47E-12*(TN/300)**0.14
 
-      !.. hv + N2 -> N+(5S) -> 2143 A emission yield from the 2s sigma g state  
-      !.. of N2. This was taken as 0.6 the value of Cleary and Barth JGR 1987, 
+      !.. hv + N2 -> N+(5S) -> 2143 A emission yield from the 2s sigma g state
+      !.. of N2. This was taken as 0.6 the value of Cleary and Barth JGR 1987,
       !.. p13,635 because they did not double EUV below 250 A.
       RTS(70)=0.06
 
@@ -1044,7 +1047,7 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
       !.. He+ + O2 -> He + O2+
       RTS(75) = 9.2E-12
 
-      !.. He+ + O2 -> He + O+(2D) + O(3P) 
+      !.. He+ + O2 -> He + O+(2D) + O(3P)
       RTS(76) = 2.37E-10
 
       !.. O2+ + N(2D) -> NO+ + O
@@ -1085,16 +1088,16 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
 
       !.. H+ + O2 -> O2+ + H
       RTS(89)=3.8E-9
- 
+
       !.. O+(2D) + N2 -> NO+ + N  !.. Li et al. (1997).
       !.. From the ratio of the cross sections.
       !.. The branching ratio to O+(4S) + N2 not given by Li et al.
       RTS(90)=2.5E-11
 
-      !.. He+ + O2 -> He + O+(4S) + O 
+      !.. He+ + O2 -> He + O+(4S) + O
       RTS(91) = 2.39E-11
 
-      !.. He+ + O2 -> He + O+(2P) + O 
+      !.. He+ + O2 -> He + O+(2P) + O
       RTS(92) = 6.04E-10
 
       !.. He+ + O2 -> He + O+(4S) + O(1D)
@@ -1108,7 +1111,7 @@ C.... 2001, page 21,305. Rates different from Fox and Sung indicated by PGR
 
       !.. N(2P) + e -> N(4S) + e
       RTS(96)=2.04E-10*(TE/300)**0.85
- 
+
       !.. N(2P) + e -> N(2D) + e
       RTS(97)=9.5E-9
 
@@ -1138,7 +1141,7 @@ C..... Calculate secondary ion production, electron heating rate and 3371 excita
       REAL SZADEG              !-- solar zenith angle {0 -> 90 degrees}
       REAL F107, F107A         !-- F107 = Solar 10.7 cm flux
       REAL TE,TN               !-- electron, neutral temperatures (K)
-      REAL XN(3),OXN,O2N,N2N!-- XN, O, O2, N2, neutral densities  (cm-3)
+      REAL XN(3),OXN,O2N,N2N   !-- XN, O, O2, N2, neutral densities  (cm-3)
       REAL XNE                 !-- electron density  (cm-3)
       REAL XN2D                !-- N(2D) density for N(2D) + e -> 2.5 eV
       REAL XOP2D               !-- O+(2D) density for O+(2D) + e -> 3.3 eV
@@ -1179,7 +1182,7 @@ C..... Calculate secondary ion production, electron heating rate and 3371 excita
      >   TE,TN,XN,XNE,XN2D,XOP2D,PEFLUX,AFAC,IMAX,DE,EV)
       !***************************************************************
 
-      !........ sample calculation of ion production rates. 
+      !........ sample calculation of ion production rates.
       DO I=1,IMAX
         E=EV(I)
         CALL TXSION(E,SIGIT)                     !.. total ion XS
@@ -1212,17 +1215,17 @@ c     >     T_XS_N2(EP),PEPION(1,1),PEXCIT(1,1)
       END
 C:::::::::::::::::::::::::: PHOTOELECTRON MODEL  ::::::::::::::::::::::::
 C....... This subroutine evaluates the photoelectron flux using the concept
-C.......  production frequencies developed by Phil Richards at Utah 
+C.......  production frequencies developed by Phil Richards at Utah
 C....... State University March 1984. It supercedes the model described in
 C....... JGR, p2155, 1983. Contact EAST::CSPARA::RICHARDS on SPAN network
 C------- Some minor updates in April 1992 indicated by C----
-C....... I would appreciate any feedback on bugs or clarity and if it 
-C....... contributes substantially to a paper, I would appreciate the 
+C....... I would appreciate any feedback on bugs or clarity and if it
+C....... contributes substantially to a paper, I would appreciate the
 C....... appropriate acknowledgement.
 C......       **************** WARNING ****************
 C...... This program is constructed to produce reasonable agreement with
 C...... the Atmosphere Explorer-E PES fluxes of John Doering (Lee et al.
-C...... PSS 1980, page 947). It will NOT give good fluxes if the EUV 
+C...... PSS 1980, page 947). It will NOT give good fluxes if the EUV
 C...... attenuation is greater than about a factor of 7 (AFAC < 0.14).
 C...... The model accurately reproduces the measured fluxes very closely
 C...... for the case in the test driver at 148 km SZA=53 when AFAC=0.19.
@@ -1231,8 +1234,8 @@ C...... periodically as a check. It is doubtful below 140km during the
 C...... day and below 200km near sunset. Between 200km & 350km, it should
 C...... be good for solar zenith angles < 90 degrees. Above 350 km there
 C...... is considerable uncertainty due to neglect of transport but most
-C...... models have similar uncertainties at high altitudes due to the 
-C...... uncertainty in the conjugate photoelectron flux, and the pitch 
+C...... models have similar uncertainties at high altitudes due to the
+C...... uncertainty in the conjugate photoelectron flux, and the pitch
 C...... angle distribution.
 C
 C------ ALT = altitude (km)  { 120 -> 500 }
@@ -1347,8 +1350,8 @@ c      COMMON/SOL/UVFAC(59),EUV
         !..... Production of pe's at energy EE, taking into account
         !..... attenuation and EUV variation, and renormalize frequencies
 
-        PRODOX=RJOX(I)*XN(1)*AFAC*FFAC*1.0E-9 
-        PRODN2=RJN2(I)*XN(3)*AFAC*FFAC*1.0E-9 
+        PRODOX=RJOX(I)*XN(1)*AFAC*FFAC*1.0E-9
+        PRODN2=RJN2(I)*XN(3)*AFAC*FFAC*1.0E-9
 
         !..... Sum all the production rates
         PROD=PRODOX+PRODN2+CASEL+CASOX+CASN2+EPN2D+EPOP2D
@@ -1423,7 +1426,7 @@ C..... with the Schram et al. cross sections at high energies
 
       !... N2+ cross section
       SIGIT(3)=0.0
-      IF(E.GT.15.0) SIGIT(3)=1.42E-14*(1-9.0/E)**7.1*E**(-0.7) 
+      IF(E.GT.15.0) SIGIT(3)=1.42E-14*(1-9.0/E)**7.1*E**(-0.7)
       IF(SIGTMP.LT.SIGIT(3)) SIGIT(3)=SIGTMP
       !... This correction to convert units to cm**2. Keiffer and Dunn page 10
       SIGIT(3)=0.87972*SIGIT(3)
@@ -1471,23 +1474,23 @@ C.... cross section. P. Richards 2003-10-04
       DATA ESAVE/0.0/
 
       !.. Wavelength < 20 A, Auger ionization
-      IF(EP.GE.600.0) THEN              
+      IF(EP.GE.600.0) THEN
         T_XS_N2=0.5E-18
       !.. Wavelength < 31 A, Auger ionization
-      ELSEIF(EP.GE.400.0) THEN              
+      ELSEIF(EP.GE.400.0) THEN
         T_XS_N2=1.0E-18
       !.. Wavelength 31.62 to 23.70 A
       ELSEIF(EP.GE.392.0) THEN
         T_XS_N2=EXP(7.9864*ALOG(EP)-91.6604)
       !.. Wavelength 225 to 125 A
       ELSEIF(EP.GE.55.09) THEN
-        T_XS_N2=EXP(-2.3711*ALOG(EP)-29.8142) 
+        T_XS_N2=EXP(-2.3711*ALOG(EP)-29.8142)
       !.. Wavelength > 225 A
       ELSE
-        T_XS_N2=EXP(-1.1077*ALOG(EP)-34.8787)  
+        T_XS_N2=EXP(-1.1077*ALOG(EP)-34.8787)
       ENDIF
 
-      !..IF(NINT(10*EP).NE.NINT(10*ESAVE)) WRITE(6,'(2F8.1,1P,2E10.2)') 
+      !..IF(NINT(10*EP).NE.NINT(10*ESAVE)) WRITE(6,'(2F8.1,1P,2E10.2)')
       !..> 12394.224/EP,EP, T_XS_N2/(3.39E-17*EXP(-0.0263*EP)), T_XS_N2
        ESAVE=EP
 
@@ -1508,21 +1511,21 @@ C.... Samson and Pareek Phys. Rev. A, 31, 1470, 1985
       DATA ESAVE/0.0/
 
       !.. NEW parameterization
-      IF(EP.GE.500.0) THEN                 
+      IF(EP.GE.500.0) THEN
         !.. Wavelength shorter than 25 A, Auger ionization
         T_XS_OX=0.5E-18
-      ELSEIF(EP.GE.165.26) THEN                 
+      ELSEIF(EP.GE.165.26) THEN
         !.. Wavelength shorter than 75 A
         T_XS_OX=EXP(-2.5209*ALOG(EP)-28.8855)
-      ELSEIF(EP.GE.55.09) THEN              
+      ELSEIF(EP.GE.55.09) THEN
         !.. Wavelength between 78 and 256.26 A
         T_XS_OX=EXP(-1.7871*ALOG(EP)-32.6335)
       ELSE
         !.. Wavelength longer than 256.26 A
-        T_XS_OX=EXP(-1.3077*ALOG(EP)-34.5556)   
+        T_XS_OX=EXP(-1.3077*ALOG(EP)-34.5556)
       ENDIF
 
-      !..IF(NINT(10*EP).NE.NINT(10*ESAVE)) WRITE(6,'(2F8.1,1P,2E10.2)') 
+      !..IF(NINT(10*EP).NE.NINT(10*ESAVE)) WRITE(6,'(2F8.1,1P,2E10.2)')
       !..> 12394.224/EP,EP, T_XS_OX/(27.2E-18*EXP(-3.09E-2*EP)), T_XS_OX
        ESAVE=EP
 
@@ -1568,8 +1571,8 @@ C
 C
 C.................... RSPRIM.FOR ..................................
 C.... This routine evaluates the ionization rates for photon impact
-C.... It is based on a FLIP model routine that was modified in August 
-C.... 2009 for the chemical equilibrium model by P. richards. 
+C.... It is based on a FLIP model routine that was modified in August
+C.... 2009 for the chemical equilibrium model by P. richards.
       SUBROUTINE PRIMPR(IJ,Z,ZOX,ZN2,ZO2,HE,SZA,TN,F107,F107A,N4S)
       IMPLICIT NONE
       INTEGER IVERT,I,IJ,IK,IPROBS,IS,K,L,LMAX,NNI,K1
@@ -1582,9 +1585,9 @@ C.... 2009 for the chemical equilibrium model by P. richards.
       REAL COLUMN(3),XN(3),PROB(3,6,37),XSNPLS(37),FNITE(37),CLNITE(3)
 cpgr
       REAL TPROB(3,6,37)
-cpgr      
+cpgr
 
-      !-- common to hold the EUV and photoelectron production rates 
+      !-- common to hold the EUV and photoelectron production rates
       COMMON/EUVPRD/EUVION(3,12),PEXCIT(3,12),PEPION(3,12),
      >   OTHPR1(6),OTHPR2(6)
       COMMON/SIGS/ZFLUX(37),SIGABS(3,37),ZLAM(37),SIGION(3,37),
@@ -1595,20 +1598,20 @@ cpgr
       DATA LMAX/0/, F107SV/0.0/, IPROBS/0/
       !.. Fluxes for nighttime ion production in the 37 wavelength bins of
       !.. Torr et al GRL 1979. The fluxes are set to reproduce the production
-      !.. rates in Strobel et al. PSS, p1027, 1980. Note that most bins are 
-      !.. set to zero and that the Strobel production rates are scaled by 
+      !.. rates in Strobel et al. PSS, p1027, 1980. Note that most bins are
+      !.. set to zero and that the Strobel production rates are scaled by
       !.. FNFAC to stabilize the O+ solution below 200 km. Note also that
       !.. the wavelengths in FNITE go from largest (#3=HI) to smallest.
       DATA FNITE/9E5,0.0,9E5,2*0.0,9E6,13*0.0,3E5,8*0.0,3E5,8*0.0/
       DATA FNFAC/1.0/
 
       !.. UVFAC(58) is left over from FLIP routines for compatibility
-      UVFAC(58)=-1.0 
+      UVFAC(58)=-1.0
       IF(ABS((F107-F107SV)/F107).GT.0.005) THEN
         !.. update UV flux factors
         CALL FACEUV(UVFAC,F107,F107A)
         CALL FACSR(UVFAC,F107,F107A)
-        
+
         !.. call params to get solar flux data and cross sections
         CALL PARAMS(0,LMAX)
         F107SV=F107
@@ -1627,7 +1630,7 @@ cpgr
         IPROBS=1
        ENDIF
 
-      !... initialization of production rates. 1.0E-15 stabilizes 
+      !... initialization of production rates. 1.0E-15 stabilizes
       !... e density evaluation at low altitudes in CMINOR
       DO 10 IS=1,3
       DO 10 IK=1,12
@@ -1674,7 +1677,7 @@ C........ OTHPR1(3)= dissociation rate. OTHPR1(5)= Energy
       CALL SCHUMN(IJ,Z,ZO2,COLUMN,OTHPR1(3),OTHPR1(5))
 C
 C---- Calculate hv + NO ion. freq. from Lyman-a (Brasseur & Solomon)
-C---- OTHPR2(2) is photodissociation of NO in the SR bands. 
+C---- OTHPR2(2) is photodissociation of NO in the SR bands.
 C---- A small night production from scattered light is included. FREQLY
 C---- varies with solar activity using Richards et al. 1994 page 8981
 C---- LY_a=2.5E11 (Lean), sigi(NO)=2.0E-18 (Brasseur & Solomon page 329)
@@ -1686,7 +1689,7 @@ C---- LY_a=2.5E11 (Lean), sigi(NO)=2.0E-18 (Brasseur & Solomon page 329)
      >    +0.001*EXP(-O2SRXS*CLNITE(2)))
 C
       !..  wavelength loop begins here  ----------
-      !..  TAU, TAUN = optical depth for day, night 
+      !..  TAU, TAUN = optical depth for day, night
       HEPLS=0.0
       DO 6 L=1,LMAX
         TAU=0.
@@ -1735,7 +1738,7 @@ C
         DO 304 I=1,3
           XNSIGF=XN(I)*SIGION(I,L)*FLUX
           K1=NNI(I)
- 
+
           !.. dspect=# ions formed by w-l l by ionization of k state of species i
           DO 302 K=1,K1
             DSPECT=XNSIGF*PROB(I,K,L)
@@ -1795,7 +1798,7 @@ C.... the MSIS model at grazing incidence
 
       IF(CHI.LT.1.5708) GO  TO 2938      !.. is sza>90.0 degrees
 
-      !..Grazing incidence parameters 
+      !..Grazing incidence parameters
       ALTG=(6371.0E5+Z)*SIN(3.1416-CHI)-6371.0E5
       IF(ALTG.GE.85*1.0E5) THEN
         ZG=ALTG*1.E-5
@@ -1806,7 +1809,7 @@ C.... the MSIS model at grazing incidence
         GTN=MAX(TINF-(TINF-300.0)*EXP(-0.025*XI),180.0)
 
         !.. Neutral densities are extrapolated from altitude to grazing
-        !.. altitude. Weighted average Tn and GTn is used 
+        !.. altitude. Weighted average Tn and GTn is used
         GR=GE*(RE/(RE+Z))**2   !.. gravity
         DO I=1,3
           GN(I)=XN(I)*EXP((Z-ALTG)/
@@ -1895,7 +1898,7 @@ C........ absorption cross sections -- o first ,o2, then n2
      > ,14.18,120.49,24.662,26.54,31.755,23.339,23.37,22.79,22.787
      > ,22.4,24.13,24.501,23.471,23.16,21.675,16.395,16.91,13.857
      > ,11.7,11.67,10.493,10.9,10.21,8.392,4.958,2.261,0.72/
-C....... ionization cross sections 
+C....... ionization cross sections
       DATA X2/5*0.0,1.315,4.554,3.498,5.091,3.749,3.89,4,10.736,11.46
      > ,17.245,13.365,13.4,13.4,13.024,13.09,12.59,12.059,12.127,11.93
      > ,11.496,9.687,9.84,8.693,7.7,7.68,6.461,7.08,6.05,5.202,3.732
@@ -2178,7 +2181,7 @@ C----- (F107+F107A)/2
      >  ,1.439,2.941,1.399,2.416,1.512,1.365,1.570,1.462,2.537,1.393
      >  ,1.572,1.578,1.681,1.598,1.473,1.530,1.622,1.634,1.525/
 
-      !--  Test to see if need to scale - see DATRD2 subroutine      
+      !--  Test to see if need to scale - see DATRD2 subroutine
       IF(NINT(UVFAC(58)).EQ.-1.OR.NINT(UVFAC(58)).EQ.-3) THEN
          !........... EUV scaling
          F107AV=(F107+F107A)*0.5
@@ -2204,7 +2207,7 @@ C........ from Torr et al. GRL 1980 p6063
       DATA SRA/25.5,20.7,13.2,11.6,11.3,7.86,7.68,4.56/
       DATA SRB/222.,129.,53.4,36.0,25.0,11.3,6.35,2.05/
 C
-C----  Test to see if need to scale - see DATRD2 subroutine      
+C----  Test to see if need to scale - see DATRD2 subroutine
       !IF(NINT(UVFAC(58)).EQ.-1.OR.NINT(UVFAC(58)).EQ.-3) THEN
 C
          DO 505 I=38,50
