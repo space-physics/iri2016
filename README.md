@@ -40,6 +40,8 @@ python3 setup.py develop --user
 This Python wrapper of IRI2016 uses our build-on-run technique.
 The first time you use IRI2016, you will see messages from the Meson build system and your C compiler.
 
+If you have errors about building on the first run, ensure that your Fortran compiler is specified in environment variable FC--this is what most build systems use to indicate the desired Fortran compiler (name or full path).
+
 ### Manual build
 
 This should not be necessary, but is included for troubleshooting purposes.
