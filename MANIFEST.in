@@ -1,2 +1,2 @@
-include iri2016/CMakeLists.txt iri2016/src/CMakeLists.txt iri2016/meson.build iri2016/src/meson.build
-recursive-include iri2016/src *.for *.f90
+include src/iri2016/CMakeLists.txt src/iri2016/src/CMakeLists.txt src/iri2016/setup.cmake
+recursive-include src/iri2016/src *.for *.f90

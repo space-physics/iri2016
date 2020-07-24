@@ -1,10 +1,6 @@
-#!/usr/bin/env python
 from pytest import approx
-import pytest
-from pathlib import Path
-import iri2016
 
-root = Path(__file__).parents[1]
+import iri2016
 
 
 def test_altitude_profile():
@@ -20,7 +16,3 @@ def test_altitude_profile():
     assert iri.NmF2.item() == approx(7.71626844e10, rel=1e-4)
     assert iri.hmF2.item() == approx(312.837677, rel=1e-4)
     assert iri.foF2.item() == approx(2.49454951)
-
-
-if __name__ == "__main__":
-    pytest.main([__file__])

@@ -1,11 +1,10 @@
+*.exe
 *.asv
 *.m~
 fort.6
 .mypy_cache/
 .pytest_cache/
-baseIRI2016
-testiri2016
-bin/
+build*/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -5,10 +5,9 @@ glon = -147.5;
 altkmrange = [100,1000,10];
 
 cwd = fileparts(mfilename('fullpath'));
-addpath([cwd, filesep, '..', filesep, 'matlab'])
+addpath(fullfile(cwd, '/../matlab'))
 
 iono = iri2016(time, glat, glon,  altkmrange);
-
 
 assert(abs(iono.Ne(11) - 3.986688e9) < 1e5, 'Ne error excessive')
 

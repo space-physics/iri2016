@@ -1,21 +1,9 @@
-function build(srcdir, builddir, build_sys)
-narginchk(2,3)
+function build(srcdir)
+narginchk(1,1)
 
-assert(is_folder(srcdir), ['source directory not found: ', srcdir])
+assert(is_folder(srcdir), 'source directory not found: %s', srcdir)
 
-if nargin < 3
-  if system('cmake --version') == 0
-    build_sys = 'cmake';
-  elseif system('meson --version') == 0 && system('ninja --version') == 0
-    build_sys = 'meson';
-  else
-    error('could not find Meson + Ninja or CMake')
-  end
+[ret, msg] = system('ctest -S ', srcdir, ' setup.cmake -VV');
+assert(ret==0, 'cmake failed to build %s', msg)
+
 end
-
-switch build_sys
-  case 'meson', meson(srcdir, builddir)
-  case 'cmake', cmake(srcdir, builddir)
-  otherwise, error(['unknown build system ', build_sys])
-end
-end % function

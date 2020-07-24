@@ -42,9 +42,12 @@ add_subdirectory(src)
 
 add_executable(iri2016_driver src/iri2016_driver.f90)
 target_link_libraries(iri2016_driver iri2016)
+set_target_properties(iri2016_driver PROPERTIES
+  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_executable(test_iri2016 src/test.f90)
 target_link_libraries(test_iri2016 iri2016)
-add_test(NAME IRI2016 COMMAND test_iri2016
+add_test(NAME IRI2016
+  COMMAND $<TARGET_FILE:test_iri2016>
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 set_tests_properties(IRI2016 PROPERTIES TIMEOUT 15)

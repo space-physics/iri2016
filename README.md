@@ -15,7 +15,6 @@ A Fortran compiler is required to build the IRI2016 code.
 
 **Prerequisites**
 
-* Python >= 3.6
 * Fortran compiler--any modern Fortran compiler will do. Here's how to get Gfortran:
   * Linux: `apt install gfortran`
   * Mac: `brew install gcc`
@@ -32,9 +31,7 @@ if you want the latest development version:
 ```sh
 git clone https://github.com/space-physics/iri2016
 
-cd iri2016
-
-python3 setup.py develop --user
+pip install -e iri2016
 ```
 
 This Python wrapper of IRI2016 uses our build-on-run technique.
@@ -57,27 +54,26 @@ cmake -S iri2016 -B iri2016/build
 cmake --build iri2016/build
 ```
 
-
 ## Usage
 
 * Altitude Profile: plot density and temperatures vs altitude
 
   ```sh
-  python AltitudeProfile.py 2003-11-21T12 -11.95 -76.77
+  iri2016_altitude 2003-11-21T12 -11.95 -76.77
   ```
 
   ![image](./figures/iri1DExample01.png)
 * Latitude profile: plot densities and height at the peak of F2, F2, and E regions vs geographic latitude
 
   ```sh
-  python LatitudeProfile.py 2004-11-21T17 -76.77
+  iri2016_latitude 2004-11-21T17 -76.77
   ```
 
   ![image](./figures/iri1DExample02.png)
 * Time profile: plot densities and height at the peak of F2, F2, and E regions vs UTC
 
   ```sh
-  python TimeProfile.py 2014-11-21 2014-11-22 1 -11.95 -76.77
+  iri2016_time 2014-11-21 2014-11-22 1 -11.95 -76.77
   ```
 
   ![image](./figures/plasma.png)
@@ -112,21 +108,6 @@ test_iri2016
 [regularly updated](http://irimodel.org/indices/).
 Currently we don't auto-update those.
 
-
 ## Notes
 
 * [2016 presentation](https://doi.org/10.5281/zenodo.1493021)
-
-### Troubleshooting
-
-if error
-
-```
-ImportError: libf77blas.so.3: cannot open shared object file: No such file or directory
-```
-
-try installing Atlas math library used by Numpy
-
-```sh
-apt install libatlas-base-dev
-```

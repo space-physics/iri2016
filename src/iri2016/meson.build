@@ -1,5 +1,5 @@
 project('iri2016', 'fortran',
-  default_options : ['default_library=static', 'buildtype=release', 'warning_level=0', 'fortran_std=legacy'])
+  default_options : ['default_library=shared', 'buildtype=release', 'warning_level=0', 'fortran_std=legacy'])
 
 fc = meson.get_compiler('fortran')
 

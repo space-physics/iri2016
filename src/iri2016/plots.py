@@ -70,7 +70,7 @@ def timeprofile(iono: xarray.Dataset):
     hi = ax.pcolormesh(iono.time, iono.alt_km, iono["ne"].values.T)
     fg.colorbar(hi, ax=ax).set_label("[m$^{-3}$]")
     ax.set_ylabel("altitude [km]")
-    ax.set_title(f"$N_e$ vs. altitude and time")
+    ax.set_title("$N_e$ vs. altitude and time")
 
 
 def altprofile(iono: xarray.Dataset):

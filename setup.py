@@ -17,7 +17,10 @@ ext = Extension(name='iri16', sources=src,
                 extra_f77_compile_args=['-w'])
 """
 
-R = Path("iri2016") / "data"
+R = Path("src/iri2016/data")
+if not R.is_dir():
+    raise FileNotFoundError(R)
+
 iridata = list(
     map(
         str,
@@ -30,6 +33,9 @@ iridata = list(
         ),
     )
 )
+
+if not iridata:
+    raise FileNotFoundError(f"iri data not found in {R}")
 
 iridata = list(map(str, iridata))  # even for Numpy 1.14 due to numpy.distutils
 

@@ -1,13 +1,9 @@
 name: ci
-env:
-  CMAKE_GENERATOR: Ninja
-
 on:
   push:
     paths:
     - "**.py"
     - ".github/workflows/ci.yml"
-  pull_request:
 
 jobs:
 
@@ -15,17 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v2
       with:
         python-version: '3.x'
 
-    - name: prereqs
-      run: |
-        pip install .[tests,lint]
-        pip install ninja
+    - run: pip install .[tests,lint]
 
     - run: flake8
-    - run: mypy .
+    - run: mypy . src
 
     - run: pytest
       env:
@@ -36,14 +29,11 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v2
       with:
         python-version: '3.x'
 
-    - name: prereqs
-      run: |
-        pip install .[tests]
-        brew install ninja
+    - run: pip install .[tests]
 
     - run: pytest
       env:
@@ -54,16 +44,10 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v2
       with:
         python-version: '3.x'
 
-    - name: prereqs
-      run: |
-        pip install .[tests]
-        cinst -y ninja
+    - run: pip install .[tests]
 
     - run: pytest
-      env:
-        CC: gcc
-        FC: gfortran

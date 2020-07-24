@@ -1,28 +1,20 @@
 import subprocess
 from dateutil.parser import parse
 from datetime import datetime
-from pathlib import Path
 import xarray
 import io
-import shutil
+import os
 import numpy as np
 import typing
+import importlib.resources
 
-from .build import build
+iri_name = "iri2016_driver"
+if os.name == "nt":
+    iri_name += ".exe"
 
-R = Path(__file__).resolve().parent
-datadir = R / "data"
-SDIR = R
-BDIR = SDIR / "build"
-exe_name = "iri2016_driver"
-
-EXE = shutil.which(exe_name, path=str(BDIR))
-if EXE is None:
-    build(SDIR, BDIR)
-
-    EXE = shutil.which(exe_name, path=str(BDIR))
-    if EXE is None:
-        raise ModuleNotFoundError(f"could not build {exe_name}, binary not found in {BDIR}")
+if not importlib.resources.is_resource(__package__, iri_name):
+    with importlib.resources.path(__package__, "setup.cmake") as setup:
+        subprocess.check_call(["ctest", "-S", str(setup), "-VV"])
 
 SIMOUT = ["ne", "Tn", "Ti", "Te", "nO+", "nH+", "nHe+", "nO2+", "nNO+", "nCI", "nN+"]
 
@@ -37,23 +29,24 @@ def IRI(time: datetime, altkmrange: typing.Sequence[float], glat: float, glon: f
     assert len(altkmrange) == 3, "altitude (km) min, max, step"
     assert isinstance(glat, float) and isinstance(glon, float), "glat, glon is scalar"
 
-    cmd = [
-        str(EXE),
-        str(time.year),
-        str(time.month),
-        str(time.day),
-        str(time.hour),
-        str(time.minute),
-        str(time.second),
-        str(glat),
-        str(glon),
-        str(altkmrange[0]),
-        str(altkmrange[1]),
-        str(altkmrange[2]),
-        str(datadir),
-    ]
+    with importlib.resources.path(__package__, iri_name) as exe:
+        cmd = [
+            str(exe),
+            str(time.year),
+            str(time.month),
+            str(time.day),
+            str(time.hour),
+            str(time.minute),
+            str(time.second),
+            str(glat),
+            str(glon),
+            str(altkmrange[0]),
+            str(altkmrange[1]),
+            str(altkmrange[2]),
+            str(exe.parent / "data"),
+        ]
 
-    ret = subprocess.check_output(cmd, universal_newlines=True, cwd=str(BDIR))  # str for Windows
+        ret = subprocess.check_output(cmd, text=True)  # str for Windows
     # %% get altitude profile data
     Nalt = int((altkmrange[1] - altkmrange[0]) // altkmrange[2]) + 1
 

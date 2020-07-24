@@ -5,29 +5,30 @@ validateattributes(glon, {'numeric'}, {'scalar'})
 validateattributes(altkmrange, {'numeric'}, {'positive', 'vector','numel',3})
 %% binary IRI2016
 cwd = fileparts(mfilename('fullpath'));
-srcdir =   [cwd, '/../iri2016'];
+srcdir =   [cwd, '/../src/iri2016'];
 builddir = [srcdir, '/build'];
 exe = [builddir, '/iri2016_driver'];
 if ispc
   exe = [exe,'.exe'];
 end
 if ~is_file(exe)
-  build(srcdir, builddir)
+  build(srcdir)
 end
 assert(is_file(exe), ['could not build or find iri2016 executable: ', exe])
 
-datadir = [cwd, filesep, '..', filesep, 'iri2016', filesep, 'data'];
+datadir = fullfile(cwd, '/../src/iri2016/data');
 
 t = num2str(datevec(time));
 
 cmd = [exe, ' ', t,...
        ' ',num2str(glat), ' ', num2str(glon), ' ', num2str(altkmrange), ' ', datadir];
 [status,dat] = system(cmd);
-if status ~= 0, error(dat), end
+assert(status == 0, dat)
 
 Nalt =  fix((altkmrange(2) - altkmrange(1)) / altkmrange(3)) + 1;
 
-arr = cell2mat(textscan(dat, '%f %f %f %f %f %f %f %f %f %f %f %f', Nalt, 'ReturnOnError', false));
+arr = cell2mat(textscan(dat, '%f %f %f %f %f %f %f %f %f %f %f %f', Nalt, ...
+  'CollectOutput', true, 'ReturnOnError', false));
 
 iono.altkm = arr(:,1);
 iono.Ne = arr(:,2);

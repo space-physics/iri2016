@@ -61,8 +61,8 @@ def geoprofile(latrange: typing.Sequence[float], glon: float, altkm: float, time
 
     f107 = []
     ap = []
-    for l in glat:
-        iri = IRI(time, altkmrange=[altkm] * 3, glat=l, glon=glon)
+    for lt in glat:
+        iri = IRI(time, altkmrange=[altkm] * 3, glat=lt, glon=glon)
         if iono is None:
             iono = iri
         else:
