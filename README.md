@@ -36,7 +36,7 @@ pip install -e iri2016
 ```
 
 This Python wrapper of IRI2016 uses our build-on-run technique.
-The first time you use IRI2016, you will see messages from the Meson build system and your C compiler.
+On the first `import iri2016` the Fortran code is built.
 
 If you have errors about building on the first run, ensure that your Fortran compiler is specified in environment variable FC--this is what most build systems use to indicate the desired Fortran compiler (name or full path).
 
