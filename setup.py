@@ -1,6 +1,10 @@
-#!/usr/bin/env python
-import setuptools  # noqa: F401
+#!/usr/bin/env python3
+import setuptools
 from pathlib import Path
+import site
+
+# PEP517 workaround
+site.ENABLE_USER_SITE = True
 
 """
 Because of bad bugs in IRI2016 itself, present even in plain Fortran usage, we can't safely use F2py, bad data can result.
