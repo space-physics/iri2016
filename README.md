@@ -48,11 +48,7 @@ This assumess you have a local copy of IRI2016 like:
 ```sh
 git clone https://github.com/space-physics/iri2016
 
-cd iri2016
-
-cmake -S iri2016 -B iri2016/build
-
-cmake --build iri2016/build
+ctest -S iri2016/src/iri2016/setup.cmake -VV
 ```
 
 ## Usage
