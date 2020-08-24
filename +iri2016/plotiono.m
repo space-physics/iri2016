@@ -1,12 +1,15 @@
 function plotiono(iono, times, glat, glon)
-
-validateattributes(iono, {'struct'}, {'scalar'})
+  arguments
+    iono struct
+    times datetime
+    glat (1,1) {mustBeNumeric,mustBeFinite}
+    glon (1,1) {mustBeNumeric,mustBeFinite}
+  end
 %% Density profiles
 hp = figure;
-try
 sgtitle(hp, {[datestr(times),' deg.  (',num2str(glat),', ', num2str(glon),')']})
-end
-ax = subplot(1,2,1, 'parent', hp);
+t = tiledlayout(hp, 1,2);
+ax = nexttile(t);
 set(ax, 'nextplot','add')
 
 semilogx(ax, iono.Ne, iono.altkm, 'DisplayName', 'N_e')
@@ -29,7 +32,7 @@ legend(ax, 'show','location','northwest')
 
 %% Temperature Profiles
 
-ax = subplot(1,2,2, 'parent', hp);
+ax = nexttile(t);
 set(ax, 'nextplot','add')
 
 plot(ax, iono.Tn, iono.altkm, 'DisplayName', 'T_n')

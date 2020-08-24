@@ -85,17 +85,16 @@ ctest -S iri2016/src/iri2016/setup.cmake -VV
 
 [irisub.for](./iri2016/src/irisub.for) has a few dozen logical flags stored in variable JF. To reconfigure those flags, edit [iri2016_driver.f90](./iri2016/src/iri2016_driver.f90) and recompile iri2016_driver.exe.
 
-### Matlab / GNU Octave
+### Matlab
 
-IRI2016 is readily accessible from Matlab and GNU Octave.
-From within Matlab / Octave, verify everything is working by from the `iri2016/tests` directory:
+IRI2016 is readily accessible from Matlab.
+From within Matlab verify everything is working by:
 
 ```matlab
-test_iri2016
+iri2016.test_unit
 ```
 
-* [iri2016.m](./matlab/iri2016.m) function accesses IRI2016 quantities.
-* [RunIRI2016.m](./matlab/RunIRI2016.m) is a simple example use with plots.
+The [Examples](./Examples) directory has simple example use with plots.
 
 ![Matlab IRI2016 plot](./figures/matlab.png)
 

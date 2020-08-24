@@ -9,14 +9,14 @@ if nargin>1
     figure
     v = xarray2mat(iono{key});
     semilogx(v, alt_km, 'DisplayName', key)
-    
+
     switch(key(1))
         case 'n', xlabel('Density [m^-3]')
         case 'T', xlabel('Temperature [K]')
     end
     ylabel('altitude [km]')
     title(key)
-    
+
     return
 end
 
