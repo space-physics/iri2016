@@ -7,26 +7,26 @@ function iono = iri2016(time, glat, glon, altkm_range)
   end
 %% binary IRI2016
 cwd = fileparts(mfilename('fullpath'));
-srcdir = fullfile(cwd, '../src/iri2016');
-exe = fullfile(srcdir, 'iri2016_driver');
+srcdir = fullfile(cwd, "../src/iri2016");
+exe = fullfile(srcdir, "iri2016_driver");
 if ispc
-  exe = [exe,'.exe'];
+  exe = exe + ".exe";
 end
 if ~isfile(exe)
   iri2016.cmake(srcdir)
 end
 assert(isfile(exe), 'could not build or find iri2016 executable: %s', exe)
 
-datadir = fullfile(cwd, '../src/iri2016/data');
+datadir = fullfile(cwd, "../src/iri2016/data");
 
 t_str = datestr(time, 'yyyy mm dd HH MM SS');
 
-cmd = [exe, ' ', t_str, ...
-       ' ',num2str(glat), ' ', num2str(glon), ' ', num2str(altkm_range), ' ', datadir];
-[status,dat] = system(cmd);
+cmd = exe + " " + t_str + ...
+       " " + num2str(glat) + " " + num2str(glon) + " " + num2str(altkm_range) + " " + datadir;
+[status, dat] = system(cmd);
 assert(status == 0, dat)
 
-Nalt =  fix((altkm_range(2) - altkm_range(1)) / altkm_range(3)) + 1;
+Nalt = fix((altkm_range(2) - altkm_range(1)) / altkm_range(3)) + 1;
 
 arr = cell2mat(textscan(dat, '%f %f %f %f %f %f %f %f %f %f %f %f', Nalt, ...
   'CollectOutput', true, 'ReturnOnError', false));

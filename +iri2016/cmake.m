@@ -1,12 +1,12 @@
 function cmake(srcdir)
 % build project with CMake
 arguments
-  srcdir char
+  srcdir (1,1) string
 end
 
-ccmd = ['ctest -S ', fullfile(srcdir, 'setup.cmake'),  ' -VV'];
+cmd = "ctest -S" + fullfile(srcdir, "setup.cmake") +  " -VV";
 
-ret = system(ccmd);
+ret = system(cmd);
 assert(ret==0, 'failed to build IRI')
 
 end

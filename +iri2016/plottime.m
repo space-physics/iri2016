@@ -6,7 +6,7 @@ function plottime(iri, times, glat, glon)
     glon (1,1) {mustBeNumeric,mustBeFinite}
   end
 
-ttxt = [datestr(times(1), 29), ' (',num2str(glat),',',num2str(glon),')'];
+ttxt = datestr(times(1), 29) + " (" + num2str(glat) + "," + num2str(glon) + ")";
 
 fig = figure;
 sgtitle(fig, ttxt)
