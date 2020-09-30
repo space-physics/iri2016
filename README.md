@@ -2,9 +2,8 @@
 
 [![image](https://zenodo.org/badge/DOI/10.5281/zenodo.240895.svg)](https://doi.org/10.5281/zenodo.240895)
 ![Actions Status](https://github.com/space-physics/iri2016/workflows/ci/badge.svg)
-[![codecov](https://codecov.io/gh/space-physics/iri2016/branch/master/graph/badge.svg)](https://codecov.io/gh/space-physics/iri2016)
 [![PyPi version](https://img.shields.io/pypi/pyversions/iri2016.svg)](https://pypi.python.org/pypi/iri2016)
-[![PyPi Download stats](http://pepy.tech/badge/iri2016)](http://pepy.tech/project/iri2016)
+[![PyPi Download stats](https://static.pepy.tech/badge/iri2016)](https://pepy.tech/project/iri2016)
 
 
 ![image](./figures/iri2DExample02.gif)
