@@ -1,2 +1,7 @@
 include src/iri2016/CMakeLists.txt src/iri2016/src/CMakeLists.txt src/iri2016/setup.cmake
 recursive-include src/iri2016/src *.for *.f90
+recursive-include src/iri2016/data/ccir *.asc
+recursive-include src/iri2016/data/igrf *.dat
+recursive-include src/iri2016/data/index *.dat
+recursive-include src/iri2016/data/mcsat *.dat
+recursive-include src/iri2016/data/ursi *.asc
