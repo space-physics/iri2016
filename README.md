@@ -3,6 +3,7 @@
 [![image](https://zenodo.org/badge/DOI/10.5281/zenodo.240895.svg)](https://doi.org/10.5281/zenodo.240895)
 ![Actions Status](https://github.com/space-physics/iri2016/workflows/ci/badge.svg)
 [![Build Status](https://travis-ci.com/space-physics/iri2016.svg?branch=master)](https://travis-ci.com/space-physics/iri2016)
+[![View iri2016 on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/81056-iri2016)
 [![PyPi version](https://img.shields.io/pypi/pyversions/iri2016.svg)](https://pypi.python.org/pypi/iri2016)
 [![PyPi Download stats](https://static.pepy.tech/badge/iri2016)](https://pepy.tech/project/iri2016)
 
