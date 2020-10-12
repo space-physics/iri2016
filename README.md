@@ -2,6 +2,7 @@
 
 [![image](https://zenodo.org/badge/DOI/10.5281/zenodo.240895.svg)](https://doi.org/10.5281/zenodo.240895)
 ![Actions Status](https://github.com/space-physics/iri2016/workflows/ci/badge.svg)
+[![Build Status](https://travis-ci.com/space-physics/iri2016.svg?branch=master)](https://travis-ci.com/space-physics/iri2016)
 [![PyPi version](https://img.shields.io/pypi/pyversions/iri2016.svg)](https://pypi.python.org/pypi/iri2016)
 [![PyPi Download stats](https://static.pepy.tech/badge/iri2016)](https://pepy.tech/project/iri2016)
 
@@ -13,7 +14,7 @@ A Fortran compiler is required to build the IRI2016 code.
 
 ## Install
 
-**Prerequisites**
+Prerequisites
 
 * Fortran compiler--any modern Fortran compiler will do. Here's how to get Gfortran:
   * Linux: `apt install gfortran`
@@ -55,21 +56,21 @@ ctest -S iri2016/src/iri2016/setup.cmake -VV
 * Altitude Profile: plot density and temperatures vs altitude
 
   ```sh
-  iri2016_altitude 2003-11-21T12 -11.95 -76.77
+  python -m iri2016.altitude 2003-11-21T12 -11.95 -76.77
   ```
 
   ![image](./figures/iri1DExample01.png)
 * Latitude profile: plot densities and height at the peak of F2, F2, and E regions vs geographic latitude
 
   ```sh
-  iri2016_latitude 2004-11-21T17 -76.77
+  python -m iri2016.latitude 2004-11-21T17 -76.77
   ```
 
   ![image](./figures/iri1DExample02.png)
 * Time profile: plot densities and height at the peak of F2, F2, and E regions vs UTC
 
   ```sh
-  iri2016_time 2014-11-21 2014-11-22 1 -11.95 -76.77
+  python -m iri2016.time 2014-11-21 2014-11-22 1 -11.95 -76.77
   ```
 
   ![image](./figures/plasma.png)

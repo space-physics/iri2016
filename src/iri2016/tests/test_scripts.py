@@ -1,22 +1,15 @@
-import pytest
+import iri2016.time as time_profile
+import iri2016.latitude as lat_profile
+import iri2016.altitude as alt_profile
 
-import subprocess
-import os
 
-
-@pytest.mark.skipif(os.environ.get("CI") is not None, reason="CI no display")
 def test_latitude():
-    pytest.importorskip("matplotlib")
-    subprocess.check_call(["iri2016_latitude", "-148"])
+    lat_profile.main("2012-01-01", 300, (-60, 60, 2.0), -148)
 
 
-@pytest.mark.skipif(os.environ.get("CI") is not None, reason="CI no display")
 def test_time():
-    pytest.importorskip("matplotlib")
-    subprocess.check_call(["iri2016_time", "2012-01-01", "2012-01-02", "1.0", "65", "-148"])
+    time_profile.main(("2012-01-01", "2012-01-02", 1.0), (100, 200, 20), 65, -148)
 
 
-@pytest.mark.skipif(os.environ.get("CI") is not None, reason="CI no display")
 def test_alt():
-    pytest.importorskip("matplotlib")
-    subprocess.check_call(["iri2016_altitude", "2012-01-01", "65", "-148"])
+    alt_profile.main("2012-01-01", (80, 1000, 10), 65, -148)

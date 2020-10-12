@@ -1,7 +1,7 @@
 import xarray
 from dateutil.parser import parse
 from datetime import datetime, timedelta
-import typing
+import typing as T
 import numpy as np
 
 from .base import IRI
@@ -9,7 +9,7 @@ from .base import IRI
 __all__ = ["datetimerange", "timeprofile", "geoprofile"]
 
 
-def datetimerange(start: datetime, end: datetime, step: timedelta) -> typing.List[datetime]:
+def datetimerange(start: datetime, end: datetime, step: timedelta) -> T.List[datetime]:
     """like range() for datetime"""
     if isinstance(start, str):
         start = parse(start)
@@ -24,7 +24,7 @@ def datetimerange(start: datetime, end: datetime, step: timedelta) -> typing.Lis
     return [start + i * step for i in range((end - start) // step)]
 
 
-def timeprofile(tlim: tuple, dt: timedelta, altkmrange: list, glat: float, glon: float) -> xarray.Dataset:
+def timeprofile(tlim: tuple, dt: timedelta, altkmrange: T.Sequence[float], glat: float, glon: float) -> xarray.Dataset:
     """compute IRI altitude profile over time range for fixed lat/lon
     """
 
@@ -51,7 +51,7 @@ def timeprofile(tlim: tuple, dt: timedelta, altkmrange: list, glat: float, glon:
     return iono
 
 
-def geoprofile(latrange: typing.Sequence[float], glon: float, altkm: float, time: datetime) -> xarray.Dataset:
+def geoprofile(latrange: T.Sequence[float], glon: float, altkm: float, time: T.Union[str, datetime]) -> xarray.Dataset:
     """compute IRI altitude profiles at time, over lat or lon range
     """
 

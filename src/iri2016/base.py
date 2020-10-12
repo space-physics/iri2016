@@ -5,7 +5,7 @@ import xarray
 import io
 import os
 import numpy as np
-import typing
+import typing as T
 import importlib.resources
 
 iri_name = "iri2016_driver"
@@ -21,13 +21,13 @@ SIMOUT = ["ne", "Tn", "Ti", "Te", "nO+", "nH+", "nHe+", "nO2+", "nNO+", "nCI", "
 __all__ = ["IRI"]
 
 
-def IRI(time: datetime, altkmrange: typing.Sequence[float], glat: float, glon: float) -> xarray.Dataset:
+def IRI(time: T.Union[str, datetime], altkmrange: T.Sequence[float], glat: float, glon: float) -> xarray.Dataset:
 
     if isinstance(time, str):
         time = parse(time)
 
     assert len(altkmrange) == 3, "altitude (km) min, max, step"
-    assert isinstance(glat, float) and isinstance(glon, float), "glat, glon is scalar"
+    assert isinstance(glat, (int, float)) and isinstance(glon, (int, float)), "glat, glon is scalar"
 
     with importlib.resources.path(__package__, iri_name) as exe:
         cmd = [

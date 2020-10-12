@@ -1,0 +1,28 @@
+dist: bionic
+# Matlab R2020a libstdc++ needs Ubuntu 18.04
+
+language: matlab
+
+matlab:
+- latest
+
+os:
+- linux
+
+git:
+- depth: 3
+- quiet: true
+
+addons:
+  apt:
+    packages:
+    - gfortran
+  snaps:
+  - name: cmake
+    confinement: classic
+
+before_script:
+- export PATH=/snap/bin:$PATH
+
+script:
+- matlab -batch "r = runtests('iri2016'); assert(~isempty(r)); assertSuccess(r)"
