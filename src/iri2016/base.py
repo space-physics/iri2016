@@ -6,6 +6,7 @@ import io
 import os
 import numpy as np
 import typing as T
+import shutil
 import importlib.resources
 
 iri_name = "iri2016_driver"
@@ -13,8 +14,13 @@ if os.name == "nt":
     iri_name += ".exe"
 
 if not importlib.resources.is_resource(__package__, iri_name):
+    ctest = shutil.which("ctest")
+    if not ctest:
+        raise ImportError("could not find CMake, which is used to build IRI2016")
     with importlib.resources.path(__package__, "setup.cmake") as setup:
-        subprocess.check_call(["ctest", "-S", str(setup), "-VV"])
+        ret = subprocess.run([ctest, "-S", str(setup), "-VV"])
+        if ret.returncode != 0:
+            raise ImportError("not able to compile IRI2016 Fortran code.")
 
 SIMOUT = ["ne", "Tn", "Ti", "Te", "nO+", "nH+", "nHe+", "nO2+", "nNO+", "nCI", "nN+"]
 
