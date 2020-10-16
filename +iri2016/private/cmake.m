@@ -1,7 +1,8 @@
-function cmake(srcdir)
-% build project with CMake
+function cmake(src_dir)
+% build program using CMake and default generator
+% to specify generator with CMake >= 3.15 set environment variable CMAKE_GENERATOR
 arguments
-  srcdir (1,1) string
+  src_dir (1,1) string
 end
 
 fix_macos()
@@ -9,14 +10,20 @@ fix_macos()
 cmd = "cmake --version";
 ret = system(cmd);
 if ret ~= 0
-  error('iri2016:cmake:runtime_error', 'CMake not found')
+  error('cmake:runtime_error', 'CMake not found')
 end
 
-cmd = "ctest -S " + fullfile(srcdir, "setup.cmake") +  " -VV";
-disp(cmd)
+cmd = "ctest -S " + fullfile(src_dir, "setup.cmake") +  " -VV";
+
+
+if ~isfolder(src_dir)
+  error("cmake:file_not_found", "source directory not found: " + src_dir)
+end
 
 ret = system(cmd);
-assert(ret==0, 'failed to build IRI')
+if ret ~= 0
+  error('cmake:runtime_error', 'error building with CMake')
+end
 
 end
 

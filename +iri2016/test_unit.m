@@ -11,6 +11,6 @@ altkmrange = [100,1000,10];
 
 iono = iri2016.iri2016(time, glat, glon, altkmrange);
 
-tc.assertEqual(iono.Ne(11), 3.986688e9, 'RelTol', 1e-4, 'Ne error excessive')
+tc.assertEqual(iono.Ne(11), 3.986688e9, 'RelTol', 1e-4)
 
 end

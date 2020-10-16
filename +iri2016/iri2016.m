@@ -13,7 +13,7 @@ if ispc
   exe = exe + ".exe";
 end
 if ~isfile(exe)
-  iri2016.cmake(srcdir)
+  cmake(srcdir)
 end
 assert(isfile(exe), 'could not build or find iri2016 executable: %s', exe)
 
