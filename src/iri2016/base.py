@@ -17,6 +17,8 @@ if not importlib.resources.is_resource(__package__, iri_name):
     ctest = shutil.which("ctest")
     if not ctest:
         raise ImportError("could not find CMake, which is used to build IRI2016")
+    if not (shutil.which("ninja") or shutil.which("make")):
+        raise ImportError("Ninja not found. Please do 'python -m pip install ninja'")
     with importlib.resources.path(__package__, "setup.cmake") as setup:
         ret = subprocess.run([ctest, "-S", str(setup), "-VV"])
         if ret.returncode != 0:
