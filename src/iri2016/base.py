@@ -6,23 +6,9 @@ import io
 import os
 import numpy as np
 import typing as T
-import shutil
 import importlib.resources
 
-iri_name = "iri2016_driver"
-if os.name == "nt":
-    iri_name += ".exe"
-
-if not importlib.resources.is_resource(__package__, iri_name):
-    ctest = shutil.which("ctest")
-    if not ctest:
-        raise ImportError("could not find CMake, which is used to build IRI2016")
-    if not (shutil.which("ninja") or shutil.which("make")):
-        raise ImportError("Ninja not found. Please do 'python -m pip install ninja'")
-    with importlib.resources.path(__package__, "setup.cmake") as setup:
-        ret = subprocess.run([ctest, "-S", str(setup), "-VV"])
-        if ret.returncode != 0:
-            raise ImportError("not able to compile IRI2016 Fortran code.")
+from .build import build
 
 SIMOUT = ["ne", "Tn", "Ti", "Te", "nO+", "nH+", "nHe+", "nO2+", "nNO+", "nCI", "nN+"]
 
@@ -36,7 +22,13 @@ def IRI(time: T.Union[str, datetime], altkmrange: T.Sequence[float], glat: float
 
     assert len(altkmrange) == 3, "altitude (km) min, max, step"
     assert isinstance(glat, (int, float)) and isinstance(glon, (int, float)), "glat, glon is scalar"
+    # %% build IRI executable if needed
+    iri_name = "iri2016_driver"
+    if os.name == "nt":
+        iri_name += ".exe"
 
+    build(iri_name)
+    # %% run IRI
     with importlib.resources.path(__package__, iri_name) as exe:
         cmd = [
             str(exe),

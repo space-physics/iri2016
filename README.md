@@ -37,7 +37,7 @@ pip install -e iri2016
 ```
 
 This Python wrapper of IRI2016 uses our build-on-run technique.
-On the first `import iri2016` the Fortran code is built.
+On the first run or `iri2016.IRI()` the Fortran code is built--we call this "build on run".
 
 If you have errors about building on the first run, ensure that your Fortran compiler is specified in environment variable FC--this is what most build systems use to indicate the desired Fortran compiler (name or full path).
 

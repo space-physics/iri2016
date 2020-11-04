@@ -20,18 +20,17 @@ jobs:
       timeout-minutes: 2
 
     - run: flake8
-    - run: mypy . src
+    - run: mypy
 
     - run: pytest
       env:
         CC: gcc-9
         FC: gfortran-9
 
-# codecov coverage
-    - run: pip install codecov pytest-cov
-    - run: pytest --cov --cov-report=xml
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
+    # - run: pip install codecov pytest-cov
+    # - run: pytest --cov --cov-report=xml
+    # - name: Upload coverage to Codecov
+    #   uses: codecov/codecov-action@v1
 
 
   macos:

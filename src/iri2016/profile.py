@@ -25,8 +25,7 @@ def datetimerange(start: datetime, end: datetime, step: timedelta) -> T.List[dat
 
 
 def timeprofile(tlim: tuple, dt: timedelta, altkmrange: T.Sequence[float], glat: float, glon: float) -> xarray.Dataset:
-    """compute IRI altitude profile over time range for fixed lat/lon
-    """
+    """compute IRI altitude profile over time range for fixed lat/lon"""
 
     times = datetimerange(tlim[0], tlim[1], dt)
 
@@ -52,8 +51,7 @@ def timeprofile(tlim: tuple, dt: timedelta, altkmrange: T.Sequence[float], glat:
 
 
 def geoprofile(latrange: T.Sequence[float], glon: float, altkm: float, time: T.Union[str, datetime]) -> xarray.Dataset:
-    """compute IRI altitude profiles at time, over lat or lon range
-    """
+    """compute IRI altitude profiles at time, over lat or lon range"""
 
     glat = np.arange(*latrange)
 

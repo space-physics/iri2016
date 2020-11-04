@@ -12,7 +12,7 @@ simout = ["ne", "Tn", "Ti", "Te", "nO+", "nH+", "nHe+", "nO2+", "nNO+", "nCI", "
 
 def Switches():
     """
-     IRI switches to turn on/off several options
+    IRI switches to turn on/off several options
     """
 
     jf = np.ones(50, dtype=bool)
