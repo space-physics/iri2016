@@ -34,6 +34,7 @@ jobs:
 
 
   macos:
+    needs: linux
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
@@ -50,6 +51,7 @@ jobs:
         FC: gfortran-9
 
   windows:
+    needs: linux
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
