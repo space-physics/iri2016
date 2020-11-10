@@ -21,7 +21,7 @@ datadir = fullfile(cwd, "../src/iri2016/data");
 
 t_str = datestr(time, 'yyyy mm dd HH MM SS');
 
-cmd = exe + sprintf(" %s %f %f ", t_str, glat, glon) + ...
+cmd = sprintf("%s %s %f %f ", exe, t_str, glat, glon) + ...
        num2str(altkm_range) + " " + datadir;
 [status, dat] = system(cmd);
 assert(status == 0, dat)
