@@ -1,10 +1,10 @@
 function iono = iri2016(time, glat, glon, altkm_range)
-  arguments
-    time (1,1) datetime
-    glat (1,1) {mustBeNumeric,mustBeFinite}
-    glon (1,1) {mustBeNumeric,mustBeFinite}
-    altkm_range (1,3) {mustBeNumeric,mustBeFinite,mustBePositive}
-  end
+arguments
+  time (1,1) datetime
+  glat (1,1) {mustBeNumeric,mustBeFinite}
+  glon (1,1) {mustBeNumeric,mustBeFinite}
+  altkm_range (1,3) {mustBeNumeric,mustBeFinite,mustBePositive}
+end
 %% binary IRI2016
 cwd = fileparts(mfilename('fullpath'));
 srcdir = fullfile(cwd, "../src/iri2016");
@@ -21,8 +21,8 @@ datadir = fullfile(cwd, "../src/iri2016/data");
 
 t_str = datestr(time, 'yyyy mm dd HH MM SS');
 
-cmd = exe + " " + t_str + ...
-       " " + num2str(glat) + " " + num2str(glon) + " " + num2str(altkm_range) + " " + datadir;
+cmd = exe + sprintf(" %s %f %f ", t_str, glat, glon) + ...
+       num2str(altkm_range) + " " + datadir;
 [status, dat] = system(cmd);
 assert(status == 0, dat)
 
@@ -46,6 +46,7 @@ iono.nN = arr(:,12);
 
 arr = cell2mat(textscan(dat, '%f', 'HeaderLines',Nalt));
 
+% by convention of msis
 arr(arr <= 0) = nan;
 
 iono.NmF2=arr(1);

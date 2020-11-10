@@ -1,10 +1,10 @@
 function plotiono(iono, times, glat, glon)
-  arguments
-    iono struct
-    times datetime
-    glat (1,1) {mustBeNumeric,mustBeFinite}
-    glon (1,1) {mustBeNumeric,mustBeFinite}
-  end
+arguments
+  iono struct
+  times datetime
+  glat (1,1) {mustBeNumeric,mustBeFinite}
+  glon (1,1) {mustBeNumeric,mustBeFinite}
+end
 %% Density profiles
 hp = figure;
 sgtitle(hp, {datestr(times) + " deg.  (" + num2str(glat) + ", " + num2str(glon) + ")"})

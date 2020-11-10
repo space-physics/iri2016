@@ -1,10 +1,10 @@
 function plottime(iri, times, glat, glon)
-  arguments
-    iri struct
-    times datetime
-    glat (1,1) {mustBeNumeric,mustBeFinite}
-    glon (1,1) {mustBeNumeric,mustBeFinite}
-  end
+arguments
+  iri struct
+  times datetime
+  glat (1,1) {mustBeNumeric,mustBeFinite}
+  glon (1,1) {mustBeNumeric,mustBeFinite}
+end
 
 ttxt = datestr(times(1), 29) + " (" + num2str(glat) + "," + num2str(glon) + ")";
 

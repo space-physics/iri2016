@@ -1,6 +1,12 @@
 variables:
   CI: true
 
+trigger:
+  paths:
+    include:
+    - "+iri2016/*"
+    - azure-pipelines.yml
+
 pool:
   vmImage: ubuntu-latest
 steps:

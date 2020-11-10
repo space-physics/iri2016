@@ -13,8 +13,7 @@ if ret ~= 0
   error('cmake:runtime_error', 'CMake not found')
 end
 
-cmd = "ctest -S " + fullfile(src_dir, "setup.cmake") +  " -VV";
-
+cmd = sprintf("ctest -S %s -VV", fullfile(src_dir, "setup.cmake"));
 
 if ~isfolder(src_dir)
   error("cmake:file_not_found", "source directory not found: " + src_dir)

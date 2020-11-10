@@ -92,7 +92,7 @@ IRI2016 is readily accessible from Matlab.
 From within Matlab verify everything is working by:
 
 ```matlab
-runtests('iri2016')
+TestAll
 ```
 
 The [Examples](./Examples) directory has simple example use with plots.
