@@ -8,6 +8,9 @@ fort.6
 .pytest_cache/
 build*/
 
+code-coverage/
+test-results/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

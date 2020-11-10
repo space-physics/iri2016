@@ -1,62 +1,28 @@
-# Cmake >= 3.13 required
+dist: bionic
+# Matlab R2020a libstdc++ needs Ubuntu 18.04
 
-language: python
-group: travis_latest
-dist: xenial
+language: matlab
+
+matlab:
+- latest
+
+os:
+- linux
 
 git:
-  depth: 3
-  quiet: true
+- depth: 3
+- quiet: true
 
 addons:
   apt:
     packages:
     - gfortran
+  snaps:
+  - name: cmake
+    confinement: classic
 
-matrix:
-  include:
-  - os: linux
-    python: 3.7
-    install: pip install -e .[tests,cov]
-    script:
-    - flake8
-    - mypy . --ignore-missing-imports
-    after_success:
-    - pytest --cov
-    - coveralls
-  - os: linux
-    language: minimal
-    addons:
-      apt:
-        packages:
-        - gfortran
-        - octave
-    before_install:
-    - git clone https://github.com/scivision/cmake-utils
-    - cd $TRAVIS_BUILD_DIR/cmake-utils
-    - bash cmake_setup.sh
-    - export PATH=$HOME/.local/cmake-3.13.4-Linux-x86_64/bin/:$PATH
-    - cd $TRAVIS_BUILD_DIR
-    install: octave-cli matlab/setup_iri2016.m
-    script: octave-cli tests/test_iri2016.m
-#  - os: osx
-#    language: sh
-#    before_install:
-#    - brew install gcc
-#    - brew upgrade cmake
-#    install: pip3 install -e .[tests]
-#  - os: windows
-#    language: sh
-#    before_install:
-#    - choco install python3
-#    - export PATH="/c/Python37:/c/Python37/Scripts:$PATH"
-#  - os: windows
-#    language: sh
-#    before_install: choco install octave.portable
-#    install: octave-cli matlab/setup_iri2016.m
-#    script: octave-cli tests/test_iri2016.m
+before_script:
+- export PATH=/snap/bin:$PATH
 
-
-install: pip install -e .[tests]
-
-script: pytest -rsv
+script:
+- matlab -batch "r = runtests('iri2016'); assert(~isempty(r)); assertSuccess(r)"

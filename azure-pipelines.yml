@@ -1,0 +1,24 @@
+variables:
+  CI: true
+
+pool:
+  vmImage: ubuntu-latest
+steps:
+  - script: |
+      sudo apt update -q
+      sudo apt install -yq --no-install-recommends gfortran
+    displayName: 'Install Linux prereqs'
+  - task: InstallMATLAB@0
+    inputs:
+      release: R2020a
+  - task: RunMATLABCommand@0
+    inputs:
+      command: TestAll
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFiles: test-results/results.xml
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: code-coverage/coverage.xml
