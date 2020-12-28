@@ -50,21 +50,37 @@ def timeprofile(tlim: tuple, dt: timedelta, altkmrange: T.Sequence[float], glat:
     return iono
 
 
-def geoprofile(latrange: T.Sequence[float], glon: float, altkm: float, time: T.Union[str, datetime]) -> xarray.Dataset:
+def geoprofile(latrange: T.Union[float, T.Sequence[float]], lonrange: T.Union[float, T.Sequence[float]], altkm: float, time: T.Union[str, datetime]) -> xarray.Dataset:
     """compute IRI altitude profiles at time, over lat or lon range"""
-
-    glat = np.arange(*latrange)
-
+    
+    if isinstance(latrange, (T.Sequence, np.ndarray)):
+        glat = np.arange(*latrange, dtype=np.float)
+    else:
+        glat = np.atleast_1d(np.float(latrange))
+        
+    if isinstance(lonrange, (T.Sequence, np.ndarray)):
+        glon = np.arange(*lonrange, dtype=np.float)
+    else:
+        glon = np.atleast_1d(np.float(lonrange))
+    
     iono: xarray.Dataset = None
 
     f107 = []
     ap = []
     for lt in glat:
-        iri = IRI(time, altkmrange=[altkm] * 3, glat=lt, glon=glon)
+        iono_lons: xarray.Dataset = None
+
+        for ln in glon:
+            iri = IRI(time, altkmrange=[altkm] * 3, glat=lt, glon=ln)
+            if iono_lons is None:
+                iono_lons = iri
+            else:
+                iono_lons = xarray.concat((iono_lons, iri), dim="glon")
+
         if iono is None:
-            iono = iri
+            iono = iono_lons
         else:
-            iono = xarray.concat((iono, iri), dim="glat")
+            iono = xarray.concat((iono, iono_lons), dim="glat")
 
         f107.append(iri.f107)
         ap.append(iri.ap)
