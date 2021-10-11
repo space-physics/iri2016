@@ -1,12 +1,12 @@
+from __future__ import annotations
 from .profile import timeprofile
 
 from argparse import ArgumentParser
 from datetime import timedelta
-import typing as T
 
 
-def main(time: T.Sequence[str], alt_km: T.Sequence[float], glat: float, glon: float):
-    """ IRI2016 time profile """
+def main(time: list[str], alt_km: list[float], glat: float, glon: float):
+    """IRI2016 time profile"""
     return timeprofile((time[0], time[1]), timedelta(hours=float(time[2])), alt_km, glat, glon)
 
 

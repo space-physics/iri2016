@@ -1,11 +1,11 @@
+from __future__ import annotations
 from .base import IRI
 
 from argparse import ArgumentParser
-import typing as T
 
 
-def main(time: str, alt_km: T.Sequence[float], glat: float, glon: float):
-    """ Height Profile Example """
+def main(time: str, alt_km: list[float], glat: float, glon: float):
+    """Height Profile Example"""
 
     return IRI(time, alt_km, glat, glon)
 

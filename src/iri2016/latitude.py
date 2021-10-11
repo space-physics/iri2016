@@ -1,12 +1,12 @@
+from __future__ import annotations
 from .profile import geoprofile
 
 from pathlib import Path
 from argparse import ArgumentParser
-import typing as T
 
 
-def main(time: str, alt_km: float, glat: T.Sequence[float], glon: float, outfn: Path = None):
-    """ latitude Profile Example """
+def main(time: str, alt_km: float, glat: list[float], glon: float, outfn: Path = None):
+    """latitude Profile Example"""
 
     iono = geoprofile(latrange=glat, glon=glon, altkm=alt_km, time=time)
 

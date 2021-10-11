@@ -1,3 +1,4 @@
+from __future__ import annotations
 import subprocess
 from dateutil.parser import parse
 from datetime import datetime
@@ -5,7 +6,6 @@ import xarray
 import io
 import os
 import numpy as np
-import typing as T
 import importlib.resources
 
 from .build import build
@@ -15,7 +15,7 @@ SIMOUT = ["ne", "Tn", "Ti", "Te", "nO+", "nH+", "nHe+", "nO2+", "nNO+", "nCI", "
 __all__ = ["IRI"]
 
 
-def IRI(time: T.Union[str, datetime], altkmrange: T.Sequence[float], glat: float, glon: float) -> xarray.Dataset:
+def IRI(time: str | datetime, altkmrange: list[float], glat: float, glon: float) -> xarray.Dataset:
 
     if isinstance(time, str):
         time = parse(time)
