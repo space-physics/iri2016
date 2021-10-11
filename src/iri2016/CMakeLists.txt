@@ -1,13 +1,10 @@
-cmake_minimum_required(VERSION 3.13)
-
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release CACHE STRING "Debug or Release")
-endif()
+cmake_minimum_required(VERSION 3.14...3.21)
 
 project(iri2016
 LANGUAGES Fortran
 DESCRIPTION "IRI2016 command line driver"
-HOMEPAGE_URL https://github.com/space-physics/iri2016)
+HOMEPAGE_URL https://github.com/space-physics/iri2016
+)
 
 include(CTest)
 
@@ -17,26 +14,18 @@ include(CheckFortranCompilerFlag)
 include(CheckFortranSourceCompiles)
 check_fortran_compiler_flag(-w nowarn)
 
-set(OLD_FLAGS)
-if(nowarn)
-  set(OLD_FLAGS "-w")
-endif()
-
 if(CMAKE_Fortran_COMPILER_ID STREQUAL GNU)
   set(CMAKE_REQUIRED_FLAGS -static)
-  check_fortran_source_compiles("end" static_ok SRC_EXT f90)
+  check_fortran_source_compiles("program empty; end program" static_ok SRC_EXT f90)
 
-  string(APPEND CMAKE_Fortran_FLAGS " -std=legacy")
-  if(static_ok)
-    string(APPEND CMAKE_Fortran_FLAGS " -static")
-  endif()
-
+  add_compile_options(-std=legacy
+  $<$<BOOL:${static_ok}>:-static>
+  )
 elseif(CMAKE_Fortran_COMPILER_ID STREQUAL Intel)
   set(CMAKE_REQUIRED_FLAGS -static-intel)
-  check_fortran_source_compiles("end" static_ok SRC_EXT f90)
-  if(static_ok)
-    string(APPEND CMAKE_Fortran_FLAGS " -static-intel")
-  endif()
+  check_fortran_source_compiles("program empty; end program" static_ok SRC_EXT f90)
+
+  add_compile_options($<$<BOOL:${static_ok}>:-static-intel>)
 endif()
 
 # --- main program

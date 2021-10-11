@@ -2,11 +2,9 @@
 
 [![image](https://zenodo.org/badge/DOI/10.5281/zenodo.240895.svg)](https://doi.org/10.5281/zenodo.240895)
 ![Actions Status](https://github.com/space-physics/iri2016/workflows/ci/badge.svg)
-[![Build Status](https://dev.azure.com/mhirsch0512/iri2016/_apis/build/status/space-physics.iri2016?branchName=master)](https://dev.azure.com/mhirsch0512/iri2016/_build/latest?definitionId=22&branchName=master)
 [![View iri2016 on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/81056-iri2016)
 [![PyPi version](https://img.shields.io/pypi/pyversions/iri2016.svg)](https://pypi.python.org/pypi/iri2016)
 [![PyPi Download stats](https://static.pepy.tech/badge/iri2016)](https://pepy.tech/project/iri2016)
-
 
 ![image](./figures/iri2DExample02.gif)
 
@@ -40,17 +38,6 @@ This Python wrapper of IRI2016 uses our build-on-run technique.
 On the first run or `iri2016.IRI()` the Fortran code is built--we call this "build on run".
 
 If you have errors about building on the first run, ensure that your Fortran compiler is specified in environment variable FC--this is what most build systems use to indicate the desired Fortran compiler (name or full path).
-
-### Manual build
-
-This should not be necessary, but is included for troubleshooting purposes.
-This assumess you have a local copy of IRI2016 like:
-
-```sh
-git clone https://github.com/space-physics/iri2016
-
-ctest -S iri2016/src/iri2016/setup.cmake -VV
-```
 
 ## Usage
 

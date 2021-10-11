@@ -27,7 +27,7 @@ def IRI(time: T.Union[str, datetime], altkmrange: T.Sequence[float], glat: float
     if os.name == "nt":
         iri_name += ".exe"
 
-    build(iri_name)
+    build()
     # %% run IRI
     with importlib.resources.path(__package__, iri_name) as exe:
         cmd = [

@@ -1,17 +1,21 @@
 import importlib.resources
 import shutil
 import subprocess
+import os
+import sys
 
 
-def build(exe_name: str):
+def build():
 
-    if not importlib.resources.is_resource(__package__, exe_name):
-        ctest = shutil.which("ctest")
-        if not ctest:
-            raise RuntimeError("could not find CMake")
-        if not (shutil.which("ninja") or shutil.which("make")):
-            raise RuntimeError("Ninja not found. Please do 'python -m pip install ninja'")
-        with importlib.resources.path(__package__, "setup.cmake") as setup:
-            ret = subprocess.run([ctest, "-S", str(setup), "-VV"])
-            if ret.returncode != 0:
-                raise RuntimeError(f"not able to build {exe_name}")
+    exe = shutil.which("cmake")
+    if not exe:
+        raise FileNotFoundError("CMake not available")
+
+    with importlib.resources.path(__package__, "CMakeLists.txt") as f:
+        s = f.parent
+        b = s / "build"
+        g = []
+        if sys.platform == "win32" and not os.environ.get("CMAKE_GENERATOR"):
+            g = ["-G", "MinGW Makefiles"]
+        subprocess.check_call([exe, f"-S{s}", f"-B{b}"] + g)
+        subprocess.check_call([exe, "--build", str(b), "--parallel"])
