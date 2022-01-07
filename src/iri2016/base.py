@@ -26,8 +26,8 @@ def IRI(time: str | datetime, altkmrange: list[float], glat: float, glon: float)
     iri_name = "iri2016_driver"
     if os.name == "nt":
         iri_name += ".exe"
-
-    build()
+    if not importlib.resources.is_resource(__package__, iri_name):
+        build()
     # %% run IRI
     with importlib.resources.path(__package__, iri_name) as exe:
         cmd = [

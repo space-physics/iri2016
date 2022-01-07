@@ -23,6 +23,7 @@ jf(22:23) = .false.
 jf(26) = .true.  ! jf(26) == jf(8) == .true. for foF2
 jf(28:30) = .false.
 jf(33:35) = .false.
+jf(39)    = .false. !hmF2-old -> AMTB-model
 
 ! --- command line input
 if (command_argument_count() < 12) then
