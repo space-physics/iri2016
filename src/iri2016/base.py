@@ -6,7 +6,7 @@ import xarray
 import io
 import os
 import numpy as np
-import importlib.resources
+import importlib.resources as impr
 
 from .build import build
 
@@ -16,12 +16,13 @@ __all__ = ["IRI"]
 
 
 def IRI(time: str | datetime, altkmrange: list[float], glat: float, glon: float) -> xarray.Dataset:
-
     if isinstance(time, str):
         time = parse(time)
 
     assert len(altkmrange) == 3, "altitude (km) min, max, step"
-    assert isinstance(glat, (int, float)) and isinstance(glon, (int, float)), "glat, glon is scalar"
+    assert isinstance(glat, (int, float)) and isinstance(
+        glon, (int, float)
+    ), "glat, glon is scalar"
     # %% build IRI executable if needed
     iri_name = "iri2016_driver"
     if os.name == "nt":
@@ -29,7 +30,7 @@ def IRI(time: str | datetime, altkmrange: list[float], glat: float, glon: float)
 
     build()
     # %% run IRI
-    with importlib.resources.path(__package__, iri_name) as exe:
+    with impr.as_file(impr.files(__package__).joinpath(iri_name)) as exe:
         cmd = [
             str(exe),
             str(time.year),
@@ -61,7 +62,9 @@ def IRI(time: str | datetime, altkmrange: list[float], glat: float, glon: float)
     assert arr.ndim == 1 and arr.size == 100, "bad text data output format"
     # %% assemble output
     iono = xarray.Dataset(
-        dsf, coords={"time": [time], "alt_km": altkm, "glat": glat, "glon": glon}, attrs={"f107": arr[40], "ap": arr[51]}
+        dsf,
+        coords={"time": [time], "alt_km": altkm, "glat": glat, "glon": glon},
+        attrs={"f107": arr[40], "ap": arr[51]},
     )
 
     for i, p in enumerate(["NmF2", "hmF2", "NmF1", "hmF1", "NmE", "hmE"]):

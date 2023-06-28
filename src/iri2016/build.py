@@ -1,4 +1,4 @@
-import importlib.resources
+import importlib.resources as impr
 import shutil
 import subprocess
 import os
@@ -6,12 +6,11 @@ import sys
 
 
 def build():
-
     exe = shutil.which("cmake")
     if not exe:
         raise FileNotFoundError("CMake not available")
 
-    with importlib.resources.path(__package__, "CMakeLists.txt") as f:
+    with impr.as_file(impr.files(__package__).joinpath("CMakeLists.txt")) as f:
         s = f.parent
         b = s / "build"
         g = []

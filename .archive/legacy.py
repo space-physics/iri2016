@@ -63,7 +63,6 @@ def Switches():
 
 
 def IRI(time, altkmrange, glat, glon, ap=None, f107=None, ssn=None, var=None):
-
     if isinstance(time, str):
         time = parse(time)
 
@@ -116,12 +115,25 @@ def IRI(time, altkmrange, glat, glon, ap=None, f107=None, ssn=None, var=None):
         raise ValueError("Altitude grid must have enough points to compute quantities of interest")
 
     outf, oarr = iri16.iri_sub(
-        jf, jmag, glat, glon, time.year, mmdd, dhour, altkmrange[0], altkmrange[1], altkmrange[2], str(proot / "data/")
+        jf,
+        jmag,
+        glat,
+        glon,
+        time.year,
+        mmdd,
+        dhour,
+        altkmrange[0],
+        altkmrange[1],
+        altkmrange[2],
+        str(proot / "data/"),
     )
 
     outf = outf[:, : altkm.size]
     # %% collect output
-    dsf = {k: (("time", "alt_km", "lat", "lon"), np.atleast_2d(v[None, :, None, None])) for (k, v) in zip(simout, outf[:11, :])}
+    dsf = {
+        k: (("time", "alt_km", "lat", "lon"), np.atleast_2d(v[None, :, None, None]))
+        for (k, v) in zip(simout, outf[:11, :])
+    }
 
     dsf.update({"NmF2": (("time", "lat", "lon"), np.atleast_3d(oarr[0]))})
     dsf.update({"hmF2": (("time", "lat", "lon"), np.atleast_3d(oarr[1]))})

@@ -11,13 +11,22 @@ on:
 
 jobs:
 
-  linux:
-    runs-on: ubuntu-latest
+  core:
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: ['3.9', '3.11']
+
+    env:
+      FC: gfortran-11
+
+    runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
       with:
-        python-version: '3.8'
+        python-version: ${{ matrix.python }}
 
     - run: pip install .[tests,lint]
       timeout-minutes: 2
@@ -26,43 +35,8 @@ jobs:
     - run: mypy
 
     - run: pytest
-      env:
-        CC: gcc-9
-        FC: gfortran-9
 
     # - run: pip install codecov pytest-cov
     # - run: pytest --cov --cov-report=xml
     # - name: Upload coverage to Codecov
     #   uses: codecov/codecov-action@v1
-
-
-  macos:
-    needs: linux
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
-
-    - run: pip install .[tests]
-      timeout-minutes: 2
-
-    - run: pytest
-      env:
-        CC: gcc-9
-        FC: gfortran-9
-
-  windows:
-    needs: linux
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
-
-    - run: pip install .[tests]
-      timeout-minutes: 2
-
-    - run: pytest
