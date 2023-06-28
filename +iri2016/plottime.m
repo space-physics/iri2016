@@ -6,7 +6,7 @@ arguments
   glon (1,1) {mustBeNumeric,mustBeFinite}
 end
 
-ttxt = datestr(times(1), 29) + " (" + num2str(glat) + "," + num2str(glon) + ")";
+ttxt = string(times(1)) + " (" + num2str(glat) + "," + num2str(glon) + ")";
 
 fig = figure;
 sgtitle(fig, ttxt)

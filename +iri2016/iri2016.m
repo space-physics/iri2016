@@ -19,7 +19,8 @@ assert(isfile(exe), 'could not build or find iri2016 executable: %s', exe)
 
 datadir = fullfile(cwd, "../src/iri2016/data");
 
-t_str = datestr(time, 'yyyy mm dd HH MM SS');
+t_str = string(datetime(time, format='yyyy MM dd hh mm ss'));
+
 
 cmd = sprintf("%s %s %f %f ", exe, t_str, glat, glon) + ...
        num2str(altkm_range) + " " + datadir;

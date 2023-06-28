@@ -12,7 +12,7 @@ addpath(fullfile(cwd, '..'));
 times = t0:ts:t1;
 
 for i = 1:length(times)
-  iri(i) = iri2016.iri2016(times(i), glat, glon, altkmrange);
+  iri(i) = iri2016.iri2016(times(i), glat, glon, altkmrange); %#ok<SAGROW>
 end
 
 iri2016.plottime(iri, times, glat, glon)

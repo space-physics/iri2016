@@ -7,7 +7,7 @@ arguments
 end
 %% Density profiles
 hp = figure;
-sgtitle(hp, {datestr(times) + " deg.  (" + num2str(glat) + ", " + num2str(glon) + ")"})
+sgtitle(hp, {string(times) + " deg.  (" + num2str(glat) + ", " + num2str(glon) + ")"})
 t = tiledlayout(hp, 1,2);
 ax = nexttile(t);
 set(ax, 'nextplot','add')
