@@ -1,5 +1,7 @@
 .ipynb_checkpoints/
 
+src/iri2016/iri2016_driver
+
 *.exe
 *.asv
 *.m~
