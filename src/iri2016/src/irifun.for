@@ -1,8 +1,10 @@
-c irifun.for, version number can be found at the end of this comment.
+c irifun.for
 c-----------------------------------------------------------------------
 C Functions and subroutines for the International Reference Ionosphere
 C (IRI) model. These functions and subroutines are called by the main
 C IRI subroutine IRI_SUB in IRISUB.FOR.
+C Please check the LIST of CHANGES below to find out if this is the
+C same version that you are using.
 c- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 c Required i/o units:
 c  KONSOL= 6 Program messages (used when jf(12)=.true. -> konsol)
@@ -147,9 +149,17 @@ C 2016.12 03/22/18 INVDPC_OLD for ELTEIK                      [V. Truhlik]
 C 2016.13 04/06/18 read_data_SD: add web dir. location for mcsat%%.dat
 C 2016.14 04/23/18 Versioning now based on year of major releases
 C 2016.15 05/07/18 StormVd: AE7_12S -> AEd7_12S                [K. Knight]
+C
 C 2020.01 07/02/19 Added subroutines BOOKER and tops_cor2 (COMMON/BLO11)
 C 2020.02 07/19/19 XE1:itopn=3 is topside cor2 option (solar activity term)
 C 2020.03 08/05/19 XE1: corrections and BLO11 change
+C 2020.04 09/14/20 SOCO: special case sunrse > sunset
+C 2020.05 10/12/20 SOCO: sign(99,flat) -> sign(99.0,flat)     [P. Coisson]
+C 2020.06 11/15/20 XE4_1: using Huang's different HST vs HEF cases
+C 2020.07 09/20/21 read_ig_rz: corrected format description in COMMENTS
+C 2020.08 10/09/21 f1_c1: delete pi=umr*180 and abs(modip)
+C 2020.08 10/09/21 readapf107,APF,APFMSIS,APf_ONLY: 23000 -> 27000
+C 2020.09 01/12/22 XE4_1: add logical f1reg
 C
 c- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 c IRI functions and subroutines:
@@ -202,13 +212,13 @@ C	B2TOP   is the topside scale height that depends on foF2 and
 C           hmF2.
 C Switch for choosing the desired option is itopn in COMMON /BLO11
 C   itopn   =0 IRI-2001, =1 IRI-2001-corrected, =2 NeQuick
-C           =3 Gulyaeva-0.5 is not yet implemented.
+C           =3 IRI-cor2.
 c----------------------------------------------------------------
         COMMON  /BLOCK1/HMF2,XNMF2,HMF1,F1REG
      &          /BLO10/BETA,ETA,DELTA,ZETA
 c     &          /BLO11/B2TOP,TC3,itopn,alg10,hcor1,tcor2
      &          /BLO11/B2TOP,itopn,tcor
-     &          /QTOP/Y05,H05TOP,QF,XNETOP,xm3000,hhalf,tau
+c     &          /QTOP/Y05,H05TOP,QF,XNETOP,xm3000,hhalf,tau
      &          /ARGEXP/ARGMAX
 
         logical 	f1reg
@@ -406,19 +416,29 @@ C
         REAL FUNCTION XE4_1(H)
 C ELECTRON DENSITY FOR THE INTERMEDIATE REGION (HEF...HZ)
 C USING THE NEW DEFINED FUNCTION
-        COMMON	/BLOCK3/	HZ,T,HST
+        COMMON	/BLOCK1/	HMF2,XNMF2,HMF1,F1REG
+     &       /BLOCK2/ B0,B1,C1   /BLOCK3/ HZ,T,HST
      &		/BLOCK4/	HME,XNME,HEF
+	    logical	f1reg
 C
 	    if(hst.lt.0.0) then
-		xe4_1=xnme+t*(h-hef)
-		return
-		endif
+		  xe4_1=xnme+t*(h-hef)
+		  return
+		  endif
         IF(HST.EQ.HEF) THEN
-           H1BAR=H
+          HAHA=H
         ELSE
-           H1BAR=HZ+0.5*T-SIGN(1.0,T)*SQRT(T*(0.25*T+HZ-H))
+          D=HZ-HST
+          T=D*D/(HST-HEF)
+          IF(HST.GT.HEF) THEN
+            HAHA=HZ+0.5*T-SQRT(T*(0.25*T+HZ-H))
+          ELSE
+            HAHA=HZ+0.5*T+SQRT(T*(0.25*T+HZ-H))
+          Endif
         ENDIF
-        XE4_1=XE3_1(H1BAR)
+        H2BAR=HAHA
+        if(F1REG) H2BAR=HMF1*(1.0-((HMF1-HAHA)/HMF1)**(1.0+C1))
+        XE4_1=XE2(H2BAR)
         RETURN
         END
 C
@@ -468,25 +488,31 @@ C SUMMARIZING PROCEDURES  NE1....6;
 		   hmf1=hmf2
 	    endif
         IF(H.LT.HMF2) GOTO 100
+c topside h >= hmF2
         XE_1=XE1(H)
         RETURN
 
 100     IF(H.LT.HMF1) GOTO 300
+c bottomside hmF1 <= h < hmF2
         XE_1=XE2(H)
         RETURN
 
 300     IF(H.LT.HZ) GOTO 400
+c F1 region HZ <= h < hmF1
         XE_1=XE3_1(H)
         RETURN
 
 400     IF(H.LT.HEF) GOTO 500
+c intermediate region HEF <= h < HZ
         XE_1=XE4_1(H)
         RETURN
 
 500     IF(H.LT.HME) GOTO 600
+c E-valley hmE <= h < HEF
         XE_1=XE5(H)
         RETURN
 
+c E-bottomside and D-region h <= hmE
 600     XE_1=XE6(H)
         RETURN
         END
@@ -3462,10 +3488,10 @@ C
 C REFERENCES:
 C   Triskova, L., Truhlik, V., Smilauer, J. An empirical model of ion
 C      composition in the outer ionosphere. Adv. Space Res. 31 (3),
-C      653–663, 2003.
+C      653â€“663, 2003.
 C   Truhlik, V., Triskova, L., Smilauer, J. New advances in empirical
 C      modeling of ion composition in the outer ionosphere. Adv. Space
-C      Res. 33, 844–849, 2004.
+C      Res. 33, 844â€“849, 2004.
 C   Truhlik V., D. Bilitza, L. Triskova, Towards better description of
 C     solar activity variation in the International Reference Ionosphere
 C     topside ion composition model, Advances in Space Research,
@@ -5823,23 +5849,23 @@ c
 c
       subroutine read_data_SD(month,coeff_month)
 c------------------------------------------------------------------
-c    subroutine to read arrays mcsat11.datÖ mcsat22.dat
+c    subroutine to read arrays mcsat11.datÃ– mcsat22.dat
 c    with coefficients of hmF2 spatial decomposition
 c    for for 12 month, 24 UT hour and two solar activity levels
 c------------------------------------------------------------------
-      implicit none
+	implicit none
 c     .. scalar arguments ..
-      integer month
+	integer month
 c     .. array arguments ..
-      double precision coeff_month(0:148,0:47)
+	double precision coeff_month(0:148,0:47)
 c     .. local scalars ..
-      integer coeff_month_read(1:12)
-      character(256) filedata
-      integer i, j
+	integer coeff_month_read(1:12)
+	character(256) filedata
+	integer i, j
 c     .. local arrays ..
-      double precision coeff_month_all(0:148,0:47,1:12)
-      save coeff_month_all
-      data coeff_month_read /12*0/
+	double precision coeff_month_all(0:148,0:47,1:12)
+	save coeff_month_all
+	data coeff_month_read /12*0/
 	    common/folders/datadir
 	    character(256) :: datadir
 c
@@ -5847,12 +5873,12 @@ c
         write(filedata, 10) month+10
         open(10, File=trim(datadir)//'/mcsat/'//filedata,
      &       status='old')
-      do j=0,47
-        read(10,20) (coeff_month_all(i,j,month),i=0,148)
-      end do
-      close(10)
-      coeff_month_read(month) = 1
-      end if
+	  do j=0,47
+	    read(10,20) (coeff_month_all(i,j,month),i=0,148)
+        end do
+	  close(10)
+	  coeff_month_read(month) = 1
+	end if
 c
       coeff_month = coeff_month_all(0:148,0:47,month)
 c
@@ -6255,14 +6281,12 @@ C--------------------------------------------- D. BILITZA, 1988.
         END
 C
 C
-	real function f1_c1(xmodip,hour,saxnon,suxnon)
+	real function f1_c1(absmdp,hour,saxnon,suxnon)
 c F1 layer shape parameter C1 after Reinisch and Huang, Advances in
 c Space Research, Volume 25, Number 1, 81-88, 2000.
 
         common	/const/umr,pi
-        pi = umr * 180.
 
-        ABSMDP=ABS(XMODIP)
       	DELA=4.32
       	IF(ABSMDP.GE.18.) DELA=1.0+EXP(-(ABSMDP-30.0)/10.0)
 
@@ -8097,6 +8121,17 @@ c
         sunset = 12. + phi - et
         if(sunrse.lt.0.) sunrse = sunrse + 24.
         if(sunset.ge.24.) sunset = sunset - 24.
+c special case sunrse > sunset
+        if(sunrse.gt.sunset) then
+           sunx=sign(99.0,flat)
+           if(ld.gt.91.and.ld.lt.273) then
+              sunset = sunx
+              sunrse = sunx
+           else
+              sunset = -sunx
+              sunrse = -sunx
+           endif
+           endif
 c
         return
         end
@@ -8738,33 +8773,26 @@ c   day, month, year of the last update of this file,
 c   a blank line
 c   start month, start year, end month, end year,
 c   a blank line
-c   the IG index for December of start year minus 1 (this value is
-c		needed for interpolating from 1st to 15th of first year)
-c   the 12 IG indices (13-months running mean) for start year,
-c   the 12 IG indices for the second year
-c       .. and so on until the last year,
-c   the 12 IG indices for the last year
-c   the IG index for January of end year plus 1 (needed for interpolation)
+c   the IG12 index for the month before the start month of the
+c		start year (needed for interpolation)
+c   the IG12 indices for the rest of the start year,
+c   the twelve IG12 indices for the year following the start year
+c       .. and so on until the year before the end year,
+c   the IG12 indices for the end year from January to the end
+c   	month +1 (needed for interpolation)
 c   a blank line
-c   the Rz index for December of start year minus 1
-c   the 12 Rz indices (13-months running mean) for the start year,
-c   the 12 Rz indices for the second year
-c       .. and so on until the last year.
-c   the 12 Rz indices for the last year
-c   the Rz index for January of end year plus 1
+c   the Rz12 index for the month before the start month of the
+c		start year (needed for interpolation)
+c   the Rz12 indices for the rest of the start year,
+c   the twelve Rz12 indices for the year following the start year
+c       .. and so on until the year before the end year,
+c   the Rz12 indices for the end year from January to the end
+c   	month +1 (needed for interpolation)
 c
-c A negative Rz index means that the given index is the 13-months-
-C running mean of the solar radio flux (F10.7). The close correlation
-C between (Rz)12 and (F10.7)12 is used to compute the (Rz)12 indices.
-c
-c An IG index of -111 indicates that no IG values are available for the
-c time period. In this case a correlation function between (IG)12 and
-C (Rz)12 is used to obtain (IG)12.
-c
-c The computation of the 13-month-running mean for month M requires the
+c The computation of the 12-month-running mean for month M requires the
 c indices for the six months preceeding M and the six months following
 C M (month: M-6, ..., M+6). To calculate the current running mean one
-C therefore requires predictions of the indix for the next six months.
+C therefore requires predictions of the index for the next six months.
 C Starting from six months before the UPDATE DATE (listed at the top of
 c the file) and onward the indices are therefore based on indices
 c predictions.
@@ -8925,7 +8953,7 @@ C
 		subroutine readapf107
 C-------------------------------------------------------------------------
 c Reads APF107.DAT file (on UNIT=13) and stores contents in COMMON block:
-C 	COMMON/AAP,AF107,N/ with  AAP(23000,9) and AF107(23000,3)
+C 	COMMON/AAP,AF107,N/ with  AAP(27000,9) and AF107(27000,3)
 C		AAP(*,1)	3-hour Ap indices for the UT interval )0-3)
 C		AAP(*,2)	3-hour Ap indices for the UT interval )3-6)
 C          ....                       ....
@@ -8954,8 +8982,8 @@ c
 c If date is outside the range of the Ap indices file then IAP(1)=-5
 C-------------------------------------------------------------------------
 C
-        INTEGER		aap(23000,9),iiap(8)
-        DIMENSION 	af107(23000,3)
+        INTEGER		aap(27000,9),iiap(8)
+        DIMENSION 	af107(27000,3)
         COMMON		/apfa/aap,af107,n
         common/folders/datadir
         character(256) :: datadir
@@ -9007,8 +9035,8 @@ c
 c If date is outside the range of the Ap indices file than IAP(1)=-5
 c-----------------------------------------------------------------------
 
-        INTEGER		aap(23000,9),iiap(8),iap(13)
-        DIMENSION 	af107(23000,3)
+        INTEGER		aap(27000,9),iiap(8),iap(13)
+        DIMENSION 	af107(27000,3)
         LOGICAL 	mess
         COMMON 		/iounit/konsol,mess	/apfa/aap,af107,nf107
 
@@ -9084,8 +9112,8 @@ c If date is outside the range of the Ap indices file then IAPO(2)=-5
 c-----------------------------------------------------------------------
 c
 		REAL 		IAPO
-        INTEGER		aap(23000,9),iiap(8)
-        DIMENSION 	af107(23000,3),iap(20),lm(12),iapo(7)
+        INTEGER		aap(27000,9),iiap(8)
+        DIMENSION 	af107(27000,3),iap(20),lm(12),iapo(7)
         LOGICAL  	mess
 
         COMMON 		/iounit/konsol,mess	/apfa/aap,af107,nf107
@@ -9175,8 +9203,8 @@ c
 c If date is outside the range of indices file than F107D=F107_81=-11.1
 c-----------------------------------------------------------------------
 
-        INTEGER		aap(23000,9),iiap(8),lm(12)
-        DIMENSION 	af107(23000,3)
+        INTEGER		aap(27000,9),iiap(8),lm(12)
+        DIMENSION 	af107(27000,3)
         LOGICAL 	mess
 
         common 		/iounit/konsol,mess /apfa/aap,af107,nf107
@@ -9232,11 +9260,11 @@ C     This subroutine converts a geographic latitude and longitude
 C     location to a corrected geomagnetic latitude.
 C
 C     INPUT:
-C       geographic latitude   -90. to +90.
-C       geographic longitude  0. to 360. positive east from Greenwich.
+C       rga		geographic latitude   -90. to +90.
+C       rgo		geographic longitude  0. to 360.
 C
 C     OUTPUT:
-C       corrected geomagnetic latitude	-90. to +90.
+C       rgma	corrected geomagnetic latitude	-90. to +90.
 
 
       DIMENSION CORMAG(20,91)
@@ -11047,7 +11075,7 @@ C corresponds to the given MLT value (xmlt).
 C
 C Y. Zhang and L.J. Paxton, An empirical Kp-dependent global auroral
 C model based on TIMED/GUVI FUV data, Journal of Atmospheric and
-C Solar-Terrestrial Physics 70, 1231–1242, 2008.
+C Solar-Terrestrial Physics 70, 1231â€“1242, 2008.
 C
 C-----------------------------------------------------------------------
 
