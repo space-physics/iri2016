@@ -1,4 +1,7 @@
+program iri2016_driver
+
 use, intrinsic:: iso_fortran_env, only: stderr=>error_unit, stdout=>output_unit
+
 implicit none
 
 logical :: jf(50)
@@ -63,10 +66,13 @@ iyyyy = ymdhms(1)
 mmdd = ymdhms(2) * 100 + ymdhms(3)
 dhour = ymdhms(4) + ymdhms(5) / 60. + ymdhms(6) / 3600.
 
+!print *, "entering iri_sub"
 
 call IRI_SUB(JF,JMAG,glat,glon,IYYYY,MMDD,DHOUR+25., &
      alt_km_range(1), alt_km_range(2), alt_km_range(3), &
      OUTF,OARR, datadir)
+
+!print *, "entering iri_tec"
 
 ! --- for TEC
 call iri_tec(alt_km_range(1), alt_km_range(2), 2,&
