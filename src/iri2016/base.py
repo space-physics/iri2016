@@ -1,5 +1,6 @@
 from __future__ import annotations
 import subprocess
+import logging
 from dateutil.parser import parse
 from datetime import datetime
 import xarray
@@ -47,13 +48,17 @@ def IRI(time: str | datetime, altkmrange: list[float], glat: float, glon: float)
             str(exe.parent / "data"),
         ]
 
-        ret = subprocess.check_output(cmd, text=True)  # str for Windows
+        logging.info(" ".join(cmd))
+        ret = subprocess.check_output(cmd, text=True)
+    if not ret:
+        raise RuntimeError("IRI failed to run correctly--gave empty text output")
     # %% get altitude profile data
     Nalt = int((altkmrange[1] - altkmrange[0]) // altkmrange[2]) + 1
 
     arr = np.genfromtxt(io.StringIO(ret), max_rows=Nalt)
     arr = np.atleast_2d(arr)
-    assert arr.ndim == 2 and arr.shape[1] == 12, "bad text data output format"
+
+    assert arr.ndim == 2 and arr.shape[1] == 12, f"bad text data output format, shape {arr.shape}"
 
     dsf = {k: (("alt_km"), v) for (k, v) in zip(SIMOUT, arr[:, 1:].T)}
     altkm = arr[:, 0]
